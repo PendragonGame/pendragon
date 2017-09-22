@@ -1,0 +1,35 @@
+{
+  "name": "pendragon",
+  "version": "0.0.0",
+  "description": "A RPG with realistic gossip",
+  "main": "main.js",
+  "scripts": {
+    "test": "xo",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PendragonGame/pendragon.git"
+  },
+  "keywords": [
+    "RPG",
+    "Phaser",
+    "Electron"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PendragonGame/pendragon/issues"
+  },
+  "homepage": "https://github.com/PendragonGame/pendragon#readme",
+  "devDependencies": {
+    "electron": "^1.7.6",
+    "eslint-config-google": "^0.9.1"
+  },
+  "dependencies": {
+    "electron-is": "^2.4.0",
+    "electron-is-dev": "^0.3.0",
+    "elemon": "^5.0.3",
+    "eslint": "^4.7.1"
+  }
+}

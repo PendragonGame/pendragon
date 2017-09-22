@@ -1,0 +1,370 @@
+{
+    "frames": {
+        "mountains.png": {
+            "frame": {
+                "y": 0, 
+                "x": 0, 
+                "w": 384, 
+                "h": 288
+            }, 
+            "rotated": false, 
+            "filename": "mountains.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 288, 
+                "w": 384
+            }, 
+            "spriteSourceSize": {
+                "y": 0, 
+                "x": 0, 
+                "w": 384, 
+                "h": 288
+            }
+        }, 
+        "house.png": {
+            "frame": {
+                "y": 0, 
+                "x": -384, 
+                "w": 288, 
+                "h": 224
+            }, 
+            "rotated": false, 
+            "filename": "house.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 224, 
+                "w": 288
+            }, 
+            "spriteSourceSize": {
+                "y": 0, 
+                "x": -384, 
+                "w": 288, 
+                "h": 224
+            }
+        }, 
+        "treetop.png": {
+            "frame": {
+                "y": -288, 
+                "x": 0, 
+                "w": 192, 
+                "h": 224
+            }, 
+            "rotated": false, 
+            "filename": "treetop.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 224, 
+                "w": 192
+            }, 
+            "spriteSourceSize": {
+                "y": -288, 
+                "x": 0, 
+                "w": 192, 
+                "h": 224
+            }
+        }, 
+        "bridges.png": {
+            "frame": {
+                "y": -288, 
+                "x": -192, 
+                "w": 192, 
+                "h": 224
+            }, 
+            "rotated": false, 
+            "filename": "bridges.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 224, 
+                "w": 192
+            }, 
+            "spriteSourceSize": {
+                "y": -288, 
+                "x": -192, 
+                "w": 192, 
+                "h": 224
+            }
+        }, 
+        "watergrass.png": {
+            "frame": {
+                "y": -288, 
+                "x": -384, 
+                "w": 96, 
+                "h": 192
+            }, 
+            "rotated": false, 
+            "filename": "watergrass.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 192, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": -288, 
+                "x": -384, 
+                "w": 96, 
+                "h": 192
+            }
+        }, 
+        "water.png": {
+            "frame": {
+                "y": -288, 
+                "x": -480, 
+                "w": 96, 
+                "h": 192
+            }, 
+            "rotated": false, 
+            "filename": "water.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 192, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": -288, 
+                "x": -480, 
+                "w": 96, 
+                "h": 192
+            }
+        }, 
+        "trunk.png": {
+            "frame": {
+                "y": -512, 
+                "x": 0, 
+                "w": 192, 
+                "h": 96
+            }, 
+            "rotated": false, 
+            "filename": "trunk.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 96, 
+                "w": 192
+            }, 
+            "spriteSourceSize": {
+                "y": -512, 
+                "x": 0, 
+                "w": 192, 
+                "h": 96
+            }
+        }, 
+        "holemid.png": {
+            "frame": {
+                "y": -288, 
+                "x": -576, 
+                "w": 96, 
+                "h": 192
+            }, 
+            "rotated": false, 
+            "filename": "holemid.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 192, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": -288, 
+                "x": -576, 
+                "w": 96, 
+                "h": 192
+            }
+        }, 
+        "holek.png": {
+            "frame": {
+                "y": 0, 
+                "x": -672, 
+                "w": 96, 
+                "h": 192
+            }, 
+            "rotated": false, 
+            "filename": "holek.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 192, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": 0, 
+                "x": -672, 
+                "w": 96, 
+                "h": 192
+            }
+        }, 
+        "hole.png": {
+            "frame": {
+                "y": -192, 
+                "x": -672, 
+                "w": 96, 
+                "h": 192
+            }, 
+            "rotated": false, 
+            "filename": "hole.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 192, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": -192, 
+                "x": -672, 
+                "w": 96, 
+                "h": 192
+            }
+        }, 
+        "grassalt.png": {
+            "frame": {
+                "y": -384, 
+                "x": -672, 
+                "w": 96, 
+                "h": 192
+            }, 
+            "rotated": false, 
+            "filename": "grassalt.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 192, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": -384, 
+                "x": -672, 
+                "w": 96, 
+                "h": 192
+            }
+        }, 
+        "grass.png": {
+            "frame": {
+                "y": 0, 
+                "x": -768, 
+                "w": 96, 
+                "h": 192
+            }, 
+            "rotated": false, 
+            "filename": "grass.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 192, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": 0, 
+                "x": -768, 
+                "w": 96, 
+                "h": 192
+            }
+        }, 
+        "dirt2.png": {
+            "frame": {
+                "y": -192, 
+                "x": -768, 
+                "w": 96, 
+                "h": 192
+            }, 
+            "rotated": false, 
+            "filename": "dirt2.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 192, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": -192, 
+                "x": -768, 
+                "w": 96, 
+                "h": 192
+            }
+        }, 
+        "dirt.png": {
+            "frame": {
+                "y": -384, 
+                "x": -768, 
+                "w": 96, 
+                "h": 192
+            }, 
+            "rotated": false, 
+            "filename": "dirt.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 192, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": -384, 
+                "x": -768, 
+                "w": 96, 
+                "h": 192
+            }
+        }, 
+        "waterfall.png": {
+            "frame": {
+                "y": -608, 
+                "x": 0, 
+                "w": 96, 
+                "h": 160
+            }, 
+            "rotated": false, 
+            "filename": "waterfall.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 160, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": -608, 
+                "x": 0, 
+                "w": 96, 
+                "h": 160
+            }
+        }, 
+        "signs.png": {
+            "frame": {
+                "y": -224, 
+                "x": -384, 
+                "w": 96, 
+                "h": 64
+            }, 
+            "rotated": false, 
+            "filename": "signs.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 64, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": -224, 
+                "x": -384, 
+                "w": 96, 
+                "h": 64
+            }
+        }, 
+        "rock.png": {
+            "frame": {
+                "y": -576, 
+                "x": -768, 
+                "w": 64, 
+                "h": 32
+            }, 
+            "rotated": false, 
+            "filename": "rock.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 32, 
+                "w": 64
+            }, 
+            "spriteSourceSize": {
+                "y": -576, 
+                "x": -768, 
+                "w": 64, 
+                "h": 32
+            }
+        }
+    }, 
+    "meta": {
+        "hash": "acfc32de9f", 
+        "name": "outdoors", 
+        "height": 768, 
+        "sprite_path": "outdoors.png", 
+        "width": 864, 
+        "version": "0.13", 
+        "sprite_filename": "outdoors.png"
+    }
+}

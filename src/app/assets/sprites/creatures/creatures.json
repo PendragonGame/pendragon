@@ -1,0 +1,223 @@
+{
+    "frames": {
+        "man_eater_flower.png": {
+            "frame": {
+                "y": 0, 
+                "x": 0, 
+                "w": 180, 
+                "h": 304
+            }, 
+            "rotated": false, 
+            "filename": "man_eater_flower.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 304, 
+                "w": 180
+            }, 
+            "spriteSourceSize": {
+                "y": 0, 
+                "x": 0, 
+                "w": 180, 
+                "h": 304
+            }
+        }, 
+        "big_worm.png": {
+            "frame": {
+                "y": 0, 
+                "x": -180, 
+                "w": 105, 
+                "h": 200
+            }, 
+            "rotated": false, 
+            "filename": "big_worm.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 200, 
+                "w": 105
+            }, 
+            "spriteSourceSize": {
+                "y": 0, 
+                "x": -180, 
+                "w": 105, 
+                "h": 200
+            }
+        }, 
+        "pumpking.png": {
+            "frame": {
+                "y": 0, 
+                "x": -285, 
+                "w": 138, 
+                "h": 184
+            }, 
+            "rotated": false, 
+            "filename": "pumpking.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 184, 
+                "w": 138
+            }, 
+            "spriteSourceSize": {
+                "y": 0, 
+                "x": -285, 
+                "w": 138, 
+                "h": 184
+            }
+        }, 
+        "ghost.png": {
+            "frame": {
+                "y": 0, 
+                "x": -423, 
+                "w": 120, 
+                "h": 184
+            }, 
+            "rotated": false, 
+            "filename": "ghost.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 184, 
+                "w": 120
+            }, 
+            "spriteSourceSize": {
+                "y": 0, 
+                "x": -423, 
+                "w": 120, 
+                "h": 184
+            }
+        }, 
+        "eyeball.png": {
+            "frame": {
+                "y": -304, 
+                "x": 0, 
+                "w": 96, 
+                "h": 152
+            }, 
+            "rotated": false, 
+            "filename": "eyeball.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 152, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": -304, 
+                "x": 0, 
+                "w": 96, 
+                "h": 152
+            }
+        }, 
+        "snake.png": {
+            "frame": {
+                "y": -304, 
+                "x": -96, 
+                "w": 96, 
+                "h": 128
+            }, 
+            "rotated": false, 
+            "filename": "snake.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 128, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": -304, 
+                "x": -96, 
+                "w": 96, 
+                "h": 128
+            }
+        }, 
+        "small_worm.png": {
+            "frame": {
+                "y": -304, 
+                "x": -192, 
+                "w": 96, 
+                "h": 128
+            }, 
+            "rotated": false, 
+            "filename": "small_worm.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 128, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": -304, 
+                "x": -192, 
+                "w": 96, 
+                "h": 128
+            }
+        }, 
+        "slime.png": {
+            "frame": {
+                "y": -304, 
+                "x": -288, 
+                "w": 96, 
+                "h": 128
+            }, 
+            "rotated": false, 
+            "filename": "slime.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 128, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": -304, 
+                "x": -288, 
+                "w": 96, 
+                "h": 128
+            }
+        }, 
+        "bee.png": {
+            "frame": {
+                "y": -304, 
+                "x": -384, 
+                "w": 96, 
+                "h": 128
+            }, 
+            "rotated": false, 
+            "filename": "bee.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 128, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": -304, 
+                "x": -384, 
+                "w": 96, 
+                "h": 128
+            }
+        }, 
+        "bat.png": {
+            "frame": {
+                "y": 0, 
+                "x": -543, 
+                "w": 96, 
+                "h": 128
+            }, 
+            "rotated": false, 
+            "filename": "bat.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 128, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": 0, 
+                "x": -543, 
+                "w": 96, 
+                "h": 128
+            }
+        }
+    }, 
+    "meta": {
+        "hash": "f7f6a52185", 
+        "name": "creatures", 
+        "height": 456, 
+        "sprite_path": "creatures.png", 
+        "width": 639, 
+        "version": "0.13", 
+        "sprite_filename": "creatures.png"
+    }
+}
