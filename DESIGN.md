@@ -1,39 +1,32 @@
-# Design
+# Design Interface
 
-## Game Engine
+# Game Logic
+> Leaders: @brian (frontend) and @ram (Backend)
 
-* [Phaser.io](https://phaser.io/)
+## Sprites
+- Have sprites maintain an inheritance. This could be an example:
+```
+  Phaser.Sprite:
+      - Entity:
+        - NPC
+          - Monster
+          - Normal NPC
+          - Quest NPC
+        - Player
+    # This can be edited, but the rest of the document is taking this as an example.
+```
+  - (@ram) In the backend, maintain a list of `Entities`, i.e., maintain a list of all active `Monsters`, `Quest`/`Normal` NPCs, and obviously, we have access to the `Player`.
 
-**Resources:**
+# Conventions
+- Google JavaScript Style Guide: https://google.github.io/styleguide/jsguide.html
+- ESLint for correction.
+  - https://github.com/eslint/eslint
+  - https://github.com/AtomLinter/linter-eslint
+  - https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
+- JSDocs for comments and documentation
+  - http://usejsdoc.org/
+  - https://atom.io/packages/docblockr
+  - https://marketplace.visualstudio.com/items?itemName=joelday.docthis
+- Commit message conventions:
+  - https://chris.beams.io/posts/git-commit/
 
-* [Top-Down Tutorial](https://gamedevacademy.org/html5-phaser-tutorial-top-down-games-with-tiled/)
-* [RPG Tutorial](http://blog.softwarelabs.co.za/gamedevelopmenttutorials/make-rpg-game-phaser-html5-tutorial-1/)
-
-## Frontend Design
-
-* http://www.lorestrome.com/pixel_archive/main.htm
-
-## Packaging Frameworks
-
-Frameworks that are currently contending for this spot:
-
-* [Electron](https://electron.atom.io/)
-* [AppJS](http://appjs.com/)
-* [NW.js](https://nwjs.io/)
-
-## Database
-
-These databases are based on storage in files, so that will be helpful.
-
-* SQLite; or
-* Redis;
-
-**Resources:**
-
-We really haven't figured out the best module to use as this may depend on the packaging framework we use.
-
-## AI for the game
-
-**Resources**:
-
-* https://jackogame.wordpress.com/2014/12/11/wandering-npcs-in-phaser/
