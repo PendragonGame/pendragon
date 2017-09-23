@@ -1,10 +1,11 @@
-var Play = {}
+let Play = {};
 
-Play.init = function(){
-	
-}
+Play.init = function() {
+
+};
 
 Play.create = function() {
+
 	//Anand did this part. I don't even know.
     this.map = game.add.tilemap('map1')
     this.map.addTilesetImage('outdoors', 'tileset')
@@ -190,4 +191,4 @@ Play.update = function() {
 }
 
 
-module.exports = Play
+module.exports = Play;
