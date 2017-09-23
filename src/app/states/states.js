@@ -1,13 +1,13 @@
-'use strict'
+'use strict';
 
-var Boot = require("./boot")
-var Load = require('./load')
-var Play = require('./play')
+let Boot = require('./boot');
+let Load = require('./load');
+let Play = require('./play');
 
-console.log("Importing States")
+console.log('Importing States');
 
 module.exports = {
     Boot: Boot,
     Load: Load,
-    Play: Play
-}
+    Play: Play,
+};
