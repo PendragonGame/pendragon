@@ -137,7 +137,7 @@ Play.update = function() {
 	var direction, playerSpeed = 60, playerSprintSpeed = 150;
 	
 	//Space for running
-	if( this.keyboard.isDown(Phaser.Keyboard.J)){
+	if( this.keyboard.isDown(Phaser.Keyboard.SHIFT)){
 		playerSpeed = playerSprintSpeed;
 		this.player.animations.currentAnim.speed = 20;
 	}
