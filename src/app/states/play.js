@@ -1,10 +1,10 @@
 let Play = {};
 
-Play.init = function () {
+Play.init = function() {
 
 };
 
-Play.create = function () {
+Play.create = function() {
     // Anand did this part. I don't even know.
     this.map = game.add.tilemap('map1');
     this.map.addTilesetImage('outdoors', 'tileset');
@@ -20,8 +20,9 @@ Play.create = function () {
     // Create the Player, setting location and naming as
     // 'player'. Giving him Physics and
     // allowing collision with the world 
-    // boundaries.his.player = game.add.sprite(window.innerWidth / 2,
-    //  window.innerHeight / 2, 'player');
+    // boundaries.
+    this.player = game.add.sprite(window.innerWidth / 2,
+        window.innerHeight / 2, 'player');
     game.physics.enable(this.player, Phaser.Physics.ARCADE);
     this.player.body.collideWorldBounds = true;
 
@@ -52,11 +53,11 @@ Play.create = function () {
      [118, 119, 120, 121, 122, 123, 124, 125], 10, true);
     this.enemy.animations.add('walk1',
      [105, 106, 107, 108, 109, 110, 111, 112], 10, true);
-	this.enemy.animations.add('walk3',
+    this.enemy.animations.add('walk3',
      [131, 132, 133, 134, 135, 136, 137, 138], 10, true);
-	this.enemy.animations.add('walk2',
+    this.enemy.animations.add('walk2',
      [144, 145, 146, 147, 148, 149, 150, 151], 10, true);
-	this.enemy.animations.add('lay',
+    this.enemy.animations.add('lay',
      [260, 261, 262, 263, 264], 10, true);
     this.enemy.frame = 118;
 };
@@ -83,7 +84,7 @@ function playerHitsEnemy(p, e) {
  * 
  */
 let newDirection = 0;
-Play.update = function () {
+Play.update = function() {
     if (playerHitsEnemy(this.player, this.enemy)) {
         this.enemy.animations.play('lay', 10, true);
         this.player.animations.stop();
@@ -108,7 +109,7 @@ Play.update = function () {
     // NPC can stop if he decides to.
     rand = Math.round(Math.random() * 50) + 1;
     if (rand === 1) {
-        rand = Math.round(Math.random() * 4); 
+        rand = Math.round(Math.random() * 4);
         newDirection = rand;
     }
 
