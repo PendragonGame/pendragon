@@ -14,8 +14,10 @@ Play.create = function() {
 	this.blockOverlap = this.map.createLayer('blkOverlap')
     this.blockLayer = this.map.createLayer('blkLayer')
 	this.game.add.existing(this.blockLayer);
-    this.map.setCollisionBetween(1, 2000, true, 'blkLayer')
-    this.bgLayer.resizeWorld()
+    this.map.setCollisionBetween(1, 10000, true, this.blockLayer)
+	this.map.setCollisionBetween(1, 10000, true, this.blockOverlap)
+    this.blockLayer.resizeWorld()
+	this.bgLayer.resizeWorld()
 	
 	//Input for game
 	this.keyboard = game.input.keyboard
@@ -35,10 +37,10 @@ Play.create = function() {
 	this.player.animations.add('walk3', [131, 132, 133, 134, 135, 136, 137, 138], 10, true)
 	this.player.animations.add('walk2', [144, 145, 146, 147, 148, 149, 150, 151], 10, true)
 	//Displaying Player as idle as initial.
-	this.player.frame = 3
+	this.player.frame = 134
 	
 	//Creating the enemy. Same procedure for as the player.
-	this.enemy = game.add.sprite(window.innerWidth/2, window.innerHeight * 3 / 4, 'enemy') 
+	this.enemy = game.add.sprite(window.innerWidth - 50, window.innerHeight/2 + 50, 'enemy') 
 	game.physics.enable(this.enemy, Phaser.Physics.ARCADE)
 	this.enemy.body.collideWorldBounds = true
 	this.enemy.animations.add('walk4', [118, 119, 120, 121, 122, 123, 124, 125], 10, true)
@@ -47,37 +49,24 @@ Play.create = function() {
 	this.enemy.animations.add('walk2', [144, 145, 146, 147, 148, 149, 150, 151], 10, true)
 	this.enemy.animations.add('lay', [260, 261, 262, 263, 264], 10, true)
 	this.enemy.frame = 118
+	
+	this.game.camera.follow(this.player)
 } 
-
-function playerHitsEnemy(p, e){ 
-	if (((p.x + p.width/6) < (e.x - e.width/6)) ||
-		((p.x - p.width/6) > (e.x + e.width/6)) ||
-		((p.y + p.height/6) < (e.y - e.height/6)) ||
-		((p.y - p.height/6) > (e.y + e.height/6))){
-			return false;
-	} else { 
-		return true;
-	} 
-}
  
 var newDirection = 0;  
 Play.update = function() {
-	/*if (playerHitsEnemy(this.player, this.enemy)){
-		this.enemy.animations.play('lay', 10, true);
-		this.player.animations.stop()
-		this.player.frame = 3;
-		return;
-	}*/
+	//Displays the hitbox for the Player
+	this.game.debug.body(this.player)
+	
 	//================================================================================== 
-	//NOTE: Directions are numbered 1-8, where Direction 1 is "Up", Direction 2 is 
-	//"Up and to the Right", and continuing clockwise about the Player ending at 
-	//Direction 8, which is "Up and to the Left".
+	//NOTE: Directions are numbered 1-4, where Direction 1 is "Up", Direction 2 is 
+	//"Right", and continuing clockwise about the Player ending at Direction 4, which is "Left".
 	//==================================================================================
 	//==================================================================================
 	//MORE NOTE: The upcoming code is for the behavior of the NPC only. Code for the 
 	//Player is organized after the NPC code.
 	//==================================================================================
-	var enemySpeed = 1
+	var enemySpeed = 60
 	
 	var rand = 3;
 	rand = Math.round(Math.random() * 50) + 1; //This value is used to calculate the NPC's decision to change
@@ -99,30 +88,38 @@ Play.update = function() {
 	//This block handles the movement of the NPC as well as its animation once the
 	// direction has been determined.
 	
-	this.game.physics.arcade.collide(this.player, this.blkLayer)
-	
 	switch (newDirection){
 		case 0: //Not moving
 			this.enemy.animations.stop(null, true)
+			this.enemy.body.velocity.x = 0
+			this.enemy.body.velocity.y = 0
 			this.enemy.frame = 134
 			break;
 		case 1: //Straight Up
-			this.enemy.animations.play('walk1', 30, true)
-			this.enemy.y -= enemySpeed
+			this.enemy.animations.play('walk1', 20, true)
+			this.enemy.body.velocity.y = -enemySpeed
+			this.enemy.body.velocity.x = 0
 			break;
 		case 2: //Straight Right
-			this.enemy.animations.play('walk2', 30, true)
-			this.enemy.x += enemySpeed
+			this.enemy.animations.play('walk2', 20, true)
+			this.enemy.body.velocity.x = enemySpeed
+			this.enemy.body.velocity.y = 0
 			break;
 		case 3: //Straight Down
-			this.enemy.animations.play('walk3', 30, true)
-			this.enemy.y += enemySpeed
+			this.enemy.animations.play('walk3', 20, true)
+			this.enemy.body.velocity.y = enemySpeed
+			this.enemy.body.velocity.x = 0
 			break;
 		case 4: //Straight Left
-			this.enemy.animations.play('walk4', 30, true)
-			this.enemy.x -= enemySpeed
+			this.enemy.animations.play('walk4', 20, true)
+			this.enemy.body.velocity.x = -enemySpeed
+			this.enemy.body.velocity.y = 0
 			break;
 	}
+	
+	//Intersection for NPC
+	this.game.physics.arcade.collide(this.enemy, this.blockLayer);
+	this.game.physics.arcade.collide(this.enemy, this.blockOverlap);
 	
 	
 	//========================================================================================
@@ -133,107 +130,59 @@ Play.update = function() {
 	
 	//Variables to keep track of which buttons are being pressed and the direction of the player.
 	//This will help later for displaying the approriate sprites for each direction.
-	var isUp = false, isDown = false, isRight = false, isLeft = false;
-	var direction, playerSpeed = 2, animFPS = 20;
+	var direction, playerSpeed = 60, playerSprintSpeed = 150;
 	
-	if( this.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
-		playerSpeed = 4;
-		animFPS = 60;
+	//Space for running
+	if( this.keyboard.isDown(Phaser.Keyboard.J)){
+		playerSpeed = playerSprintSpeed;
+		this.player.animations.currentAnim.speed = 20;
+	}
+	else {
+		this.player.animations.currentAnim.speed = 10;
 	}
 	
 	//W Key is the Up Button
 	if( this.keyboard.isDown(Phaser.Keyboard.W)){
-        this.player.body.y -= playerSpeed; //Move the player 4 "units"
-		//The Game Camera automatically stops at the edge of the world so the player can get 
-		//un-centered. When that happens, the player runs out of the middle of the screen. In
-		// this case for the W Key, 
-		if (this.player.body.y <= (this.game.camera.y+window.innerHeight/2)) {
-			this.game.camera.y -= playerSpeed; //Move the camera 4 "units"
-		}
-		isRight = false;
-		isLeft = false;
-		isUp = true;
-		isDown = false;
+        this.player.body.velocity.y = -playerSpeed;
+		this.player.body.velocity.x = 0;
+		direction = 1;
 	}
     else if( this.keyboard.isDown(Phaser.Keyboard.S)){
-		this.player.body.y += playerSpeed;
-		if (this.player.body.y >= (this.game.camera.y+window.innerHeight/2)) { 
-			this.game.camera.y += playerSpeed; 
-		}
-		isRight = false;
-		isLeft = false;
-		isDown = true;
-		isUp = false;
+		this.player.body.velocity.y = playerSpeed;
+		this.player.body.velocity.x = 0;
+		direction = 3;
 	}
     else if( this.keyboard.isDown(Phaser.Keyboard.A)){
-		this.player.body.x -= playerSpeed;
-		if (this.player.body.x <= (this.game.camera.x+window.innerWidth/2)) { 
-			this.game.camera.x -= playerSpeed; 
-		}
-		isLeft = true;
-		isRight = false;
-		isUp = false;
-		isDown = false;
+		this.player.body.velocity.x = -playerSpeed;
+		this.player.body.velocity.y = 0;
+		direction = 4;
 	}
     else if( this.keyboard.isDown(Phaser.Keyboard.D)){
-		this.player.body.x += playerSpeed;
-		if (this.player.body.x >= (this.game.camera.x+window.innerWidth/2)) { 
-			this.game.camera.x += playerSpeed; 
-		}
-		isRight = true;
-		isLeft = false;
-		isUp = false;
-		isDown = false;
+		this.player.body.velocity.x = playerSpeed;
+		this.player.body.velocity.y = 0;
+		direction = 2;
 	}
     else{
-		isRight = false;
-		isLeft = false;
-		isUp = false;
-		isDown = false;
+		this.player.body.velocity.x = 0;
+		this.player.body.velocity.y = 0;
+		direction = 0;
 	}
 	
 	//Animations
-	if (isUp) {
-		this.player.animations.play('walk1', animFPS, true)
-		direction = 1
-	}
-	else if (isRight) {
-		this.player.animations.play('walk2', animFPS, true)
-		direction = 2
-	}
-	else if (isDown) {
-		this.player.animations.play('walk3', animFPS, true)
-		direction = 3
-	}
-	else if (isLeft) {
-		this.player.animations.play('walk4', animFPS, true)
-		direction = 4
-	}
-	else {
-		this.player.animations.stop()
-		switch (direction) {
-			case 1:
-				this.player.frame = 108;
-				break;
-			case 2:
-				this.player.frame = 147;
-				break;
-			case 3:
-				this.player.frame = 134;
-				break;
-			case 4:
-				this.player.frame = 121;
-				break;
-		}
+	if (direction > 0) { this.player.animations.play('walk' + direction, 20, true); }
+	else { 
+		this.player.animations.stop(null, true); 
+		this.player.frame = 134; 
 	}
 	
-	//Decinding which character to render on top of the other.
+	//Deciding which character to render on top of the other.
 	if ((this.player.y + this.player.height)  > (this.enemy.y + this.enemy.height)){
 		this.game.world.bringToTop(this.player);
 	} else { this.game.world.bringToTop(this.enemy); } 
 	
-	
-	
+	//Intersection for Player
+	this.game.physics.arcade.collide(this.player, this.blockLayer);
+	this.game.physics.arcade.collide(this.player, this.blockOverlap);
 }
 
 
