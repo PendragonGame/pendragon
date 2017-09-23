@@ -38,6 +38,10 @@ Play.create = function() {
 	this.player.animations.add('walk2', [144, 145, 146, 147, 148, 149, 150, 151], 10, true)
 	//Displaying Player as idle as initial.
 	this.player.frame = 134
+	this.player.body.height = this.player.body.height / 2    //Changing the size of the hitbox
+	this.player.body.width = this.player.body.width / 2
+	this.player.body.offset.x += this.player.body.width / 2
+	this.player.body.offset.y += this.player.body.height
 	
 	//Creating the enemy. Same procedure for as the player.
 	this.enemy = game.add.sprite(window.innerWidth - 50, window.innerHeight/2 + 50, 'enemy') 
@@ -56,7 +60,7 @@ Play.create = function() {
 var newDirection = 0;  
 Play.update = function() {
 	//Displays the hitbox for the Player
-	this.game.debug.body(this.player)
+	//this.game.debug.body(this.player)
 	
 	//================================================================================== 
 	//NOTE: Directions are numbered 1-4, where Direction 1 is "Up", Direction 2 is 
