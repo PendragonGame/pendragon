@@ -9,6 +9,9 @@ Play.create = function() {
     this.map = game.add.tilemap('map1')
     this.map.addTilesetImage('outdoors', 'tileset')
     this.bgLayer = this.map.createLayer('bgLayer')
+	this.bgOverlap = this.map.createLayer('bgOverlap')
+	this.bgOverlap2 = this.map.createLayer('bgOverlap2')
+	this.blockOverlap = this.map.createLayer('blkOverlap')
     this.blockLayer = this.map.createLayer('blkLayer')
 	this.game.add.existing(this.blockLayer);
     this.map.setCollisionBetween(1, 2000, true, 'blkLayer')
@@ -59,12 +62,12 @@ function playerHitsEnemy(p, e){
  
 var newDirection = 0;  
 Play.update = function() {
-	if (playerHitsEnemy(this.player, this.enemy)){
+	/*if (playerHitsEnemy(this.player, this.enemy)){
 		this.enemy.animations.play('lay', 10, true);
 		this.player.animations.stop()
 		this.player.frame = 3;
 		return;
-	}
+	}*/
 	//================================================================================== 
 	//NOTE: Directions are numbered 1-8, where Direction 1 is "Up", Direction 2 is 
 	//"Up and to the Right", and continuing clockwise about the Player ending at 
@@ -131,7 +134,12 @@ Play.update = function() {
 	//Variables to keep track of which buttons are being pressed and the direction of the player.
 	//This will help later for displaying the approriate sprites for each direction.
 	var isUp = false, isDown = false, isRight = false, isLeft = false;
-	var direction, playerSpeed = 2;
+	var direction, playerSpeed = 2, animFPS = 20;
+	
+	if( this.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
+		playerSpeed = 4;
+		animFPS = 60;
+	}
 	
 	//W Key is the Up Button
 	if( this.keyboard.isDown(Phaser.Keyboard.W)){
@@ -186,19 +194,19 @@ Play.update = function() {
 	
 	//Animations
 	if (isUp) {
-		this.player.animations.play('walk1', 20, true)
+		this.player.animations.play('walk1', animFPS, true)
 		direction = 1
 	}
 	else if (isRight) {
-		this.player.animations.play('walk2', 20, true)
+		this.player.animations.play('walk2', animFPS, true)
 		direction = 2
 	}
 	else if (isDown) {
-		this.player.animations.play('walk3', 20, true)
+		this.player.animations.play('walk3', animFPS, true)
 		direction = 3
 	}
 	else if (isLeft) {
-		this.player.animations.play('walk4', 20, true)
+		this.player.animations.play('walk4', animFPS, true)
 		direction = 4
 	}
 	else {
