@@ -1,0 +1,97 @@
+{
+    "frames": {
+        "barrel.png": {
+            "frame": {
+                "y": 0, 
+                "x": 0, 
+                "w": 128, 
+                "h": 64
+            }, 
+            "rotated": false, 
+            "filename": "barrel.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 64, 
+                "w": 128
+            }, 
+            "spriteSourceSize": {
+                "y": 0, 
+                "x": 0, 
+                "w": 128, 
+                "h": 64
+            }
+        }, 
+        "chests.png": {
+            "frame": {
+                "y": -64, 
+                "x": 0, 
+                "w": 64, 
+                "h": 96
+            }, 
+            "rotated": false, 
+            "filename": "chests.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 96, 
+                "w": 64
+            }, 
+            "spriteSourceSize": {
+                "y": -64, 
+                "x": 0, 
+                "w": 64, 
+                "h": 96
+            }
+        }, 
+        "buckets.png": {
+            "frame": {
+                "y": 0, 
+                "x": -128, 
+                "w": 96, 
+                "h": 64
+            }, 
+            "rotated": false, 
+            "filename": "buckets.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 64, 
+                "w": 96
+            }, 
+            "spriteSourceSize": {
+                "y": 0, 
+                "x": -128, 
+                "w": 96, 
+                "h": 64
+            }
+        }, 
+        "cup.png": {
+            "frame": {
+                "y": -64, 
+                "x": -128, 
+                "w": 32, 
+                "h": 64
+            }, 
+            "rotated": false, 
+            "filename": "cup.png", 
+            "trimmed": false, 
+            "sourceSize": {
+                "h": 64, 
+                "w": 32
+            }, 
+            "spriteSourceSize": {
+                "y": -64, 
+                "x": -128, 
+                "w": 32, 
+                "h": 64
+            }
+        }
+    }, 
+    "meta": {
+        "hash": "3173d819c0", 
+        "name": "objects", 
+        "height": 160, 
+        "sprite_path": "objects.png", 
+        "width": 224, 
+        "version": "0.13", 
+        "sprite_filename": "objects.png"
+    }
+}
