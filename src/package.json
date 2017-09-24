@@ -8,6 +8,7 @@
     "test": "xo",
     "start": "electron .",
     "package-osx": "electron-packager . pendragon --overwrite --platform=darwin --arch=x64 --prune=true --out=../release",
+    //"package-windows": "electron-packager . pendragon --overwrite --asar=true --platform=win64 --arch=x64 --prune=true --out../release --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Pendragon\"",
     "package-linux": "electron-packager . pendragon --overwrtie --platform=linux --arch=x64 --prune=true --out=../release"
   },
   "repository": {
