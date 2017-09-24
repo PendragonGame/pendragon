@@ -1,6 +1,7 @@
 {
   "name": "pendragon",
-  "version": "0.0.0",
+  "productName": "Pendragon Prototype",
+  "version": "0.1.0",
   "description": "A RPG with realistic gossip",
   "main": "main.js",
   "scripts": {
@@ -24,6 +25,7 @@
   "homepage": "https://github.com/PendragonGame/pendragon#readme",
   "devDependencies": {
     "electron": "^1.7.6",
+    "electron-packager": "^9.1.0",
     "eslint-config-google": "^0.9.1"
   },
   "dependencies": {
@@ -31,5 +33,6 @@
     "electron-is-dev": "^0.3.0",
     "elemon": "^5.0.3",
     "eslint": "^4.7.1"
-  }
+  },
+  "electronVersion": "1.7.6"
 }
