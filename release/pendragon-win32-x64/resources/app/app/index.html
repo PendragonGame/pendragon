@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Pendragon</title>
+    <style>
+        body {
+            padding: 0px;
+            margin: 0px;
+        }
+        /* fauna-one-regular - latin */
+        @font-face {
+            font-family: 'Fauna One';
+            font-style: normal;
+            font-weight: 400;
+            src: local('Fauna One'), local('FaunaOne-Regular'),
+                url('./assets/fonts/fauna-one-v4-latin/fauna-one-v4-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+                url('./assets/fonts/fauna-one-v4-latin/fauna-one-v4-latin-regular.woff2') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+        }
+        .fontLoader {
+        position: absolute;
+        left: -1000px;
+        visibility: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="fontLoader" style="font-family: Fauna One;">-</div>
+    <div id="game" style="font-family: Fauna One;"></div>
+    <script src="lib/phaser.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
