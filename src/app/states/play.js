@@ -54,6 +54,10 @@ Play.create = function() {
 	this.enemy.animations.add('walk2', [144, 145, 146, 147, 148, 149, 150, 151], 10, true)
 	this.enemy.animations.add('lay', [260, 261, 262, 263, 264], 10, true)
 	this.enemy.frame = 118
+	this.enemy.body.height = this.enemy.body.height / 2    //Changing the size of the hitbox
+	this.enemy.body.width = this.enemy.body.width / 2
+	this.enemy.body.offset.x += this.enemy.body.width / 2
+	this.enemy.body.offset.y += this.enemy.body.height
 	
 	this.game.camera.follow(this.player)
 } 
