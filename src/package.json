@@ -65,12 +65,14 @@
       "category": "public.app-category.games",
       "target": [
         "dmg",
-        "zip",
-        "tar.gz"
+        "zip"
       ]
     },
     "win": {
-      "target": ["portable", "zip"],
+      "target": [
+        "portable",
+        "zip"
+      ],
       "publisherName": "Pendragon Game"
     },
     "linux": {
