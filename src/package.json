@@ -51,7 +51,8 @@
     "electron-is": "^2.4.0",
     "electron-is-dev": "^0.3.0",
     "elemon": "^5.0.3",
-    "eslint": "^4.7.1"
+    "eslint": "^4.7.1",
+    "lodash": "^4.17.4"
   },
   "electronVersion": "1.7.6",
   "build": {
@@ -65,12 +66,14 @@
       "category": "public.app-category.games",
       "target": [
         "dmg",
-        "zip",
-        "tar.gz"
+        "zip"
       ]
     },
     "win": {
-      "target": ["portable", "zip"],
+      "target": [
+        "portable",
+        "zip"
+      ],
       "publisherName": "Pendragon Game"
     },
     "linux": {
