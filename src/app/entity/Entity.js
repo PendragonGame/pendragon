@@ -86,10 +86,6 @@ Entity.prototype.setAnimations = function(frames) {
      * right corner of the image. Spritesheets and their corresponding integers
      * count left to right, top to bottom.
      */
-    this.animations.add('idle_up', [104], 1, true);
-    this.animations.add('idle_down', [130], 1, true);
-    this.animations.add('idle_left', [117], 1, true);
-    this.animations.add('idle_right', [143], 1, true);
 
     this.animations.add('walk_up',
                         [105, 106, 107, 108, 109, 110, 111, 112],
@@ -116,8 +112,7 @@ Entity.prototype.setAnimations = function(frames) {
     this.animations.add('slash_right',
                         [195, 196, 197, 198, 199, 200],
                         10, false);
-
-    this.animations.play('idle_down');
+	this.frame = 130;
 };
 
 
@@ -185,7 +180,21 @@ Entity.prototype.moveInDirection = function(direction, sprint) {
 Entity.prototype.idleHere = function() {
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
-    this.animations.play('idle_' + this.direction, 1, true);
+    this.animations.stop(null, true);
+	switch (this.direction){
+		case ('up'):
+			this.frame = 104;
+			break;
+		case ('right'):
+			this.frame = 143;
+			break;
+		case ('down'):
+			this.frame = 130;
+			break;
+		case ('left'):
+			this.frame = 117;
+			break;
+	}
 };
 
 /**

@@ -53,7 +53,7 @@ Play.create = function() {
 let newDirection = 0;
 Play.update = function() {
     // Displays the hitbox for the Player
-    this.game.debug.body(this.player);
+    //this.game.debug.body(this.player);
 
     // ================================================================================== 
     // NOTE: Directions are numbered 1-4, where Direction 1 is "Up", Direction 2 is 
@@ -147,8 +147,8 @@ Play.update = function() {
     if ((this.player.y + this.player.height) > (this.enemy.y + this.enemy.height)) {
         this.game.world.bringToTop(this.player);
     } else {
-this.game.world.bringToTop(this.enemy);
-}
+	this.game.world.bringToTop(this.enemy);
+	}
 
     // Intersection for Player
     this.game.physics.arcade.collide(this.player, this.blockLayer);
