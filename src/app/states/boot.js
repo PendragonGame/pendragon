@@ -10,7 +10,7 @@ Boot.create = function() {
     game.scale.pageAlignVertically = true;
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    game.state.start('Menu');
+    game.state.start('Load');
 };
 
 module.exports = Boot;

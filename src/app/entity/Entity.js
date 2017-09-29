@@ -1,3 +1,13 @@
+'use strict';
+
+const _ = require('lodash');
+
+
+/**
+ * A lookup table for directions
+ */
+const DIRECTIONS = ['up', 'right', 'down', 'left'];
+
 /**
  * The `Entity` class is the base class for all game entities.
  * It needs to have to following properties
@@ -17,9 +27,10 @@
  */
 function Entity(x, y, key) {
     Phaser.Sprite.call(this, game, x, y, key);
-    game.add.existing(this);
-    this.body.collideWorldBounds = true;
 
+    game.add.existing(this);
+    game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.body.collideWorldBounds = true;
     /**
      * Direction initialized to down. 
      * Must be changed only when new direction is chosen.
@@ -32,6 +43,12 @@ function Entity(x, y, key) {
      * @todo: The weapons can be stored as an object with attributes.
      */
     this.weapon = null;
+
+    /**
+     * Miscellaneous attributes. 
+     */
+    this.speed = 60;
+    this.sprintSpeed = 150;
 
     // Set the default animations
     this.setAnimations();
@@ -101,6 +118,74 @@ Entity.prototype.setAnimations = function(frames) {
                         10, false);
 
     this.animations.play('idle_down');
+};
+
+
+/**
+ * Method to move any `Entity`
+ * 
+ * The parameter `direction` has to be one of 'up', 'down', 'left' or 'right'.
+ * 
+ * Another option is to use:
+ * 
+ *  1. UP
+ *  2. RIGHT
+ *  3. DOWN
+ *  4. LEFT 
+ * 
+ * @param {string|number} direction 
+ * @param {Boolean} sprint - Whether to sprint or not
+ */
+Entity.prototype.moveInDirection = function(direction, sprint) {
+    let speed = this.speed;
+    let animSpeed = 10;
+    if (sprint) {
+        speed = this.sprintSpeed;
+        animSpeed = 30;
+    }
+
+    let dir = '';
+    if (_.isString(direction) && _.includes(DIRECTIONS, direction)) {
+        dir = direction.toLowerCase();
+    } else if (_.isNumber(direction) && _.inRange(direction, 1, 5)) {
+        dir = DIRECTIONS[direction];
+    } else {
+        console.error('Invalid direction');
+        return;
+    }
+
+    switch (dir) {
+        case 'up':
+            this.body.velocity.y = -speed;
+            this.body.velocity.x = 0;
+            this.direction = 'up';
+            break;
+        case 'down':
+            this.body.velocity.y = speed;
+            this.body.velocity.x = 0;
+            this.direction = 'down';
+            break;
+        case 'right':
+            this.body.velocity.x = speed;
+            this.body.velocity.y = 0;
+            this.direction = 'right';
+            break;
+        case 'left':
+            this.body.velocity.x = -speed;
+            this.body.velocity.y = 0;
+            this.direction = 'left';
+            break;
+        default:
+            console.error('Invalid direction');
+            return;
+    }
+    this.animations.play('walk_' + dir, animSpeed, true);
+};
+
+Entity.prototype.idleHere = function() {
+    this.body.velocity.x = 0;
+    this.body.velocity.y = 0;
+    this.animations.play('idle_' + this.direction, 1, true);
 };
 
 /**
