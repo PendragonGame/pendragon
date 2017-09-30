@@ -51,9 +51,11 @@ Play.create = function() {
 };
 
 let newDirection = 0;
+let attacking = false;
 Play.update = function() {
     // Displays the hitbox for the Player
-    //this.game.debug.body(this.player);
+    this.game.debug.body(this.player);
+	//this.game.debug.body(this.enemy);
 
     // ================================================================================== 
     // NOTE: Directions are numbered 1-4, where Direction 1 is "Up", Direction 2 is 
@@ -63,13 +65,13 @@ Play.update = function() {
     // MORE NOTE: The upcoming code is for the behavior of the NPC only. Code for the 
     // Player is organized after the NPC code.
     // ==================================================================================
-    let enemySpeed = 0;
+    let enemySpeed = 50;
 
     let rand = 3;
     rand = Math.round(Math.random() * 50) + 1; // This value is used to calculate the NPC's decision to change
-    if (rand === 1) {							// directions. According to this, 1 out of 1000 chance. Direction
-        rand = Math.round(Math.random() * 4); // 0 (stationary) is a valid direction here. NPC can stop if he decides to.
-        // newDirection = rand;
+    if (rand === 1) {							// directions. According to this, 1 out of 50 chance. Direction
+        rand = Math.round(Math.random() * 5); // 0 (stationary) is a valid direction here. NPC can stop if he decides to.
+        newDirection = rand;
     }
 
     // This block handles what happens when the NPC hits walls, whether one at a time or in corners.
@@ -131,23 +133,37 @@ Play.update = function() {
       sprint = true;
     }
 
-    if ( this.keyboard.isDown(Phaser.Keyboard.W)) {
-        this.player.moveInDirection('up', sprint);
-    } else if ( this.keyboard.isDown(Phaser.Keyboard.S)) {
-        this.player.moveInDirection('down', sprint);
-    } else if ( this.keyboard.isDown(Phaser.Keyboard.A)) {
-        this.player.moveInDirection('left', sprint);
-    } else if ( this.keyboard.isDown(Phaser.Keyboard.D)) {
-        this.player.moveInDirection('right', sprint);
-    } else {
-        this.player.idleHere();
-    }
+	//Checking for a player attack.
+	if (this.keyboard.isDown(Phaser.Keyboard.M)){
+		if (attacking === false){
+			this.player.idleHere();
+			attacking = true;
+			this.player.attack();
+		}
+	} else{
+		if (attacking) attacking = false;
+	}
+	
+	//Moving the player, but only if you aren't attacking.
+	if (!attacking){
+		if ( this.keyboard.isDown(Phaser.Keyboard.W)) {
+			this.player.moveInDirection('up', sprint);
+		} else if ( this.keyboard.isDown(Phaser.Keyboard.S)) {
+			this.player.moveInDirection('down', sprint);
+		} else if ( this.keyboard.isDown(Phaser.Keyboard.A)) {
+			this.player.moveInDirection('left', sprint);
+		} else if ( this.keyboard.isDown(Phaser.Keyboard.D)) {
+			this.player.moveInDirection('right', sprint);
+		} else {
+			this.player.idleHere();
+		}
+	}
 
     // Deciding which character to render on top of the other.
     if ((this.player.y + this.player.height) > (this.enemy.y + this.enemy.height)) {
         this.game.world.bringToTop(this.player);
     } else {
-	this.game.world.bringToTop(this.enemy);
+		this.game.world.bringToTop(this.enemy);
 	}
 
     // Intersection for Player
