@@ -186,8 +186,6 @@ Entity.prototype.moveInDirection = function(direction, sprint) {
             return;
     }
     this.animations.play('walk_' + dir, animSpeed, true);
-	
-	//Reset the hitbox
 	this.adjustHitbox('walk');
 };
 
@@ -195,31 +193,18 @@ Entity.prototype.idleHere = function() {
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
     this.animations.play('idle_' + this.direction, 10, true);
-	
-	//Reset the hitbox
-	this.adjustHitbox('walk');
+	this.adjustHitbox('idle');
 };
 
 Entity.prototype.attack = function(){
 	this.animations.play('slash_' + this.direction, 20, true);
-	switch (this.direction){
-		case ('up'):
-			this.body.height = 1.5 * h;
-			this.body.offset.y = h / 2;
-			break;
-		case ('down'):
-			this.body.height = 1.5 * h;
-			break;
-		case ('right'):
-			this.body.width = 1.5 * w;
-			break;
-		case ('left'):
-			this.body.width = 1.5 * w;
-			this.body.offset.x = offx - (w / 2);
-			break;
-	}
+	this.adjustHitbox('slash');
 };
 
+/*
+*  This function changes the size of the Entity's hit box based on what
+*  action they are performing and what direction they are facing.
+*/
 Entity.prototype.adjustHitbox = function(state){
 	switch (state){
 		case ('walk'):
@@ -235,6 +220,22 @@ Entity.prototype.adjustHitbox = function(state){
 			this.body.offset.x = offx;
 			break;
 		case ('slash'):
+			switch (this.direction){
+				case ('up'):
+					this.body.height = 1.5 * h;
+					this.body.offset.y = h / 2;
+					break;
+				case ('down'):
+					this.body.height = 1.5 * h;
+					break;
+				case ('right'):
+					this.body.width = 1.5 * w;
+					break;
+				case ('left'):
+					this.body.width = 1.5 * w;
+					this.body.offset.x = offx - (w / 2);
+					break;
+			}
 			break;
 	}
 };
