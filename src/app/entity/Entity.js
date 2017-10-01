@@ -1,6 +1,8 @@
 'use strict';
 
 const _ = require('lodash');
+let h, w, offx, offy;
+let attacking = false;
 
 
 /**
@@ -61,6 +63,12 @@ function Entity(x, y, key) {
     this.body.width = this.body.width / 2;
     this.body.offset.x += this.body.width / 2;
     this.body.offset.y += this.body.height;
+	
+	//Set size constants
+	h = this.body.height;
+	w = this.body.width;
+	offx = this.body.offset.x;
+	offy = this.body.offset.y;
 }
 
 Entity.prototype = Object.create(Phaser.Sprite.prototype);
@@ -86,6 +94,10 @@ Entity.prototype.setAnimations = function(frames) {
      * right corner of the image. Spritesheets and their corresponding integers
      * count left to right, top to bottom.
      */
+	 this.animations.add('idle_up', [104], 10, true);
+	 this.animations.add('idle_right', [143], 10, true);
+	 this.animations.add('idle_down', [130], 10, true);
+	 this.animations.add('idle_left', [117], 10, true);
 
     this.animations.add('walk_up',
                         [105, 106, 107, 108, 109, 110, 111, 112],
@@ -102,17 +114,16 @@ Entity.prototype.setAnimations = function(frames) {
 
     this.animations.add('slash_up',
                         [156, 157, 158, 159, 160, 161],
-                        10, false);
+                        10, true);
     this.animations.add('slash_down',
-                        [169, 170, 171, 172, 173, 174],
-                        10, false);
-    this.animations.add('slash_left',
                         [182, 183, 184, 185, 186, 187],
-                        10, false);
+                        10, true);
+    this.animations.add('slash_left',
+                        [169, 170, 171, 172, 173, 174],
+                        10, true);
     this.animations.add('slash_right',
                         [195, 196, 197, 198, 199, 200],
-                        10, false);
-	this.frame = 130;
+                        10, true);
 };
 
 
@@ -175,26 +186,62 @@ Entity.prototype.moveInDirection = function(direction, sprint) {
             return;
     }
     this.animations.play('walk_' + dir, animSpeed, true);
+	this.adjustHitbox('walk');
 };
 
 Entity.prototype.idleHere = function() {
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
-    this.animations.stop(null, true);
-	switch (this.direction){
-		case ('up'):
-			this.frame = 104;
+    this.animations.play('idle_' + this.direction, 10, true);
+	this.adjustHitbox('idle');
+};
+
+Entity.prototype.attack = function(){
+	this.animations.play('slash_' + this.direction, 20, false);
+	this.adjustHitbox('slash');
+};
+
+/*
+*  This function changes the size of the Entity's hit box based on what
+*  action they are performing and what direction they are facing.
+*/
+Entity.prototype.adjustHitbox = function(state){
+	switch (state){
+		case ('walk'):
+			this.body.height = h;
+			this.body.width = w;
+			this.body.offset.y = offy;
+			this.body.offset.x = offx;
 			break;
-		case ('right'):
-			this.frame = 143;
+		case ('idle'):
+			this.body.height = h;
+			this.body.width = w;
+			this.body.offset.y = offy;
+			this.body.offset.x = offx;
 			break;
-		case ('down'):
-			this.frame = 130;
-			break;
-		case ('left'):
-			this.frame = 117;
+		case ('slash'):
+			switch (this.direction){
+				case ('up'):
+					this.body.height = 1.5 * h;
+					this.body.offset.y = h / 2;
+					break;
+				case ('down'):
+					this.body.height = 1.5 * h;
+					break;
+				case ('right'):
+					this.body.width = 1.5 * w;
+					break;
+				case ('left'):
+					this.body.width = 1.5 * w;
+					this.body.offset.x = offx - (w / 2);
+					break;
+			}
 			break;
 	}
+};
+
+Entity.prototype.collision = function(p){
+	p.idleHere();
 };
 
 /**
