@@ -197,7 +197,7 @@ Entity.prototype.idleHere = function() {
 };
 
 Entity.prototype.attack = function(){
-	this.animations.play('slash_' + this.direction, 20, true);
+	this.animations.play('slash_' + this.direction, 20, false);
 	this.adjustHitbox('slash');
 };
 
@@ -238,6 +238,10 @@ Entity.prototype.adjustHitbox = function(state){
 			}
 			break;
 	}
+};
+
+Entity.prototype.collision = function(p){
+	p.idleHere();
 };
 
 /**
