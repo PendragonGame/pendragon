@@ -3,6 +3,7 @@
 const _ = require('lodash');
 let h, w, offx, offy;
 let attacking = false;
+let state = 'idle'; //State can be 'idling', 'walking', 'attacking'
 
 
 /**
@@ -49,7 +50,7 @@ function Entity(x, y, key) {
     /**
      * Miscellaneous attributes. 
      */
-    this.speed = 60;
+    this.speed = 90;
     this.sprintSpeed = 150;
 
     // Set the default animations
@@ -143,61 +144,68 @@ Entity.prototype.setAnimations = function(frames) {
  * @param {Boolean} sprint - Whether to sprint or not
  */
 Entity.prototype.moveInDirection = function(direction, sprint) {
-    let speed = this.speed;
-    let animSpeed = 10;
-    if (sprint) {
-        speed = this.sprintSpeed;
-        animSpeed = 30;
-    }
+	if (this.state !== 'attacking'){
+		this.state = 'walking';
+		let speed = this.speed;
+		let animSpeed = 10;
+		if (sprint) {
+			speed = this.sprintSpeed;
+			animSpeed = 30;
+		}
 
-    let dir = '';
-    if (_.isString(direction) && _.includes(DIRECTIONS, direction)) {
-        dir = direction.toLowerCase();
-    } else if (_.isNumber(direction) && _.inRange(direction, 1, 5)) {
-        dir = DIRECTIONS[direction];
-    } else {
-        console.error('Invalid direction');
-        return;
-    }
-
-    switch (dir) {
-        case 'up':
-            this.body.velocity.y = -speed;
-            this.body.velocity.x = 0;
-            this.direction = 'up';
-            break;
-        case 'down':
-            this.body.velocity.y = speed;
-            this.body.velocity.x = 0;
-            this.direction = 'down';
-            break;
-        case 'right':
-            this.body.velocity.x = speed;
-            this.body.velocity.y = 0;
-            this.direction = 'right';
-            break;
-        case 'left':
-            this.body.velocity.x = -speed;
-            this.body.velocity.y = 0;
-            this.direction = 'left';
-            break;
-        default:
-            console.error('Invalid direction');
-            return;
-    }
-    this.animations.play('walk_' + dir, animSpeed, true);
-	this.adjustHitbox('walk');
+		let dir = '';
+		if (_.isString(direction) && _.includes(DIRECTIONS, direction)) {
+			dir = direction.toLowerCase();
+		} else if (_.isNumber(direction) && _.inRange(direction, 1, 5)) {
+			dir = DIRECTIONS[direction];
+		} else {
+			console.error('Invalid direction');
+			return;
+		}
+	
+		switch (dir) {
+			case 'up':
+				this.body.velocity.y = -speed;
+				this.body.velocity.x = 0;
+				this.direction = 'up';
+				break;
+			case 'down':
+				this.body.velocity.y = speed;
+				this.body.velocity.x = 0;
+				this.direction = 'down';
+				break;
+			case 'right':
+				this.body.velocity.x = speed;
+				this.body.velocity.y = 0;
+				this.direction = 'right';
+				break;
+			case 'left':
+				this.body.velocity.x = -speed;
+				this.body.velocity.y = 0;
+				this.direction = 'left';
+				break;
+			default:
+				console.error('Invalid direction');
+				return;
+		}
+		this.animations.play('walk_' + dir, animSpeed, true);
+		this.adjustHitbox('walk');
+	}
 };
 
 Entity.prototype.idleHere = function() {
+	this.state = 'idling';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
-    this.animations.play('idle_' + this.direction, 10, true);
+    this.animations.play('idle_' + this.direction, 1, false);
 	this.adjustHitbox('idle');
 };
 
 Entity.prototype.attack = function(){
-	this.animations.play('slash_' + this.direction, 20, false);
+	this.state = 'attacking';
+	this.body.velocity.x = 0;
+	this.body.velocity.y = 0;
+	this.animations.play('slash_' + this.direction, 15, true);
 	this.adjustHitbox('slash');
 };
 
@@ -238,10 +246,6 @@ Entity.prototype.adjustHitbox = function(state){
 			}
 			break;
 	}
-};
-
-Entity.prototype.collision = function(p){
-	p.idleHere();
 };
 
 /**

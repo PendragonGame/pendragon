@@ -39,8 +39,7 @@ Play.create = function() {
     this.game.camera.follow(this.player);
 };
 
-let newDirection = 2, collideDir = '', collideDirNPC = 0;
-let attacking = false, collide = false;
+let newDirection = 2, collideDirNPC = 0;
 Play.update = function() {
     // ==================================================================================
     // NPC CODE
@@ -80,7 +79,7 @@ Play.update = function() {
     // ========================================================================================
 	
 	// Displays the hitbox for the Player
-    this.game.debug.body(this.player);
+    //this.game.debug.body(this.player);
 
     // SHIFT for running
     let sprint = false;
@@ -88,31 +87,32 @@ Play.update = function() {
       sprint = true;
     }
 	
-	//Moving the player, but only if you aren't attacking.
-	if (!attacking){
-		if ( this.keyboard.isDown(Phaser.Keyboard.W)) {
-			this.player.moveInDirection('up', sprint);
-		} else if ( this.keyboard.isDown(Phaser.Keyboard.S)) {
-			this.player.moveInDirection('down', sprint);
-		} else if ( this.keyboard.isDown(Phaser.Keyboard.A)) {
-			this.player.moveInDirection('left', sprint);
-		} else if ( this.keyboard.isDown(Phaser.Keyboard.D)) {
-			this.player.moveInDirection('right', sprint);
-		} else {
-			this.player.idleHere();
+	//Attack
+	if (this.keyboard.isDown(Phaser.Keyboard.M) && this.player.state !== 'attacking') {                 
+		this.player.attack();
+	}        
+	else { 
+		//attacking == false iff we are on the last frame. ie. the whole animation has played.
+		let temp = this.player.frame - 161;
+		if ((temp % 13 === 0) || (temp < 0 || temp > 39)) {
+			if (!(this.keyboard.isDown(Phaser.Keyboard.M))) this.player.state = 'idling'; 
 		}
 	}
 	
-	if (game.input.keyboard.isDown(Phaser.Keyboard.M) && !attacking) {            
-		attacking = true;     
-		this.player.attack();
-	}        
-	else {            
-		//Checking to see if the animation is finished before stopping the attack.
-		let temp = this.player.frame - 161;
-		if (temp % 13 === 0) attacking = false;
+	//Moving the player, but only if you aren't attacking.
+	if ( this.keyboard.isDown(Phaser.Keyboard.W)) {
+		this.player.moveInDirection('up', sprint);
+	} else if ( this.keyboard.isDown(Phaser.Keyboard.S)) {
+		this.player.moveInDirection('down', sprint);
+	} else if ( this.keyboard.isDown(Phaser.Keyboard.A)) {
+		this.player.moveInDirection('left', sprint);
+	} else if ( this.keyboard.isDown(Phaser.Keyboard.D)) {
+		this.player.moveInDirection('right', sprint);
+	} else if (this.player.state !== 'attacking'){
+		this.player.idleHere();
 	}
 
+	console.log(this.player.state);
 	// Intersection for Player
     this.game.physics.arcade.collide(this.player, this.blockLayer, playerCollision, null, this);
     this.game.physics.arcade.collide(this.player, this.blockOverlap);
@@ -127,8 +127,6 @@ Play.update = function() {
 
 function playerCollision(){
 	this.player.idleHere();
-	collide = true;
-	collideDir = this.player.direction;
 }
 
 function npcCollision(){
