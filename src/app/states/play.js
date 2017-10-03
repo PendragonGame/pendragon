@@ -1,15 +1,16 @@
 'use strict';
 
 const Player = require('../entity/Player');
-const Enemy = require('../entity/NPC');
+const Monster = require('../entity/Monster');
+const Factory = require('../factory/Factory');
 
 let Play = {};
 
-Play.init = function() {
+Play.init = function () {
 
 };
 
-Play.create = function() {
+Play.create = function () {
     // Anand did this part. I don't even know.
     this.map = game.add.tilemap('map1');
     this.map.addTilesetImage('outdoors', 'tileset');
@@ -31,33 +32,46 @@ Play.create = function() {
      * Create the Player, setting location and naming as 'player'.
      * Giving him Physics and allowing collision with the world boundaries.
      */
-    this.player = new Player(window.innerWidth/2, window.innerHeight/2, 'player');
+    this.player = new Player(window.innerWidth / 2,
+        window.innerHeight / 2,
+        'player');
 
-    // Creating the enemy. Same procedure for as the player.
-    this.enemy = new Enemy(window.innerWidth - 50, window.innerHeight/2 + 50, 'enemy');
+    /**
+     * Generate a factory and a few monsters
+     * @todo(anand): Change this implementation to something more general
+     */
+    this.monsterGroup = game.add.group();
+    this.monsterFactory = new Factory(Monster, this.monsterGroup);
+    for (let i = 0; i < 10; i++) {
+        
+    }
 
+    /**
+     * Center camera on player
+     */
     this.game.camera.follow(this.player);
 };
 
-let newDirection = 2, collideDirNPC = 0;
-Play.update = function() {
+let newDirection = 2,
+    collideDirNPC = 0;
+Play.update = function () {
     // ==================================================================================
     // NPC CODE
     // ==================================================================================
-	
-	// Intersection for NPC
+
+    // Intersection for NPC
     this.game.physics.arcade.collide(this.enemy, this.blockLayer, npcCollision, null, this);
     this.game.physics.arcade.collide(this.enemy, this.blockOverlap);
 
-	//Generate random number 1-4 to be the new enemy direction. 
+    // Generate random number 1-4 to be the new enemy direction. 
     let rand;
     rand = Math.round(Math.random() * 50) + 1; // This value is used to calculate the NPC's decision to change
-    if (rand === 1) {							// directions. According to this, 1 out of 50 chance. 
+    if (rand === 1) { // directions. According to this, 1 out of 50 chance. 
         rand = Math.round(Math.random() * 4) + 1;
-		if (rand !== collideDirNPC) newDirection = rand;
+        if (rand !== collideDirNPC) newDirection = rand;
     }
-	
-	//Moving the enemy in a direction based on the generated number.
+
+    // Moving the enemy in a direction based on the generated number.
     switch (newDirection) {
         case 1: // Straight Up
             this.enemy.moveInDirection('up', false);
@@ -77,62 +91,62 @@ Play.update = function() {
     // ========================================================================================
     // PLAYER CODE
     // ========================================================================================
-	
-	// Displays the hitbox for the Player
-    //this.game.debug.body(this.player);
+
+    // Displays the hitbox for the Player
+    // this.game.debug.body(this.player);
 
     // SHIFT for running
     let sprint = false;
-    if ( this.keyboard.isDown(Phaser.Keyboard.SHIFT)) {
-      sprint = true;
+    if (this.keyboard.isDown(Phaser.Keyboard.SHIFT)) {
+        sprint = true;
     }
-	
-	//Attack
-	if (this.keyboard.isDown(Phaser.Keyboard.M) && this.player.state !== 'attacking') {                 
-		this.player.attack();
-	}        
-	else { 
-		//attacking == false iff we are on the last frame. ie. the whole animation has played.
-		let temp = this.player.frame - 161;
-		if ((temp % 13 === 0) || (temp < 0 || temp > 39)) {
-			if (!(this.keyboard.isDown(Phaser.Keyboard.M))) this.player.state = 'idling'; 
-		}
-	}
-	
-	//Moving the player, but only if you aren't attacking.
-	if ( this.keyboard.isDown(Phaser.Keyboard.W)) {
-		this.player.moveInDirection('up', sprint);
-	} else if ( this.keyboard.isDown(Phaser.Keyboard.S)) {
-		this.player.moveInDirection('down', sprint);
-	} else if ( this.keyboard.isDown(Phaser.Keyboard.A)) {
-		this.player.moveInDirection('left', sprint);
-	} else if ( this.keyboard.isDown(Phaser.Keyboard.D)) {
-		this.player.moveInDirection('right', sprint);
-	} else if (this.player.state !== 'attacking'){
-		this.player.idleHere();
-	}
 
-	console.log(this.player.state);
-	// Intersection for Player
+    // Attack
+    if (this.keyboard.isDown(Phaser.Keyboard.M) && this.player.state !== 'attacking') {
+        this.player.attack();
+    } else {
+        // attacking == false iff we are on the last frame. ie. the whole animation has played.
+        let temp = this.player.frame - 161;
+        if ((temp % 13 === 0) || (temp < 0 || temp > 39)) {
+            if (!(this.keyboard.isDown(Phaser.Keyboard.M))) this.player.state = 'idling';
+        }
+    }
+
+    // Moving the player, but only if you aren't attacking.
+    if (this.keyboard.isDown(Phaser.Keyboard.W)) {
+        this.player.moveInDirection('up', sprint);
+    } else if (this.keyboard.isDown(Phaser.Keyboard.S)) {
+        this.player.moveInDirection('down', sprint);
+    } else if (this.keyboard.isDown(Phaser.Keyboard.A)) {
+        this.player.moveInDirection('left', sprint);
+    } else if (this.keyboard.isDown(Phaser.Keyboard.D)) {
+        this.player.moveInDirection('right', sprint);
+    } else if (this.player.state !== 'attacking') {
+        this.player.idleHere();
+    }
+
+    console.log(this.player.state);
+    // Intersection for Player
     this.game.physics.arcade.collide(this.player, this.blockLayer, playerCollision, null, this);
     this.game.physics.arcade.collide(this.player, this.blockOverlap);
-	
+
     // Deciding which character to render on top of the other.
     if ((this.player.y + this.player.height) > (this.enemy.y + this.enemy.height)) {
         this.game.world.bringToTop(this.player);
     } else {
-		this.game.world.bringToTop(this.enemy);
-	}
+        this.game.world.bringToTop(this.enemy);
+    }
 };
 
-function playerCollision(){
-	this.player.idleHere();
+
+function playerCollision() {
+    this.player.idleHere();
 }
 
-function npcCollision(){
-	this.enemy.idleHere();
-	collideDirNPC = newDirection;
-	newDirection = 0;
+function npcCollision() {
+    this.enemy.idleHere();
+    collideDirNPC = newDirection;
+    newDirection = 0;
 }
 
 module.exports = Play;

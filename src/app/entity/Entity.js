@@ -64,8 +64,8 @@ function Entity(x, y, key) {
     this.body.width = this.body.width / 2;
     this.body.offset.x += this.body.width / 2;
     this.body.offset.y += this.body.height;
-	
-	//Set size constants
+
+	// Set size constants
 	h = this.body.height;
 	w = this.body.width;
 	offx = this.body.offset.x;
