@@ -18,7 +18,7 @@ Play.create = function() {
     this.bgOverlap2 = this.map.createLayer('bgOverlap2');
     this.blockOverlap = this.map.createLayer('blkOverlap');
     this.blockLayer = this.map.createLayer('blkLayer');
-    this.game.add.existing(this.blockLayer);
+    game.add.existing(this.blockLayer);
     this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
     this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
     this.blockLayer.resizeWorld();
@@ -36,7 +36,7 @@ Play.create = function() {
     // Creating the enemy. Same procedure for as the player.
     this.enemy = new Enemy(window.innerWidth - 50, window.innerHeight/2 + 50, 'enemy');
 
-    this.game.camera.follow(this.player);
+    game.camera.follow(this.player);
 };
 
 let newDirection = 2, collideDirNPC = 0;
@@ -88,13 +88,13 @@ Play.update = function() {
     }
 	
 	//Attack
-	if (this.keyboard.isDown(Phaser.Keyboard.M) && this.player.state !== 'attacking') {                 
+	if ((this.keyboard.isDown(Phaser.Keyboard.M)) && (this.player.state !== 'attacking')) {                 
 		this.player.attack();
 	}        
 	else { 
 		//attacking == false iff we are on the last frame. ie. the whole animation has played.
 		let temp = this.player.frame - 161;
-		if ((temp % 13 === 0) || (temp < 0 || temp > 39)) {
+		if ((temp % 13 === 0)) {
 			if (!(this.keyboard.isDown(Phaser.Keyboard.M))) this.player.state = 'idling'; 
 		}
 	}
@@ -112,10 +112,10 @@ Play.update = function() {
 		this.player.idleHere();
 	}
 
-	console.log(this.player.state);
+	console.log("State: " + this.player.state);
 	// Intersection for Player
-    this.game.physics.arcade.collide(this.player, this.blockLayer, playerCollision, null, this);
-    this.game.physics.arcade.collide(this.player, this.blockOverlap);
+    game.physics.arcade.collide(this.player, this.blockLayer, playerCollision, null, this);
+    game.physics.arcade.collide(this.player, this.blockOverlap);
 	
     // Deciding which character to render on top of the other.
     if ((this.player.y + this.player.height) > (this.enemy.y + this.enemy.height)) {

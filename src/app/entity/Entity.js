@@ -205,7 +205,7 @@ Entity.prototype.attack = function(){
 	this.state = 'attacking';
 	this.body.velocity.x = 0;
 	this.body.velocity.y = 0;
-	this.animations.play('slash_' + this.direction, 15, true);
+	this.animations.play('slash_' + this.direction, 20, true);
 	this.adjustHitbox('slash');
 };
 
