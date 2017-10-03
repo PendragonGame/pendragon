@@ -112,7 +112,7 @@ Play.update = function() {
 		this.player.idleHere();
 	}
 
-	console.log("State: " + this.player.state);
+	// console.log("State: " + this.player.state);
 	// Intersection for Player
     game.physics.arcade.collide(this.player, this.blockLayer, playerCollision, null, this);
     game.physics.arcade.collide(this.player, this.blockOverlap);

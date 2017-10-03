@@ -2,8 +2,7 @@
 
 const _ = require('lodash');
 let h, w, offx, offy;
-let attacking = false;
-let state = 'idle'; //State can be 'idling', 'walking', 'attacking'
+
 
 
 /**
@@ -70,6 +69,12 @@ function Entity(x, y, key) {
 	w = this.body.width;
 	offx = this.body.offset.x;
 	offy = this.body.offset.y;
+
+	/**
+	 * States.
+	 * State can be 'idling', 'walking', 'attacking'
+	 */
+	this.state = 'idling';
 }
 
 Entity.prototype = Object.create(Phaser.Sprite.prototype);
