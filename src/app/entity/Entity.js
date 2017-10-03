@@ -1,6 +1,8 @@
 'use strict';
 
 const _ = require('lodash');
+let h, w, offx, offy;
+
 
 
 /**
@@ -47,7 +49,7 @@ function Entity(x, y, key) {
     /**
      * Miscellaneous attributes. 
      */
-    this.speed = 60;
+    this.speed = 90;
     this.sprintSpeed = 150;
 
     // Set the default animations
@@ -61,6 +63,18 @@ function Entity(x, y, key) {
     this.body.width = this.body.width / 2;
     this.body.offset.x += this.body.width / 2;
     this.body.offset.y += this.body.height;
+	
+	//Set size constants
+	h = this.body.height;
+	w = this.body.width;
+	offx = this.body.offset.x;
+	offy = this.body.offset.y;
+
+	/**
+	 * States.
+	 * State can be 'idling', 'walking', 'attacking'
+	 */
+	this.state = 'idling';
 }
 
 Entity.prototype = Object.create(Phaser.Sprite.prototype);
@@ -86,10 +100,12 @@ Entity.prototype.setAnimations = function(frames) {
      * right corner of the image. Spritesheets and their corresponding integers
      * count left to right, top to bottom.
      */
-    this.animations.add('idle_up', [104], 10, true);
-    this.animations.add('idle_right', [143], 10, true);
-    this.animations.add('idle_down', [130], 10, true);
-    this.animations.add('idle_left', [117], 10, true);
+
+	 this.animations.add('idle_up', [104], 10, true);
+	 this.animations.add('idle_right', [143], 10, true);
+	 this.animations.add('idle_down', [130], 10, true);
+	 this.animations.add('idle_left', [117], 10, true);
+
 
     this.animations.add('walk_up',
                         [105, 106, 107, 108, 109, 110, 111, 112],
@@ -106,17 +122,16 @@ Entity.prototype.setAnimations = function(frames) {
 
     this.animations.add('slash_up',
                         [156, 157, 158, 159, 160, 161],
-                        10, false);
+                        10, true);
     this.animations.add('slash_down',
-                        [169, 170, 171, 172, 173, 174],
-                        10, false);
-    this.animations.add('slash_left',
                         [182, 183, 184, 185, 186, 187],
-                        10, false);
+                        10, true);
+    this.animations.add('slash_left',
+                        [169, 170, 171, 172, 173, 174],
+                        10, true);
     this.animations.add('slash_right',
                         [195, 196, 197, 198, 199, 200],
-                        10, false);
-	this.frame = 130;
+                        10, true);
 };
 
 
@@ -136,56 +151,111 @@ Entity.prototype.setAnimations = function(frames) {
  * @param {Boolean} sprint - Whether to sprint or not
  */
 Entity.prototype.moveInDirection = function(direction, sprint) {
-    let speed = this.speed;
-    let animSpeed = 10;
-    if (sprint) {
-        speed = this.sprintSpeed;
-        animSpeed = 30;
-        this.animations.speed = animSpeed;
-    }
 
-    let dir = '';
-    if (_.isString(direction) && _.includes(DIRECTIONS, direction)) {
-        dir = direction.toLowerCase();
-    } else if (_.isNumber(direction) && _.inRange(direction, 1, 5)) {
-        dir = DIRECTIONS[direction];
-    } else {
-        console.error('Invalid direction');
-        return;
-    }
+	if (this.state !== 'attacking'){
+		this.state = 'walking';
+		let speed = this.speed;
+		let animSpeed = 10;
+		if (sprint) {
+			speed = this.sprintSpeed;
+			animSpeed = 30;
+		}
+		this.animations.currentAnim.speed = animSpeed;
 
-    switch (dir) {
-        case 'up':
-            this.body.velocity.y = -speed;
-            this.body.velocity.x = 0;
-            this.direction = 'up';
-            break;
-        case 'down':
-            this.body.velocity.y = speed;
-            this.body.velocity.x = 0;
-            this.direction = 'down';
-            break;
-        case 'right':
-            this.body.velocity.x = speed;
-            this.body.velocity.y = 0;
-            this.direction = 'right';
-            break;
-        case 'left':
-            this.body.velocity.x = -speed;
-            this.body.velocity.y = 0;
-            this.direction = 'left';
-            break;
-        default:
-            console.error('Invalid direction');
-            return;
-    }
-    this.animations.play('walk_' + dir, animSpeed, true);
+		let dir = '';
+		if (_.isString(direction) && _.includes(DIRECTIONS, direction)) {
+			dir = direction.toLowerCase();
+		} else if (_.isNumber(direction) && _.inRange(direction, 1, 5)) {
+			dir = DIRECTIONS[direction];
+		} else {
+			console.error('Invalid direction');
+			return;
+		}
+	
+		switch (dir) {
+			case 'up':
+				this.body.velocity.y = -speed;
+				this.body.velocity.x = 0;
+				this.direction = 'up';
+				break;
+			case 'down':
+				this.body.velocity.y = speed;
+				this.body.velocity.x = 0;
+				this.direction = 'down';
+				break;
+			case 'right':
+				this.body.velocity.x = speed;
+				this.body.velocity.y = 0;
+				this.direction = 'right';
+				break;
+			case 'left':
+				this.body.velocity.x = -speed;
+				this.body.velocity.y = 0;
+				this.direction = 'left';
+				break;
+			default:
+				console.error('Invalid direction');
+				return;
+		}
+		this.animations.play('walk_' + dir, animSpeed, true);
+		this.adjustHitbox('walk');
+	}
 };
 
 Entity.prototype.idleHere = function() {
+	this.state = 'idling';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
-    this.animations.play('idle_' + this.direction, 10, true);
+
+    this.animations.play('idle_' + this.direction, 1, false);
+	this.adjustHitbox('idle');
+};
+
+Entity.prototype.attack = function(){
+	this.state = 'attacking';
+	this.body.velocity.x = 0;
+	this.body.velocity.y = 0;
+	this.animations.play('slash_' + this.direction, 20, true);
+	this.adjustHitbox('slash');
+};
+
+/*
+*  This function changes the size of the Entity's hit box based on what
+*  action they are performing and what direction they are facing.
+*/
+Entity.prototype.adjustHitbox = function(state){
+	switch (state){
+		case ('walk'):
+			this.body.height = h;
+			this.body.width = w;
+			this.body.offset.y = offy;
+			this.body.offset.x = offx;
+			break;
+		case ('idle'):
+			this.body.height = h;
+			this.body.width = w;
+			this.body.offset.y = offy;
+			this.body.offset.x = offx;
+			break;
+		case ('slash'):
+			switch (this.direction){
+				case ('up'):
+					this.body.height = 1.5 * h;
+					this.body.offset.y = h / 2;
+					break;
+				case ('down'):
+					this.body.height = 1.5 * h;
+					break;
+				case ('right'):
+					this.body.width = 1.5 * w;
+					break;
+				case ('left'):
+					this.body.width = 1.5 * w;
+					this.body.offset.x = offx - (w / 2);
+					break;
+			}
+			break;
+	}
 };
 
 /**
