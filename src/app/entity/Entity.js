@@ -152,6 +152,7 @@ Entity.prototype.moveInDirection = function(direction, sprint) {
 			speed = this.sprintSpeed;
 			animSpeed = 30;
 		}
+		this.animations.currentAnim.speed = animSpeed;
 
 		let dir = '';
 		if (_.isString(direction) && _.includes(DIRECTIONS, direction)) {
