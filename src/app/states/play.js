@@ -24,11 +24,16 @@ Play.create = function() {
     this.bgLayer.resizeWorld();
 
     const navMeshPlugin = this.game.plugins.add(PhaserNavmesh);
-    const navMesh = navMeshPlugin.buildMeshFromTiled(this.map, 'navmesh', 12.5);
+    const navMesh = navMeshPlugin.buildMeshFromTiled(this.map, 'navmesh', 16);
     navMesh.enableDebug();
     navMesh.debugDrawMesh({
-        drawCentroid: true, drawBounds: false,
+        drawCentroid: true, drawBounds: true,
          drawNeighbors: true, drawPortals: true,
+    });
+    const p1 = new Phaser.Point(window.innerWidth/2, window.innerHeight/2);
+    const p2 = new Phaser.Point(window.innerWidth/2+200, window.innerHeight/2+200);
+    const path = navMesh.findPath(p1, p2, {
+        drawPolyPath: true, drawFinalPath: true,
     });
 
     // Input for game
