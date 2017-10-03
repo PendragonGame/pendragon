@@ -23,6 +23,14 @@ Play.create = function() {
     this.blockLayer.resizeWorld();
     this.bgLayer.resizeWorld();
 
+    const navMeshPlugin = this.game.plugins.add(PhaserNavmesh);
+    const navMesh = navMeshPlugin.buildMeshFromTiled(this.map, 'navmesh', 12.5);
+    navMesh.enableDebug();
+    navMesh.debugDrawMesh({
+        drawCentroid: true, drawBounds: false,
+         drawNeighbors: true, drawPortals: true,
+    });
+
     // Input for game
     this.keyboard = game.input.keyboard;
 
@@ -46,7 +54,6 @@ Play.create = function() {
     this.enemy.body.width = this.enemy.body.width / 2;
     this.enemy.body.offset.x += this.enemy.body.width / 2;
     this.enemy.body.offset.y += this.enemy.body.height;
-
     this.game.camera.follow(this.player);
 };
 
