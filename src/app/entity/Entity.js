@@ -100,10 +100,12 @@ Entity.prototype.setAnimations = function(frames) {
      * right corner of the image. Spritesheets and their corresponding integers
      * count left to right, top to bottom.
      */
+
 	 this.animations.add('idle_up', [104], 10, true);
 	 this.animations.add('idle_right', [143], 10, true);
 	 this.animations.add('idle_down', [130], 10, true);
 	 this.animations.add('idle_left', [117], 10, true);
+
 
     this.animations.add('walk_up',
                         [105, 106, 107, 108, 109, 110, 111, 112],
@@ -149,6 +151,7 @@ Entity.prototype.setAnimations = function(frames) {
  * @param {Boolean} sprint - Whether to sprint or not
  */
 Entity.prototype.moveInDirection = function(direction, sprint) {
+
 	if (this.state !== 'attacking'){
 		this.state = 'walking';
 		let speed = this.speed;
@@ -203,6 +206,7 @@ Entity.prototype.idleHere = function() {
 	this.state = 'idling';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
+
     this.animations.play('idle_' + this.direction, 1, false);
 	this.adjustHitbox('idle');
 };
