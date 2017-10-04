@@ -208,11 +208,11 @@ Play.update = function() {
  * @param {any} entity2 
  */
 function entityCollision(entity1, entity2) {
-	if (entity1.frame === 266) {
+	if (entity1.frame === 272) {
 		entity1.destroy();
 		return;
 	}
-	if (entity2.frame === 266) {
+	if (entity2.frame === 272) {
 		entity2.destroy();
 	}
     /**

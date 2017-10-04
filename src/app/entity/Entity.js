@@ -109,8 +109,8 @@ Entity.prototype.setAnimations = function(frames) {
      this.animations.add('idle_down', [130], 10, true);
      this.animations.add('idle_left', [117], 10, true);
 	 
-	 this.animations.add('die', [260, 261, 262, 263, 264, 265, 265, 265, 265, 265, 265, 265, 265, 265, 
-								 265, 265, 265, 265, 265, 265, 265, 265, 265, 265, 265, 265, 265, 266], 
+	 this.animations.add('die', [260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 271, 271, 
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271], 
 								 20, 
 								 true);
 
