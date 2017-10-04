@@ -2,15 +2,16 @@
 
 const Player = require('../entity/Player');
 const Monster = require('../entity/Monster');
+const NPC = require('../entity/NPC');
 const Factory = require('../factory/Factory');
 
 let Play = {};
 
-Play.init = function () {
+Play.init = function() {
 
 };
 
-Play.create = function () {
+Play.create = function() {
     // Anand did this part. I don't even know.
     this.map = game.add.tilemap('map1');
     this.map.addTilesetImage('outdoors', 'tileset');
@@ -20,13 +21,42 @@ Play.create = function () {
     this.blockOverlap = this.map.createLayer('blkOverlap');
     this.blockLayer = this.map.createLayer('blkLayer');
     game.add.existing(this.blockLayer);
-    this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
-    this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
+
     this.blockLayer.resizeWorld();
     this.bgLayer.resizeWorld();
+    this.game = game;
 
     // Input for game
     this.keyboard = game.input.keyboard;
+
+
+    /**
+     * Generate a factory and a few monsters
+     */
+    this.monsterGroup = game.add.group();
+    this.monsterFactory = new Factory(Monster, this.monsterGroup);
+    for (let i = 0; i < 10; i++) {
+        /**
+         * Generate a random location withing 3/4ths of the map
+         */
+        let rndx = ((Math.random() * 0.75) + 0.125) * this.map.widthInPixels;
+        let rndy = ((Math.random() * 0.75) + 0.125) * this.map.heightInPixels;
+        this.monsterFactory.next(rndx, rndy, 'enemy');
+    }
+
+    /**
+     * Generate a factory and a few NPCs
+     */
+    this.npcGroup = game.add.group();
+    this.npcFactory = new Factory(NPC, this.npcGroup);
+    for (let i = 0; i < 10; i++) {
+        /**
+         * Generate a random location withing 3/4ths of the map
+         */
+        let rndx = ((Math.random() * 0.5) + 0.025) * this.map.widthInPixels;
+        let rndy = ((Math.random() * 0.5) + 0.025) * this.map.heightInPixels;
+        this.npcFactory.next(rndx, rndy, 'woman');
+    }
 
     /**
      * Create the Player, setting location and naming as 'player'.
@@ -36,20 +66,27 @@ Play.create = function () {
         window.innerHeight / 2,
         'player');
 
+
     /**
-     * Generate a factory and a few monsters
-     * @todo(anand): Change this implementation to something more general
+     * Add all Entities to the same group.
      */
-    this.monsterGroup = game.add.group();
-    this.monsterFactory = new Factory(Monster, this.monsterGroup);
-    for (let i = 0; i < 10; i++) {
-        this.monsterFactory.
-    }
+    this.entitiesGroup = game.add.group();
+    this.entitiesGroup.addMultiple([
+        this.player,
+        this.npcGroup,
+        this.monsterGroup,
+    ]);
 
     /**
      * Center camera on player
      */
     this.game.camera.follow(this.player);
+
+    this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
+    this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
+    /**
+     * Debug Stuff
+     */
 };
 
 
@@ -57,51 +94,57 @@ let newDirection = 2;
 let collideDirNPC = 0;
 Play.update = function() {
     /**
+     * Debug Stuff
+     */
+    // game.debug.body(this.monsterGroup);
+
+    /**
+     * Deal with collision of entities
+     */
+    game.physics.arcade.collide(this.entitiesGroup, this.blockLayer);
+    game.physics.arcade.collide(this.entitiesGroup, this.blockOverlap);
+    game.physics.arcade.collide(this.entitiesGroup, this.entitiesGroup, entityCollision);
+
+    /**
      * NPC Code
      */
     // Intersection for NPC
-    this.game.physics.arcade.collide(this.enemy, this.blockLayer,
-                                        npcCollision, null, this);
-    this.game.physics.arcade.collide(this.enemy, this.blockOverlap);
+    // this.game.physics.arcade.collide(this.enemy, this.blockLayer,
+    //                                     npcCollision, null, this);
+    // this.game.physics.arcade.collide(this.enemy, this.blockOverlap);
 
     /**
      * Generate random number 1-4 to be the new enemy direction.
      * This value is used to calculate the NPC's decision to change
      * directions. According to this, 1 out of 50 chance.
      */
-    let rand;
-    rand = Math.round(Math.random() * 50) + 1;
-    if (rand === 1) {
-        rand = Math.round(Math.random() * 4) + 1;
-        if (rand !== collideDirNPC) newDirection = rand;
-    }
+    // let rand;
+    // rand = Math.round(Math.random() * 50) + 1;
+    // if (rand === 1) {
+    //     rand = Math.round(Math.random() * 4) + 1;
+    //     if (rand !== collideDirNPC) newDirection = rand;
+    // }
 
-    // Moving the enemy in a direction based on the generated number.
-    switch (newDirection) {
-        case 1: // Straight Up
-            this.enemy.moveInDirection('up', false);
-            break;
-        case 2: // Straight Right
-            this.enemy.moveInDirection('right', false);
-            break;
-        case 3: // Straight Down
-            this.enemy.moveInDirection('down', false);
-            break;
-        case 4: // Straight Left
-            this.enemy.moveInDirection('left', false);
-            break;
-    }
+    // // Moving the enemy in a direction based on the generated number.
+    // switch (newDirection) {
+    //     case 1: // Straight Up
+    //         this.enemy.moveInDirection('up', false);
+    //         break;
+    //     case 2: // Straight Right
+    //         this.enemy.moveInDirection('right', false);
+    //         break;
+    //     case 3: // Straight Down
+    //         this.enemy.moveInDirection('down', false);
+    //         break;
+    //     case 4: // Straight Left
+    //         this.enemy.moveInDirection('left', false);
+    //         break;
+    // }
 
 
-<<<<<<< HEAD
-    // ========================================================================================
-    // PLAYER CODE
-    // ========================================================================================
-=======
     /**
      * PLAYER CODE
      */
->>>>>>> hotfix
 
     // Displays the hitbox for the Player
     // this.game.debug.body(this.player);
@@ -113,15 +156,6 @@ Play.update = function() {
     }
 
     // Attack
-<<<<<<< HEAD
-    if (this.keyboard.isDown(Phaser.Keyboard.M) && this.player.state !== 'attacking') {
-        this.player.attack();
-    } else {
-        // attacking == false iff we are on the last frame. ie. the whole animation has played.
-        let temp = this.player.frame - 161;
-        if ((temp % 13 === 0) || (temp < 0 || temp > 39)) {
-            if (!(this.keyboard.isDown(Phaser.Keyboard.M))) this.player.state = 'idling';
-=======
     if ((this.keyboard.isDown(Phaser.Keyboard.M))
             && (this.player.state !== 'attacking')) {
         this.player.attack();
@@ -136,7 +170,6 @@ Play.update = function() {
             if (!(this.keyboard.isDown(Phaser.Keyboard.M))) {
                 this.player.state = 'idling';
             }
->>>>>>> hotfix
         }
     }
 
@@ -154,39 +187,34 @@ Play.update = function() {
         this.player.idleHere();
     }
 
-
-    // console.log("State: " + this.player.state);
-    // Intersection for Player
-    game.physics.arcade.collide(this.player, this.blockLayer,
-                                playerCollision, null, this);
-    game.physics.arcade.collide(this.player, this.blockOverlap);
-
-    // Deciding which character to render on top of the other.
-    if ((this.player.y + this.player.height) > (this.enemy.y + this.enemy.height)) {
-        this.game.world.bringToTop(this.player);
-    } else {
-        this.game.world.bringToTop(this.enemy);
-    }
+    /**
+     * Deciding which character to render on top of the other.
+     * 
+     * @todo(anand): Only do this check for the nearest 4 neighbors.
+     */
+    // if ((this.player.y + this.player.height) > (this.enemy.y + this.enemy.height)) {
+    //     this.game.world.bringToTop(this.player);
+    // } else {
+    //     this.game.world.bringToTop(this.enemy);
+    // }
 };
 
 
 /**
- * Handle Player Collision with blocks
  * 
- */
-function playerCollision() {
-    this.player.idleHere();
-}
-
-
-/**
- * Handle NPC Collision with blocks
  * 
+ * @param {any} entity1 
+ * @param {any} entity2 
  */
-function npcCollision() {
-    this.enemy.idleHere();
-    collideDirNPC = newDirection;
-    newDirection = 0;
+function entityCollision(entity1, entity2) {
+    entity1.idleHere();
+    entity2.idleHere();
+    console.debug('[Collision] ' + entity1 + ' - ' + entity2);
+
+    /**
+     * @todo(anand): This could be where combat is detected
+     */
+
 }
 
 module.exports = Play;

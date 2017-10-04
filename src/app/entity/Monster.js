@@ -17,7 +17,7 @@ function Monster(x, y, key) {
      */
 }
 
-Monster.prototype = Object.create(Entity.prototype);
+Monster.prototype = Object.create(NPC.prototype);
 Monster.prototype.constructor = Monster;
 
 module.exports = Monster;
