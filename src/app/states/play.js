@@ -35,7 +35,7 @@ Play.create = function() {
      */
     this.monsterGroup = game.add.group();
     this.monsterFactory = new Factory(Monster, this.monsterGroup);
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 100; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
          */
@@ -76,6 +76,7 @@ Play.create = function() {
         this.npcGroup,
         this.monsterGroup,
     ]);
+	this.player.bringToTop();
 
     /**
      * Center camera on player
