@@ -103,7 +103,8 @@ Play.update = function() {
      */
     game.physics.arcade.collide(this.entitiesGroup, this.blockLayer);
     game.physics.arcade.collide(this.entitiesGroup, this.blockOverlap);
-    game.physics.arcade.collide(this.entitiesGroup, this.entitiesGroup, entityCollision);
+    game.physics.arcade.collide(this.entitiesGroup, this.entitiesGroup,
+                                entityCollision, null, this);
 
     /**
      * NPC Code
@@ -210,6 +211,17 @@ function entityCollision(entity1, entity2) {
     /**
      * @todo(anand): Handle code to get injured
      */
+    if (game.physics.arcade.collide(entity1, this.blockLayer)
+    || game.physics.arcade.collide(entity1, this.blockOverlap)
+    || game.physics.arcade.collide(entity2, this.blockLayer)
+    || game.physics.arcade.collide(entity2, this.blockOverlap)) {
+        return;
+    }
+
+    entity1.body.velocity.x = 0;
+    entity1.body.velocity.y = 0;
+    entity2.body.velocity.x = 0;
+    entity2.body.velocity.y = 0;
 
     if (entity1.state == 'attacking') entity1.attack();
     else entity1.idleHere();
