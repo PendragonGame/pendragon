@@ -10,6 +10,7 @@ Load.preload = function() {
      null, Phaser.Tilemap.TILED_JSON);
     game.load.image('tileset', 'assets/tilemaps/outdoors.png');
     game.load.spritesheet('enemy', 'assets/sprites/OrcEnemy.png', 64, 64, 273);
+    game.load.spritesheet('woman', 'assets/sprites/woman.png', 64, 64, 273);
     game.load.spritesheet('player', 'assets/sprites/armor.png', 64, 64, 273);
 };
 

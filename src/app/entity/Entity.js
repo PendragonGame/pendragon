@@ -66,6 +66,7 @@ function Entity(x, y, key) {
     this.body.offset.x += this.body.width / 2;
     this.body.offset.y += this.body.height;
 
+
     // Set size constants
     h = this.body.height;
     w = this.body.width;
@@ -258,6 +259,33 @@ Entity.prototype.adjustHitbox = function(state) {
             break;
     }
 };
+
+/**
+ * Set the direction of the sprite
+ * 
+ * @param {string|number} direction 
+ */
+Entity.prototype.setDirection= function(direction) {
+    if (_.isString(direction) && _.includes(DIRECTIONS, direction)) {
+        this.direction = direction.toLowerCase();
+    } else if (_.isNumber(direction) && _.inRange(direction, 1, 5)) {
+        this.direction = DIRECTIONS[direction];
+    } else {
+        console.error('Invalid direction');
+    }
+};
+
+/**
+ * Return the Name of the function.
+ * This is a hack and should be used only for debugging.
+ * 
+ * @return {string}
+ */
+Entity.prototype.toString = function() {
+    let funcNameRegex = /function (.{1,})\(/;
+    let results = (funcNameRegex).exec((this).constructor.toString());
+    return (results && results.length > 1) ? results[1] : '';
+ };
 
 /**
  * Entity module.
