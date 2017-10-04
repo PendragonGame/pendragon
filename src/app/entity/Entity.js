@@ -51,8 +51,8 @@ function Entity(x, y, key) {
     /**
      * Miscellaneous attributes. 
      */
-    this.speed = 90;
-    this.sprintSpeed = 150;
+    this.speed = 65;
+    this.sprintSpeed = 170;
 
     // Set the default animations
     this.setAnimations();
