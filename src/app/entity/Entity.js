@@ -132,6 +132,7 @@ Entity.prototype.setAnimations = function(frames) {
     this.animations.add('slash_right',
                         [195, 196, 197, 198, 199, 200],
                         10, true);
+
 };
 
 
@@ -256,6 +257,18 @@ Entity.prototype.adjustHitbox = function(state){
 			}
 			break;
 	}
+};
+
+Entity.prototype.serialize = function() {
+    let obj = {};
+    obj.name = this.name;
+    obj.health = this.health;
+    obj.maxHealth = this.maxHealth;
+    obj.x = this.x;
+    obj.y = this.y;
+    obj.key = this.key;
+
+    return obj;
 };
 
 /**
