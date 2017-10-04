@@ -201,20 +201,23 @@ Play.update = function() {
 
 
 /**
- * 
+ * Handle collision between two `Entities`
  * 
  * @param {any} entity1 
  * @param {any} entity2 
  */
 function entityCollision(entity1, entity2) {
-    entity1.idleHere();
-    entity2.idleHere();
-    console.debug('[Collision] ' + entity1 + ' - ' + entity2);
-
     /**
-     * @todo(anand): This could be where combat is detected
+     * Handle code to get injured
      */
 
+    if (entity1.state == 'attacking') entity1.attack();
+    else entity1.idleHere();
+
+    if (entity2.state == 'attacking') entity2.attack();
+    else entity2.idleHere();
+
+    console.debug('[Collision] ' + entity1 + ' - ' + entity2);
 }
 
 module.exports = Play;
