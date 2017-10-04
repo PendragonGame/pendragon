@@ -208,6 +208,13 @@ Play.update = function() {
  * @param {any} entity2 
  */
 function entityCollision(entity1, entity2) {
+	if (entity1.frame === 266) {
+		entity1.destroy();
+		return;
+	}
+	if (entity2.frame === 266) {
+		entity2.destroy();
+	}
     /**
      * @todo(anand): Handle code to get injured
      */
@@ -225,7 +232,9 @@ function entityCollision(entity1, entity2) {
 	
     if (entity2.state == 'attacking') {
 		entity2.attack();
-		if (entity1.state !== 'dead') entity1.die();
+		if (entity1.state !== 'dead') { 
+		  entity1.die();
+		}
 	}
     else {
 		if (entity1.state !== 'dead') entity1.idleHere();
