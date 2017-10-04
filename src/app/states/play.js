@@ -222,9 +222,14 @@ function entityCollision(entity1, entity2) {
     entity1.body.velocity.y = 0;
     entity2.body.velocity.x = 0;
     entity2.body.velocity.y = 0;
-
-    if (entity1.state == 'attacking') entity1.attack();
-    else entity1.idleHere();
+	
+    if (entity2.state == 'attacking') {
+		entity2.attack();
+		if (entity1.state !== 'dead') entity1.die();
+	}
+    else {
+		if (entity1.state !== 'dead') entity1.idleHere();
+	}
 
     if (entity2.state == 'attacking') entity2.attack();
     else entity2.idleHere();
