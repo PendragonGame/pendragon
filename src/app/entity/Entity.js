@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const uuid = require('../util/uuid');
 let h;
 let w;
 let offx;
@@ -48,6 +49,7 @@ function Entity(x, y, key) {
      */
     this.weapon = null;
 
+
     /**
      * Miscellaneous attributes. 
      */
@@ -78,6 +80,12 @@ function Entity(x, y, key) {
      * State can be 'idling', 'walking', 'attacking'
      */
     this.state = 'idling';
+
+    /**
+     * generating unique ID for Entity
+     */
+
+    this.id = uuid();
 }
 
 Entity.prototype = Object.create(Phaser.Sprite.prototype);
@@ -263,13 +271,12 @@ Entity.prototype.adjustHitbox = function(state) {
 
 Entity.prototype.serialize = function() {
     let obj = {};
-    obj.name = this.name;
-    obj.health = this.health;
-    obj.maxHealth = this.maxHealth;
+    obj.id = this.id;
     obj.x = this.x;
     obj.y = this.y;
     obj.key = this.key;
-
+    obj.alive = this.alive;
+    obj.type = this.type;
     return obj;
 };
 

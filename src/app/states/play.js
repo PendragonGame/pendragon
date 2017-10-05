@@ -5,6 +5,8 @@ const Monster = require('../entity/Monster');
 const NPC = require('../entity/NPC');
 const Factory = require('../factory/Factory');
 
+const dataStore = require('../util/data');
+
 let Play = {};
 
 Play.init = function() {
@@ -231,5 +233,11 @@ function entityCollision(entity1, entity2) {
 
     console.debug('[Collision] ' + entity1 + ' - ' + entity2);
 }
+
+Play.storeState = function() {
+    dataStore.updateEntity(this.player);
+    this.monsterGroup.forEachAlive(dataStore.updateEntity);
+    this.npcGroup.forEachAlive(dataStore.updateEntity);
+};
 
 module.exports = Play;
