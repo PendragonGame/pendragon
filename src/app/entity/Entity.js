@@ -1,11 +1,11 @@
 'use strict';
 
 const _ = require('lodash');
-const NavMesh = require('../ai/Nav-mesh');
 
-
-let h, w, offx, offy;
-
+let h;
+let w;
+let offx;
+let offy;
 
 
 /**
@@ -66,18 +66,19 @@ function Entity(x, y, key) {
     this.body.width = this.body.width / 2;
     this.body.offset.x += this.body.width / 2;
     this.body.offset.y += this.body.height;
-	
-	//Set size constants
-	h = this.body.height;
-	w = this.body.width;
-	offx = this.body.offset.x;
-	offy = this.body.offset.y;
 
-	/**
-	 * States.
-	 * State can be 'idling', 'walking', 'attacking'
-	 */
-	this.state = 'idling';
+
+    // Set size constants
+    h = this.body.height;
+    w = this.body.width;
+    offx = this.body.offset.x;
+    offy = this.body.offset.y;
+
+    /**
+     * States.
+     * State can be 'idling', 'walking', 'attacking'
+     */
+    this.state = 'idling';
 }
 
 Entity.prototype = Object.create(Phaser.Sprite.prototype);
@@ -104,10 +105,10 @@ Entity.prototype.setAnimations = function(frames) {
      * count left to right, top to bottom.
      */
 
-	 this.animations.add('idle_up', [104], 10, true);
-	 this.animations.add('idle_right', [143], 10, true);
-	 this.animations.add('idle_down', [130], 10, true);
-	 this.animations.add('idle_left', [117], 10, true);
+     this.animations.add('idle_up', [104], 10, true);
+     this.animations.add('idle_right', [143], 10, true);
+     this.animations.add('idle_down', [130], 10, true);
+     this.animations.add('idle_left', [117], 10, true);
 
 
     this.animations.add('walk_up',
@@ -154,111 +155,111 @@ Entity.prototype.setAnimations = function(frames) {
  * @param {Boolean} sprint - Whether to sprint or not
  */
 Entity.prototype.moveInDirection = function(direction, sprint) {
+    if (this.state !== 'attacking') {
+        this.state = 'walking';
+        let speed = this.speed;
+        let animSpeed = 10;
+        if (sprint) {
+            speed = this.sprintSpeed;
+            animSpeed = 30;
+        }
+        this.animations.currentAnim.speed = animSpeed;
 
-	if (this.state !== 'attacking'){
-		this.state = 'walking';
-		let speed = this.speed;
-		let animSpeed = 10;
-		if (sprint) {
-			speed = this.sprintSpeed;
-			animSpeed = 30;
-		}
-		this.animations.currentAnim.speed = animSpeed;
+        let dir = '';
+        if (_.isString(direction) && _.includes(DIRECTIONS, direction)) {
+            dir = direction.toLowerCase();
+        } else if (_.isNumber(direction) && _.inRange(direction, 0, 4)) {
+            dir = DIRECTIONS[direction];
+        } else {
+            console.log(direction);
+            console.error('Invalid direction');
+            return;
+        }
 
-		let dir = '';
-		if (_.isString(direction) && _.includes(DIRECTIONS, direction)) {
-			dir = direction.toLowerCase();
-		} else if (_.isNumber(direction) && _.inRange(direction, 1, 5)) {
-			dir = DIRECTIONS[direction];
-		} else {
-			console.error('Invalid direction');
-			return;
-		}
-	
-		switch (dir) {
-			case 'up':
-				this.body.velocity.y = -speed;
-				this.body.velocity.x = 0;
-				this.direction = 'up';
-				break;
-			case 'down':
-				this.body.velocity.y = speed;
-				this.body.velocity.x = 0;
-				this.direction = 'down';
-				break;
-			case 'right':
-				this.body.velocity.x = speed;
-				this.body.velocity.y = 0;
-				this.direction = 'right';
-				break;
-			case 'left':
-				this.body.velocity.x = -speed;
-				this.body.velocity.y = 0;
-				this.direction = 'left';
-				break;
-			default:
-				console.error('Invalid direction');
-				return;
-		}
-		this.animations.play('walk_' + dir, animSpeed, true);
-		this.adjustHitbox('walk');
-	}
+        switch (dir) {
+            case 'up':
+                this.body.velocity.y = -speed;
+                this.body.velocity.x = 0;
+                this.direction = 'up';
+                break;
+            case 'down':
+                this.body.velocity.y = speed;
+                this.body.velocity.x = 0;
+                this.direction = 'down';
+                break;
+            case 'right':
+                this.body.velocity.x = speed;
+                this.body.velocity.y = 0;
+                this.direction = 'right';
+                break;
+            case 'left':
+                this.body.velocity.x = -speed;
+                this.body.velocity.y = 0;
+                this.direction = 'left';
+                break;
+            default:
+                console.error('Invalid direction');
+                return;
+        }
+        this.animations.play('walk_' + dir, animSpeed, true);
+        this.adjustHitbox('walk');
+    }
 };
 
 Entity.prototype.idleHere = function() {
-	this.state = 'idling';
+    this.state = 'idling';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
 
     this.animations.play('idle_' + this.direction, 1, false);
-	this.adjustHitbox('idle');
+    this.adjustHitbox('idle');
 };
 
-Entity.prototype.attack = function(){
-	this.state = 'attacking';
-	this.body.velocity.x = 0;
-	this.body.velocity.y = 0;
-	this.animations.play('slash_' + this.direction, 20, true);
-	this.adjustHitbox('slash');
+Entity.prototype.attack = function() {
+    this.state = 'attacking';
+    this.body.velocity.x = 0;
+    this.body.velocity.y = 0;
+    this.animations.play('slash_' + this.direction, 20, true);
+    this.adjustHitbox('slash');
 };
 
 /*
 *  This function changes the size of the Entity's hit box based on what
 *  action they are performing and what direction they are facing.
 */
-Entity.prototype.adjustHitbox = function(state){
-	switch (state){
-		case ('walk'):
-			this.body.height = h;
-			this.body.width = w;
-			this.body.offset.y = offy;
-			this.body.offset.x = offx;
-			break;
-		case ('idle'):
-			this.body.height = h;
-			this.body.width = w;
-			this.body.offset.y = offy;
-			this.body.offset.x = offx;
-			break;
-		case ('slash'):
-			switch (this.direction){
-				case ('up'):
-					this.body.height = 1.5 * h;
-					this.body.offset.y = h / 2;
-					break;
-				case ('down'):
-					this.body.height = 1.5 * h;
-					break;
-				case ('right'):
-					this.body.width = 1.5 * w;
-					break;
-				case ('left'):
-					this.body.width = 1.5 * w;
-					this.body.offset.x = offx - (w / 2);
-					break;
-			}
-			break;
-	}
+Entity.prototype.adjustHitbox = function(state) {
+    switch (state) {
+        case ('walk'):
+            this.body.height = h;
+            this.body.width = w;
+            this.body.offset.y = offy;
+            this.body.offset.x = offx;
+            break;
+        case ('idle'):
+            this.body.height = h;
+            this.body.width = w;
+            this.body.offset.y = offy;
+            this.body.offset.x = offx;
+            break;
+        case ('slash'):
+            switch (this.direction) {
+                case ('up'):
+                    this.body.height = 1.5 * h;
+                    this.body.offset.y = h / 2;
+                    break;
+                case ('down'):
+                    this.body.height = 1.5 * h;
+                    break;
+                case ('right'):
+                    this.body.width = 1.5 * w;
+                    break;
+                case ('left'):
+                    this.body.width = 1.5 * w;
+                    this.body.offset.x = offx - (w / 2);
+                    break;
+            }
+            break;
+    }
 };
 /**
  * This function tells an entity object to travel to a desired location
@@ -268,10 +269,55 @@ Entity.prototype.adjustHitbox = function(state){
  * @param {navMesh} navMesh -navigation mesh object
  */
 Entity.prototype.gotoXY = function(x, y, navMesh) {
+    // destination point
     const p2 = new Phaser.Point(x, y);
-    const p1 = new Phaser.Point(this.x+this.body.width / 2 + this.body.offset.x, this.y+this.body.height / 2 + this.body.offset.y);
-    navMesh.findPath(p1, p2);
+    // the entities location, respective to the center of its hit box
+    const trueX = this.x+this.body.width /
+    2 + this.body.offset.x;
+    const trueY = this.y+this.body.height /
+          2 + this.body.offset.y;
+    const p1 = new Phaser.Point(trueX, trueY);
+    // cool library magic
+    const path = navMesh.findPath(p1, p2);
+    /* 0. up
+    *  1. right
+    *  2. down
+    *  3. left
+    */
+    if (path) {
+        // confusing code
+        Math.abs(path[1].x - trueX) >= Math.abs(path[1].y - trueY) ?
+         this.moveInDirection(((path[1].x - trueX < 0)*2)+1, false) :
+          this.moveInDirection((path[1].y - trueY > 0)*2, false);
+    }
 };
+
+/**
+ * Set the direction of the sprite
+ * 
+ * @param {string|number} direction 
+ */
+Entity.prototype.setDirection= function(direction) {
+    if (_.isString(direction) && _.includes(DIRECTIONS, direction)) {
+        this.direction = direction.toLowerCase();
+    } else if (_.isNumber(direction) && _.inRange(direction, 1, 5)) {
+        this.direction = DIRECTIONS[direction];
+    } else {
+        console.error('Invalid direction');
+    }
+};
+
+/**
+ * Return the Name of the function.
+ * This is a hack and should be used only for debugging.
+ * 
+ * @return {string}
+ */
+Entity.prototype.toString = function() {
+    let funcNameRegex = /function (.{1,})\(/;
+    let results = (funcNameRegex).exec((this).constructor.toString());
+    return (results && results.length > 1) ? results[1] : '';
+ };
 
 /**
  * Entity module.
