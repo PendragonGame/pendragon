@@ -52,7 +52,8 @@
     "electron-is-dev": "^0.3.0",
     "elemon": "^5.0.3",
     "eslint": "^4.7.1",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "phaser-navmesh": "^1.1.1"
   },
   "electronVersion": "1.7.6",
   "build": {
