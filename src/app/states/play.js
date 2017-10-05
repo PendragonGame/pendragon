@@ -80,6 +80,7 @@ Play.create = function() {
         this.player,
         this.npcGroup,
         this.monsterGroup,
+        this.monster,
     ]);
 
     /**
