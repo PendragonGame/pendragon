@@ -284,6 +284,12 @@ Entity.prototype.gotoXY = function(x, y, navMesh) {
     *  2. down
     *  3. left
     */
+    // chack to see if the target location is reached within 5 units
+    if (path.length === 2 && Math.abs(path[1].x - trueX) < 5
+     && Math.abs(path[1].y - trueY) < 5) {
+        this.idleHere();
+        return;
+    }
     if (path) {
         // confusing code
         Math.abs(path[1].x - trueX) >= Math.abs(path[1].y - trueY) ?
