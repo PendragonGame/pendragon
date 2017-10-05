@@ -6,10 +6,10 @@ const ipcFrontend = require('electron');
  * 
  * @param {any} entity 
  */
-let updateEntity = function(entity) {
+let storeEntity = function(entity) {
     let data = entity.serialize();
-    ipcFrontend.send('updateEntity', data);
+    ipcFrontend.send('storeEntity', data);
 };
-module.exports.updateEntity = updateEntity;
+module.exports.storeEntity = storeEntity;
 
 

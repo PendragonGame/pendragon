@@ -240,9 +240,9 @@ function entityCollision(entity1, entity2) {
 }
 
 Play.storeState = function() {
-    dataStore.updateEntity(this.player);
-    this.monsterGroup.forEachAlive(dataStore.updateEntity);
-    this.npcGroup.forEachAlive(dataStore.updateEntity);
+    dataStore.storeEntity(this.player);
+    this.monsterGroup.forEachAlive(dataStore.storeEntity);
+    this.npcGroup.forEachAlive(dataStore.storeEntity);
 };
 
 module.exports = Play;
