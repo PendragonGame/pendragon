@@ -86,6 +86,11 @@ Play.create = function() {
 
     this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
     this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
+
+    /**
+     * Setting datastore callback interval
+     */
+    setInterval(this.storeState, 1000);
     /**
      * Debug Stuff
      */
