@@ -1,6 +1,9 @@
 'use strict';
 
 const _ = require('lodash');
+const NavMesh = require('../ai/Nav-mesh');
+
+
 let h, w, offx, offy;
 
 
@@ -256,6 +259,18 @@ Entity.prototype.adjustHitbox = function(state){
 			}
 			break;
 	}
+};
+/**
+ * This function tells an entity object to travel to a desired location
+ * 
+ * @param {number} x
+ * @param {number} y
+ * @param {navMesh} navMesh -navigation mesh object
+ */
+Entity.prototype.gotoXY = function(x, y, navMesh) {
+    const p2 = new Phaser.Point(x, y);
+    const p1 = new Phaser.Point(this.x+this.body.width / 2 + this.body.offset.x, this.y+this.body.height / 2 + this.body.offset.y);
+    navMesh.findPath(p1, p2);
 };
 
 /**

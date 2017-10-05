@@ -1,7 +1,7 @@
 'use strict';
-
 const Player = require('../entity/Player');
 const Enemy = require('../entity/NPC');
+const NavMesh = require('../ai/Nav-mesh.js');
 
 let Play = {};
 
@@ -24,18 +24,7 @@ Play.create = function() {
     this.blockLayer.resizeWorld();
     this.bgLayer.resizeWorld();
 
-    const navMeshPlugin = this.game.plugins.add(PhaserNavmesh);
-    const navMesh = navMeshPlugin.buildMeshFromTiled(this.map, 'navmesh', 16);
-    navMesh.enableDebug();
-    navMesh.debugDrawMesh({
-        drawCentroid: false, drawBounds: true,
-         drawNeighbors: true, drawPortals: false,
-    });
-    const p1 = new Phaser.Point(window.innerWidth/2, window.innerHeight/2);
-    const p2 = new Phaser.Point(window.innerWidth/2+200, window.innerHeight/2+200);
-    const path = navMesh.findPath(p1, p2, {
-        drawPolyPath: true, drawFinalPath: true,
-    });
+    this.navMesh = new NavMesh(this.map);
 
     // Input for game
     this.keyboard = game.input.keyboard;
@@ -45,7 +34,6 @@ Play.create = function() {
      * Giving him Physics and allowing collision with the world boundaries.
      */
     this.player = new Player(window.innerWidth/2, window.innerHeight/2, 'player');
-
     // Creating the enemy. Same procedure for as the player.
     this.enemy = new Enemy(window.innerWidth - 50, window.innerHeight/2 + 50, 'enemy');
 
@@ -53,6 +41,7 @@ Play.create = function() {
 };
 
 let newDirection = 2, collideDirNPC = 0;
+
 Play.update = function() {
     // ==================================================================================
     // NPC CODE
@@ -92,8 +81,8 @@ Play.update = function() {
     // ========================================================================================
 	
 	// Displays the hitbox for the Player
-    //this.game.debug.body(this.player);
-
+    this.game.debug.body(this.player);
+    this.player.gotoXY(this.enemy.x+this.enemy.body.width / 2 + this.enemy.body.offset.x, this.enemy.y+this.enemy.body.height / 2 + this.enemy.body.offset.y, this.navMesh);
     // SHIFT for running
     let sprint = false;
     if ( this.keyboard.isDown(Phaser.Keyboard.SHIFT)) {
