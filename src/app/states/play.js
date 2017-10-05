@@ -155,7 +155,8 @@ Play.update = function() {
     // Displays the hitbox for the Player
     // this.game.debug.body(this.player);
     this.monster.gotoXY(this.player.x+this.player.body.width /
-        2 + this.player.body.offset.x - 16, this.player.y+this.player.body.height /
+        2 + this.player.body.offset.x - 32,
+         this.player.y+this.player.body.height /
         2 + this.player.body.offset.y + 16, this.navMesh);
     // SHIFT for running
     let sprint = false;

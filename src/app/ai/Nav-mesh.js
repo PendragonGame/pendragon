@@ -27,7 +27,8 @@ function NavMesh(tilemap) {
  */
 NavMesh.prototype.findPath = function(start, finish) {
     // return this.navMesh.findPath(start, finish);
-    this.navMesh.debugClear(); // Clears the overlay    
+    this.navMesh.debugClear(); // Clears the overlay
+    // draw the path    
     this.navMesh.findPath(start, finish, {
         drawPolyPath: false, drawFinalPath: true,
     });
