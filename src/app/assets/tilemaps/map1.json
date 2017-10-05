@@ -264,8 +264,8 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":120,
-                 "x":520,
+                 "width":112,
+                 "x":528,
                  "y":528
                 }, 
                 {
@@ -495,7 +495,7 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":56,
+                 "width":64,
                  "x":464,
                  "y":592
                 }, 

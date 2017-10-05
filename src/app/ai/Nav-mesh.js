@@ -12,7 +12,7 @@ const PhaserNavmesh = require('phaser-navmesh');
 function NavMesh(tilemap) {
     this.navMeshPlugin = game.plugins.add(PhaserNavmesh);
     this.navMesh = this.navMeshPlugin.buildMeshFromTiled(tilemap,
-         'navmesh', 32);
+         'navmesh', 16);
     this.navMesh.enableDebug();
     this.navMesh.debugDrawMesh({
         drawCentroid: false, drawBounds: false,
