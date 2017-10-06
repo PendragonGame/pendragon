@@ -80,6 +80,7 @@ function Entity(x, y, key) {
      */
     this.state = 'idling';
     this.idleTimer = 0;
+    this.directionLimiter = 0;
 }
 
 Entity.prototype = Object.create(Phaser.Sprite.prototype);
@@ -293,12 +294,15 @@ Entity.prototype.gotoXY = function(x, y, navMesh) {
         this.idleHere();
         return true;
 }
-
-
-        // confusing code that ram won't understand
-        Math.abs(path[1].x - trueX) >= Math.abs(path[1].y - trueY) ?
-         this.moveInDirection(((path[1].x - trueX < 0)*2)+1, false) :
-          this.moveInDirection((path[1].y - trueY > 0)*2, false);
+    let currentTime = game.time.now;
+    // limit the amount of direction changes to about 1 per 150 ms
+    if (currentTime - this.directionLimiter >= 150) {
+            // confusing code that ram won't understand
+            Math.abs(path[1].x - trueX) >= Math.abs(path[1].y - trueY) ?
+            this.moveInDirection(((path[1].x - trueX < 0)*2)+1, false) :
+            this.moveInDirection((path[1].y - trueY > 0)*2, false);
+            this.directionLimiter = currentTime;
+    }
     } else {
         // if lost don't move
         this.idleHere();

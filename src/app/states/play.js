@@ -115,7 +115,7 @@ Play.update = function() {
     /**
      * NPC Code
      */
-    this.navMesh.navMesh.debugClear(); // Clears the overlay
+    // this.navMesh.navMesh.debugClear(); // Clears the overlay
     for (let i = 0, len = this.npcGroup.children.length; i < len; i++) {
         (this.npcGroup.children[i]).wander(this.navMesh);
     }
