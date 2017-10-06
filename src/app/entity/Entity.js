@@ -287,6 +287,13 @@ Entity.prototype.toString = function() {
     return (results && results.length > 1) ? results[1] : '';
  };
 
+ Entity.prototype.centerXY = function() {
+     let tmp = {};
+     tmp.x = this.centerX;
+     tmp.y = this.centerY;
+     return tmp;
+ };
+
 /**
  * Entity module.
  * @module: entity/Entity
