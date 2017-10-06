@@ -79,6 +79,8 @@ function Entity(x, y, key) {
      * State can be 'idling', 'walking', 'attacking'
      */
     this.state = 'idling';
+    this.idleTimer = 0;
+    this.directionLimiter = 0;
 }
 
 Entity.prototype = Object.create(Phaser.Sprite.prototype);
@@ -283,6 +285,7 @@ Entity.prototype.adjustHitbox = function(state) {
  * @param {number} x
  * @param {number} y
  * @param {navMesh} navMesh -navigation mesh object
+ * @return {boolean} return true if finished, otherwise false.
  */
 Entity.prototype.gotoXY = function(x, y, navMesh) {
     // destination point
@@ -305,17 +308,56 @@ Entity.prototype.gotoXY = function(x, y, navMesh) {
         if (path.length === 2 && Math.abs(path[1].x - trueX) < 5
         && Math.abs(path[1].y - trueY) < 5) {
         this.idleHere();
-        return;
+        return true;
 }
-
-
-        // confusing code that ram won't understand
-        Math.abs(path[1].x - trueX) >= Math.abs(path[1].y - trueY) ?
-         this.moveInDirection(((path[1].x - trueX < 0)*2)+1, false) :
-          this.moveInDirection((path[1].y - trueY > 0)*2, false);
+    let currentTime = game.time.now;
+    // limit the amount of direction changes to about 1 per 150 ms
+    if (currentTime - this.directionLimiter >= 150) {
+            // confusing code that ram won't understand
+            Math.abs(path[1].x - trueX) >= Math.abs(path[1].y - trueY) ?
+            this.moveInDirection(((path[1].x - trueX < 0)*2)+1, false) :
+            this.moveInDirection((path[1].y - trueY > 0)*2, false);
+            this.directionLimiter = currentTime;
+    }
     } else {
         // if lost don't move
         this.idleHere();
+        this.destinationX = undefined;
+        this.destinationY = undefined;
+    }
+    return false;
+};
+
+/**
+ * Allow an Entity object to wander 
+ * @param {navMesh} navMesh the maps navigation mesh
+ * @param {Phaser.Point} topLeft top left cornor of the bounds (x,y) default 0,0
+ * @param {Phaser.Point} botRight bottom left cornor of the bounds (x,y) 
+ * default map width,hieght
+ */
+Entity.prototype.wander = function(navMesh,
+     topLeft = new Phaser.Point(0, 0),
+      botRight = new Phaser.Point(game.world.width, game.world.height)) {
+        if (this.state === 'dead') {
+            return;
+        }
+    // check if the npc is still thinking about going somewhere
+        if (this.idleTimer != 0) {
+        this.idleTimer -= 1;
+        return;
+        }
+    // check if the npc is en route, otherrwise find a new route
+    if (!(this.destinationX && this.destinationY)) {
+        this.destinationX = game.rnd.integerInRange(topLeft.x, botRight.x);
+        this.destinationY = game.rnd.integerInRange(topLeft.y, botRight.y);
+    }
+    // if destination is reached, clear current destination.
+    // add a random timer to wait before wandering elsewhere
+    // max about 12 seconds
+    if (this.gotoXY(this.destinationX, this.destinationY, navMesh)) {
+        this.destinationX = undefined;
+        this.destinationY = undefined;
+        this.idleTimer = game.rnd.integerInRange(1, 600);
     }
 };
 
