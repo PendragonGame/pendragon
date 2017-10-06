@@ -68,10 +68,6 @@ Play.create = function() {
         window.innerHeight / 2,
         'player');
 
-    this.monster = new Monster(window.innerWidth / 2,
-        window.innerHeight / 2,
-        'enemy');
-
     /**
      * Add all Entities to the same group.
      */
@@ -80,7 +76,6 @@ Play.create = function() {
         this.player,
         this.npcGroup,
         this.monsterGroup,
-        this.monster,
     ]);
 	this.player.bringToTop();
 

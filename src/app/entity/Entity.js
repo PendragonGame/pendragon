@@ -338,6 +338,9 @@ Entity.prototype.gotoXY = function(x, y, navMesh) {
 Entity.prototype.wander = function(navMesh,
      topLeft = new Phaser.Point(0, 0),
       botRight = new Phaser.Point(game.world.width, game.world.height)) {
+        if (this.state === 'dead') {
+            return;
+        }
     // check if the npc is still thinking about going somewhere
         if (this.idleTimer != 0) {
         this.idleTimer -= 1;
