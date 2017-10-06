@@ -90,6 +90,16 @@ Play.create = function() {
 
     this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
     this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
+
+    this.light = game.add.graphics();
+    this.light.beginFill(0x18007A);
+    this.light.alpha = 0;
+    this.light.drawRect(0, 0, game.camera.width, game.camera.height);
+    console.log(game.camera.width);
+    this.light.fixedToCamera = true;
+    this.light.endFill();
+    this.dayTime = true;
+
     /**
      * Debug Stuff
      */
@@ -103,6 +113,19 @@ Play.update = function() {
      * Debug Stuff
      */
     // game.debug.body(this.monsterGroup);
+
+     // day / night cycle
+     if (this.dayTime) {
+        this.light.alpha += .0001;
+    } else {
+        this.light.alpha -= .0007;
+    }
+    if (this.light.alpha <= 0) {
+        this.dayTime = true;
+       }
+    if (this.light.alpha >= .5) {
+    this.dayTime = false;
+    }
 
     /**
      * Deal with collision of entities
