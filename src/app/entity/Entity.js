@@ -1,7 +1,6 @@
 'use strict';
 
 const _ = require('lodash');
-const uuid = require('../util/uuid');
 
 let h;
 let w;
@@ -50,7 +49,6 @@ function Entity(x, y, key) {
      */
     this.weapon = null;
 
-
     /**
      * Miscellaneous attributes. 
      */
@@ -81,12 +79,6 @@ function Entity(x, y, key) {
      * State can be 'idling', 'walking', 'attacking'
      */
     this.state = 'idling';
-
-    /**
-     * generating unique ID for Entity
-     */
-
-    this.id = uuid();
 }
 
 Entity.prototype = Object.create(Phaser.Sprite.prototype);
@@ -144,7 +136,6 @@ Entity.prototype.setAnimations = function(frames) {
     this.animations.add('slash_right',
                         [195, 196, 197, 198, 199, 200],
                         10, true);
-
 };
 
 
@@ -310,17 +301,6 @@ Entity.prototype.gotoXY = function(x, y, navMesh) {
         // if lost don't move
         this.idleHere();
     }
-};
-
-Entity.prototype.serialize = function() {
-    let obj = {};
-    obj.id = this.id;
-    obj.x = this.x;
-    obj.y = this.y;
-    obj.key = this.key;
-    obj.alive = this.alive;
-    obj.type = this.type;
-    return obj;
 };
 
 /**
