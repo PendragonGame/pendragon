@@ -212,11 +212,11 @@ function entityCollision(entity1, entity2) {
 	//entity2 seems to be the Player, and entity1 is the Enemy
 	entity1.body.immovable = true;
 	if (entity1.frame === 272) {
-		entity1.destroy();
+		entity1.kill();
 		return;
 	}
 	if (entity2.frame === 272) {
-		entity2.destroy();
+		entity2.kill();
 		return;
 	}
     /**
