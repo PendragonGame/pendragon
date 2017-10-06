@@ -5,6 +5,8 @@ const Monster = require('../entity/Monster');
 const NPC = require('../entity/NPC');
 const Factory = require('../factory/Factory');
 
+const dataStore = require('../util/data');
+
 let Play = {};
 
 Play.init = function() {
@@ -90,6 +92,11 @@ Play.create = function() {
 
     this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
     this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
+
+    /**
+     * Setting datastore callback interval
+     */
+    setInterval(this.storeState, 1000);
     /**
      * Debug Stuff
      */
@@ -239,5 +246,11 @@ function entityCollision(entity1, entity2) {
 
     console.debug('[Collision] ' + entity1 + ' - ' + entity2);
 }
+
+Play.storeState = function() {
+    dataStore.storeEntity(this.player);
+    this.monsterGroup.forEachAlive(dataStore.storeEntity);
+    this.npcGroup.forEachAlive(dataStore.storeEntity);
+};
 
 module.exports = Play;

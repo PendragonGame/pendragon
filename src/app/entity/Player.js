@@ -20,6 +20,8 @@ function Player(x, y, key) {
      */
     this.maxHP = 100;
     this.HP = 100;
+
+    this.type = 'player';
 }
 
 Player.prototype = Object.create(Entity.prototype);
