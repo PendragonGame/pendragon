@@ -1,8 +1,7 @@
-const {app, BrowserWindow, ipcMain} = require('electron');
+const {app, BrowserWindow} = require('electron');
 const path = require('path');
 const url = require('url');
 const is = require('electron-is');
-const dbStore = require('./data-store/dbStore');
 
 let mainWindow;
 
@@ -44,9 +43,3 @@ app.on('ready', () => {
         mainWindow.openDevTools();
     }
 });
-
-ipcMain.on('storeEntity', function(ev, arg) {
-    dbStore.storeEntity(arg);
-});
-
-setInterval(dbStore.storeState, 1000);

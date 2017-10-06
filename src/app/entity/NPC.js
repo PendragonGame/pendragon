@@ -20,7 +20,6 @@ function NPC(x, y, key) {
      */
     this.maxHP = 100;
     this.HP = 100;
-    this.type = 'npc';
 }
 
 NPC.prototype = Object.create(Entity.prototype);
