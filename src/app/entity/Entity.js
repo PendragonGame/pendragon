@@ -52,8 +52,8 @@ function Entity(x, y, key) {
     /**
      * Miscellaneous attributes. 
      */
-    this.speed = 90;
-    this.sprintSpeed = 150;
+    this.speed = 65;
+    this.sprintSpeed = 170;
 
     // Set the default animations
     this.setAnimations();
@@ -111,6 +111,16 @@ Entity.prototype.setAnimations = function(frames) {
      this.animations.add('idle_right', [143], 10, true);
      this.animations.add('idle_down', [130], 10, true);
      this.animations.add('idle_left', [117], 10, true);
+	 
+	 this.animations.add('die', [260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 271, 271, 
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 272],
+								 25, 
+								 true);
 
 
     this.animations.add('walk_up',
@@ -212,7 +222,6 @@ Entity.prototype.idleHere = function() {
     this.state = 'idling';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
-
     this.animations.play('idle_' + this.direction, 1, false);
     this.adjustHitbox('idle');
 };
@@ -224,6 +233,13 @@ Entity.prototype.attack = function() {
     this.animations.play('slash_' + this.direction, 20, true);
     this.adjustHitbox('slash');
 };
+
+Entity.prototype.die = function() {
+	this.state = 'dead';
+	this.body.velocity.x = 0;
+	this.body.velocity.y = 0;
+	this.animations.play('die', 10, false);
+}
 
 /*
 *  This function changes the size of the Entity's hit box based on what
