@@ -2,6 +2,7 @@
 
 const _ = require('lodash');
 const uuid = require('../util/uuid');
+
 let h;
 let w;
 let offx;
@@ -176,9 +177,10 @@ Entity.prototype.moveInDirection = function(direction, sprint) {
         let dir = '';
         if (_.isString(direction) && _.includes(DIRECTIONS, direction)) {
             dir = direction.toLowerCase();
-        } else if (_.isNumber(direction) && _.inRange(direction, 1, 5)) {
+        } else if (_.isNumber(direction) && _.inRange(direction, 0, 4)) {
             dir = DIRECTIONS[direction];
         } else {
+            console.log(direction);
             console.error('Invalid direction');
             return;
         }
@@ -266,6 +268,47 @@ Entity.prototype.adjustHitbox = function(state) {
                     break;
             }
             break;
+    }
+};
+/**
+ * This function tells an entity object to travel to a desired location
+ * 
+ * @param {number} x
+ * @param {number} y
+ * @param {navMesh} navMesh -navigation mesh object
+ */
+Entity.prototype.gotoXY = function(x, y, navMesh) {
+    // destination point
+    const p2 = new Phaser.Point(x, y);
+    // the entities location, respective to the center of its hit box
+    const trueX = this.x+this.body.width /
+    2 + this.body.offset.x;
+    const trueY = this.y+this.body.height /
+          2 + this.body.offset.y;
+    const p1 = new Phaser.Point(trueX, trueY);
+    // cool library magic
+    const path = navMesh.findPath(p1, p2);
+    /* 0. up
+    *  1. right
+    *  2. down
+    *  3. left
+    */
+    if (path) {
+        // check to see if the target location is reached within 5 units
+        if (path.length === 2 && Math.abs(path[1].x - trueX) < 5
+        && Math.abs(path[1].y - trueY) < 5) {
+        this.idleHere();
+        return;
+}
+
+
+        // confusing code that ram won't understand
+        Math.abs(path[1].x - trueX) >= Math.abs(path[1].y - trueY) ?
+         this.moveInDirection(((path[1].x - trueX < 0)*2)+1, false) :
+          this.moveInDirection((path[1].y - trueY > 0)*2, false);
+    } else {
+        // if lost don't move
+        this.idleHere();
     }
 };
 
