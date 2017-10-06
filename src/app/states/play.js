@@ -115,6 +115,15 @@ Play.update = function() {
     /**
      * NPC Code
      */
+    this.navMesh.navMesh.debugClear(); // Clears the overlay
+    for (let i = 0, len = this.npcGroup.children.length; i < len; i++) {
+        (this.npcGroup.children[i]).wander(this.navMesh);
+    }
+    for (let i = 0, len = this.monsterGroup.children.length; i < len; i++) {
+        (this.monsterGroup.children[i]).wander(this.navMesh);
+    }
+
+
     // Intersection for NPC
     // this.game.physics.arcade.collide(this.enemy, this.blockLayer,
     //                                     npcCollision, null, this);
@@ -154,10 +163,7 @@ Play.update = function() {
 
     // Displays the hitbox for the Player
     // this.game.debug.body(this.player);
-    this.monster.gotoXY(this.player.x+this.player.body.width /
-        2 + this.player.body.offset.x - 32,
-         this.player.y+this.player.body.height /
-          2 + this.player.body.offset.y + 16, this.navMesh);
+
     // SHIFT for running
     let sprint = false;
     if (this.keyboard.isDown(Phaser.Keyboard.SHIFT)) {
