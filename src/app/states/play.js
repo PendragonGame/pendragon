@@ -118,11 +118,17 @@ Play.create = function() {
 	this.scoreLabel.y = window.innerHeight - this.scoreLabel.height;
 	this.scoreLabel.fixedToCamera = true;
 	
+	this.dayLabel = game.add.text(0, 0, "Score: 0", this.textStyle);
+	this.dayLabel.x = window.innerWidth - (1.5 * this.dayLabel.width);
+	this.dayLabel.y = window.innerHeight - (2 * this.dayLabel.height);
+	this.dayLabel.fixedToCamera = true;
+	
 	this.emptyHealthBar = game.add.sprite(this.healthLabel.width + 5, 0, 'hud_emptyHealth');
 	this.emptyHealthBar.fixedToCamera = true;
 	this.fullHealthBar = game.add.sprite(this.healthLabel.width + 7, 2, 'hud_fullHealth');
 	this.fullHealthBar.fixedToCamera = true;
 	this.fullHealthBar.width /= 2;
+	
 	this.emptyRepBar = game.add.sprite(this.healthLabel.width + 5, this.emptyHealthBar.height, 'hud_emptyHealth');
 	this.emptyRepBar.fixedToCamera = true;
 	this.fullRepBar = game.add.sprite(this.healthLabel.width + 7, this.emptyHealthBar.height + 2, 'hud_fullRep');
@@ -140,6 +146,7 @@ let collideDirNPC = 0;
 Play.update = function() {
 	while (this.fullHealthBar.width < 146) this.fullHealthBar.width += 1;
 	this.scoreLabel.text = "Score: " + this.player.score;
+	this.dayLabel.text = "Day " + this.player.daysSurvived;
     /**
      * Debug Stuff
      */
@@ -151,11 +158,12 @@ Play.update = function() {
     } else {
         this.light.alpha -= .0007;
     }
-    if (this.light.alpha <= 0) {
+    if (this.light.alpha <= 0 && this.dayTime === false) {
         this.dayTime = true;
+		this.player.daysSurvived++;
        }
     if (this.light.alpha >= .5) {
-    this.dayTime = false;
+		this.dayTime = false;
     }
 
     /**
