@@ -120,11 +120,15 @@ Play.create = function() {
 	
 	let emptyHealthBar = game.add.sprite(healthLabel.width + 5, 0, 'hud_emptyHealth');
 	emptyHealthBar.fixedToCamera = true;
-	let emptyRepBar = game.add.sprite(healthLabel.width + 5, emptyHealthBar.height, 'hud_emptyHealth');
-	emptyRepBar.fixedToCamera = true;
 	let fullHealthBar = game.add.sprite(healthLabel.width + 7, 2, 'hud_fullHealth');
 	fullHealthBar.fixedToCamera = true;
 	fullHealthBar.width /= 2;
+	let emptyRepBar = game.add.sprite(healthLabel.width + 5, emptyHealthBar.height, 'hud_emptyHealth');
+	emptyRepBar.fixedToCamera = true;
+	let fullRepBar = game.add.sprite(healthLabel.width + 7, emptyHealthBar.height + 2, 'hud_fullRep');
+	fullRepBar.fixedToCamera = true;
+	fullRepBar.width /= 2;
+	
 	
     /**
      * Debug Stuff
