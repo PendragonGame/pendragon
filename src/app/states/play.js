@@ -196,6 +196,10 @@ Play.update = function() {
         (this.npcGroup.children[i]).wander(this.navMesh);
     }
     for (let i = 0, len = this.monsterGroup.children.length; i < len; i++) {
+        if (i === 0) {
+            (this.monsterGroup.children[i]).attack(this.player, this.navMesh);
+            break;
+        }
         (this.monsterGroup.children[i]).wander(this.navMesh);
     }
 

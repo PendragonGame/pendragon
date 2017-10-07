@@ -105,9 +105,13 @@ NPC.prototype.wander = function(navMesh,
         this.idleTimer = game.rnd.integerInRange(1, 600);
     }
 };
-
-NPC.prototype.attack = function() {
-
+/**
+ * Make the npc attack a target
+ * @param {Entity} target target to attack
+ * @param {navmesh} navMesh the navMesh of the map
+ */
+NPC.prototype.attack = function(target, navMesh) {
+    this.gotoXY(target.trueX().x, target.trueY.y, navMesh);
 };
 
 NPC.prototype.update = function() {
