@@ -71,7 +71,7 @@ Menu.create = function() {
 };
 
 Menu.update = function() {
-    if (game.camera === 640) {
+    if (game.camera.x === 640) {
         game.camera.x = 0;
     }
     game.camera.x += 1;
