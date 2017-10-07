@@ -4,6 +4,7 @@ const NavMesh = require('../ai/Nav-mesh.js');
 const Monster = require('../entity/Monster');
 const NPC = require('../entity/NPC');
 const Factory = require('../factory/Factory');
+const dataStore = require('../util/data');
 
 const Map = require('../util/Map');
 const _ = require('lodash');
@@ -16,11 +17,11 @@ Play.init = function() {
 
 Play.create = function() {
     // Anand did this part. I don't even know.
-    this.map = game.add.tilemap('map1');
+    this.map = game.add.tilemap('map');
     this.map.addTilesetImage('outdoors', 'tileset');
     this.bgLayer = this.map.createLayer('bgLayer');
-    this.bgOverlap = this.map.createLayer('bgOverlap');
     this.bgOverlap2 = this.map.createLayer('bgOverlap2');
+    this.bgOverlap = this.map.createLayer('bgOverlap');
     this.blockOverlap = this.map.createLayer('blkOverlap');
     this.blockLayer = this.map.createLayer('blkLayer');
     game.add.existing(this.blockLayer);
@@ -66,12 +67,66 @@ Play.create = function() {
     this.light.endFill();
     this.dayTime = true;
 
+    // HUD elements
+    this.wasd = game.add.sprite(0, 0, 'hud_wasd');
+    this.wasd.y = window.innerHeight - this.wasd.height;
+    this.wasd.fixedToCamera = true;
+
+    this.wpn = game.add.sprite(0, 0, 'hud_weapon');
+    this.wpn.width /= 2;
+    this.wpn.height /= 2;
+    this.wpn.x = window.innerWidth - this.wpn.width;
+    this.wpn.fixedToCamera = true;
+
+    this.textStyle = {
+        font: 'bold 20px Consolas',
+        fill: '#ffff00',
+        align: 'center',
+    };
+    this.healthLabel = game.add.text(0, 5, 'Health', this.textStyle);
+    this.healthLabel.fixedToCamera = true;
+    this.repLabel = game.add.text(0, this.healthLabel.height + 10,
+                                'Rep', this.textStyle);
+    this.repLabel.fixedToCamera = true;
+
+    this.scoreLabel = game.add.text(0, 0, 'Score: 0', this.textStyle);
+    this.scoreLabel.x = window.innerWidth - (1.5 * this.scoreLabel.width);
+    this.scoreLabel.y = window.innerHeight - this.scoreLabel.height;
+    this.scoreLabel.fixedToCamera = true;
+
+    this.dayLabel = game.add.text(0, 0, 'Score: 0', this.textStyle);
+    this.dayLabel.x = window.innerWidth - (1.5 * this.dayLabel.width);
+    this.dayLabel.y = window.innerHeight - (2 * this.dayLabel.height);
+    this.dayLabel.fixedToCamera = true;
+
+    this.emptyHealthBar = game.add.sprite(this.healthLabel.width + 5, 0,
+                                            'hud_emptyHealth');
+    this.emptyHealthBar.fixedToCamera = true;
+    this.fullHealthBar = game.add.sprite(this.healthLabel.width + 7, 2,
+                                            'hud_fullHealth');
+    this.fullHealthBar.fixedToCamera = true;
+    this.fullHealthBar.width /= 2;
+
+    this.emptyRepBar = game.add.sprite(this.healthLabel.width + 5,
+                                        this.emptyHealthBar.height,
+                                        'hud_emptyHealth');
+    this.emptyRepBar.fixedToCamera = true;
+    this.fullRepBar = game.add.sprite(this.healthLabel.width + 7,
+                                        this.emptyHealthBar.height + 2,
+                                        'hud_fullRep');
+    this.fullRepBar.fixedToCamera = true;
+    this.fullRepBar.width /= 2;
+
+
     /**
      * Debug Stuff
      */
 };
 
 Play.update = function() {
+    while (this.fullHealthBar.width < 146) this.fullHealthBar.width += 1;
+    this.scoreLabel.text = 'Score: ' + this.player.score;
+    this.dayLabel.text = 'Day ' + this.player.daysSurvived;
     /**
      * Debug Stuff
      */
@@ -83,11 +138,12 @@ Play.update = function() {
     } else {
         this.light.alpha -= .0007;
     }
-    if (this.light.alpha <= 0) {
+    if (this.light.alpha <= 0 && this.dayTime === false) {
         this.dayTime = true;
+        this.player.daysSurvived++;
        }
     if (this.light.alpha >= .5) {
-    this.dayTime = false;
+        this.dayTime = false;
     }
 
     /**
@@ -108,40 +164,6 @@ Play.update = function() {
     for (let i = 0, len = this.monsterGroup.children.length; i < len; i++) {
         (this.monsterGroup.children[i]).wander(this.navMesh);
     }
-
-
-    // Intersection for NPC
-    // this.game.physics.arcade.collide(this.enemy, this.blockLayer,
-    //                                     npcCollision, null, this);
-    // this.game.physics.arcade.collide(this.enemy, this.blockOverlap);
-
-    /**
-     * Generate random number 1-4 to be the new enemy direction.
-     * This value is used to calculate the NPC's decision to change
-     * directions. According to this, 1 out of 50 chance.
-     */
-    // let rand;
-    // rand = Math.round(Math.random() * 50) + 1;
-    // if (rand === 1) {
-    //     rand = Math.round(Math.random() * 4) + 1;
-    //     if (rand !== collideDirNPC) newDirection = rand;
-    // }
-
-    // // Moving the enemy in a direction based on the generated number.
-    // switch (newDirection) {
-    //     case 1: // Straight Up
-    //         this.enemy.moveInDirection('up', false);
-    //         break;
-    //     case 2: // Straight Right
-    //         this.enemy.moveInDirection('right', false);
-    //         break;
-    //     case 3: // Straight Down
-    //         this.enemy.moveInDirection('down', false);
-    //         break;
-    //     case 4: // Straight Left
-    //         this.enemy.moveInDirection('left', false);
-    //         break;
-    // }
 
     /**
      * PLAYER CODE
@@ -238,11 +260,20 @@ function entityCollision(entity1, entity2) {
         return;
     }
 
+    /**
+     * @todo(anand): I think this needs to be made general to all Entities
+     * 
+     * We shouldn't be assuming that entity 2 is always going to be Player
+     * also, other entities can attack too
+     */
     if (entity2.state == 'attacking') {
         entity2.attack();
         if (entity1.state !== 'dead') {
           entity1.die();
           entity1.body.enable = false;
+          if (this.monsterGroup.children.indexOf(entity1) > -1) {
+              this.player.score++;
+          }
         }
     } else {
         if (entity1.state !== 'dead') entity1.idleHere();
