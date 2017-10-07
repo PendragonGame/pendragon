@@ -1,6 +1,6 @@
 'use strict';
-
 const Player = require('../entity/Player');
+const NavMesh = require('../ai/Nav-mesh.js');
 const Monster = require('../entity/Monster');
 const NPC = require('../entity/NPC');
 const Factory = require('../factory/Factory');
@@ -27,6 +27,8 @@ Play.create = function() {
     this.blockLayer.resizeWorld();
     this.bgLayer.resizeWorld();
     this.game = game;
+
+    this.navMesh = new NavMesh(this.map);
 
     // Input for game
     this.keyboard = game.input.keyboard;
@@ -68,6 +70,9 @@ Play.create = function() {
         window.innerHeight / 2,
         'player');
 
+    this.monster = new Monster(window.innerWidth / 2,
+        window.innerHeight / 2,
+        'enemy');
 
     /**
      * Add all Entities to the same group.
@@ -77,6 +82,7 @@ Play.create = function() {
         this.player,
         this.npcGroup,
         this.monsterGroup,
+        this.monster,
     ]);
 
     /**
@@ -154,14 +160,16 @@ Play.update = function() {
     //         break;
     // }
 
-
     /**
      * PLAYER CODE
      */
 
     // Displays the hitbox for the Player
     // this.game.debug.body(this.player);
-
+    this.monster.gotoXY(this.player.x+this.player.body.width /
+        2 + this.player.body.offset.x - 32,
+         this.player.y+this.player.body.height /
+          2 + this.player.body.offset.y + 16, this.navMesh);
     // SHIFT for running
     let sprint = false;
     if (this.keyboard.isDown(Phaser.Keyboard.SHIFT)) {
