@@ -5,6 +5,8 @@ const is = require('electron-is');
 const dbStore = require('./data-store/dbStore');
 
 let mainWindow;
+const Autosave = new dbStore.SaveGame('autosave.entities');
+const ManualSave = new dbStore.SaveGame('entities');
 
 
 /**
@@ -46,8 +48,11 @@ app.on('ready', () => {
     }
 });
 
-ipcMain.on('storeEntity', function(ev, arg) {
-    dbStore.storeEntity(arg);
+ipcMain.on('autosaveEntity', function(ev, arg) {
+    Autosave.storeEntity(arg);
+});
+ipcMain.on('manualSaveEntity', function(ev, arg) {
+    ManualSave.storeEntity(arg);
 });
 
-setInterval(dbStore.storeState, 1000);
+setInterval(Autosave.storeState, 1000);

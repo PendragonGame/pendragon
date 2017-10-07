@@ -54,9 +54,9 @@ Play.create = function() {
      */
 
     setInterval(function() {
-        dataStore.storeEntity(self.player);
-        self.monsterGroup.forEachAlive(dataStore.storeEntity);
-        self.npcGroup.forEachAlive(dataStore.storeEntity);
+        dataStore.autosaveEntity(self.player);
+        self.monsterGroup.forEachAlive(dataStore.autosaveEntity);
+        self.npcGroup.forEachAlive(dataStore.autosaveEntity);
     }, 1000);
 
     /**

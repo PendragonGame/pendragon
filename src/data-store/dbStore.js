@@ -1,44 +1,101 @@
 'use strict';
 const storage = require('electron-json-storage');
+const moment = require('moment');
 
-let playerData = null;
-let monsterData = {};
-let npcData = {};
+// let playerData = null;
+// let monsterData = {};
+// let npcData = {};
 
+
+// /**
+//  * @todo let highScore = 0;
+//  */
+
+
+// /**
+//  * Store Entity into JSON file.
+//  * 
+//  * @param {any} data 
+//  */
+// let storeEntity = function(data) {
+//     if (data.type === 'player') {
+//         playerData = data;
+//     } else if (data.type === 'monster') {
+//         monsterData[data.id] = data;
+//     } else if (data.type === 'npc') {
+//         npcData[data.id] = data;
+//     }
+// };
+
+// let autosave = function() {
+//     let entities = {
+//         player: playerData,
+//         monsters: monsterData,
+//         npc: npcData,
+//     };
+
+//     storage.set('autosave.entities', entities, function(err) {
+//         throw err;
+//     });
+
+//     // storage.set('player', playerData, function(err) {
+//     //     if (err) throw err;
+//     // });
+//     // storage.set('monsters', monsterData, function(err) {
+//     //     if (err) throw err;
+//     // });
+//     // storage.set('npc', npcData, function(err) {
+//     //     if (err) throw err;
+//     // });
+// };
+
+
+// module.exports.storeEntity = storeEntity;
+// module.exports.autosave = autosave;
 
 /**
- * @todo let highScore = 0;
- */
-
-
-/**
- * Store Entity into JSON file.
  * 
- * @param {any} data 
+ * 
+ * @param {string} key 
+ * @param {bool=} timestamp
  */
-let storeEntity = function(data) {
+function SaveGame(key, timestamp) {
+    this.key = key;
+    this.timestamp = timestamp || false;
+}
+
+SaveGame.prototype.storeEntity = function(data) {
     if (data.type === 'player') {
-        playerData = data;
+        this.playerData = data;
     } else if (data.type === 'monster') {
-        monsterData[data.id] = data;
+        this.monsterData[data.id] = data;
     } else if (data.type === 'npc') {
-        npcData[data.id] = data;
+        this.npcData[data.id] = data;
     }
 };
 
-let storeState = function() {
-    storage.set('player', playerData, function(err) {
-        if (err) throw err;
+SaveGame.prototype.storeState = function() {
+    const self = this;
+    let entities = {
+        player: self.playerData,
+        monsters: self.monsterData,
+        npc: self.npcData,
+    };
+    let key = '';
+
+    storage.set(this.key, entities, function(err) {
+        throw err;
     });
-    storage.set('monsters', monsterData, function(err) {
-        if (err) throw err;
-    });
-    storage.set('npc', npcData, function(err) {
-        if (err) throw err;
-    });
+
+    // storage.set('player', playerData, function(err) {
+    //     if (err) throw err;
+    // });
+    // storage.set('monsters', monsterData, function(err) {
+    //     if (err) throw err;
+    // });
+    // storage.set('npc', npcData, function(err) {
+    //     if (err) throw err;
+    // });
 };
 
-
-module.exports.storeEntity = storeEntity;
-module.exports.storeState = storeState;
-
+module.exports.SaveGame = SaveGame;
