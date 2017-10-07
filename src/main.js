@@ -5,6 +5,7 @@ const is = require('electron-is');
 
 let mainWindow;
 
+
 /**
  * 
  */
