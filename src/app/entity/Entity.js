@@ -287,12 +287,19 @@ Entity.prototype.toString = function() {
     return (results && results.length > 1) ? results[1] : '';
  };
 
- Entity.prototype.centerXY = function() {
-     let tmp = {};
-     tmp.x = this.centerX;
-     tmp.y = this.centerY;
-     return tmp;
- };
+/**
+ * Get the center of the Hitbox of the entity
+ * 
+ * @return {Object} - Point with x and y
+ */
+Entity.prototype.trueXY = function() {
+    const self = this;
+    return {
+        x: self.x + self.body.width/2 + self.body.offset.x,
+        y: self.y + self.body.height/2 + self.body.offset.y,
+    };
+};
+
 
 /**
  * Entity module.
