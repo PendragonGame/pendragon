@@ -80,48 +80,6 @@ Play.create = function() {
     this.light.endFill();
     this.dayTime = true;
 
-<<<<<<< HEAD
-    //HUD elements	
-	this.wasd = game.add.sprite(0, 0, 'hud_wasd');
-	this.wasd.y = window.innerHeight - this.wasd.height;
-	this.wasd.fixedToCamera = true;
-	
-	this.wpn = game.add.sprite(0, 0, 'hud_weapon');
-	this.wpn.width /= 2;
-	this.wpn.height /= 2;
-	this.wpn.x = window.innerWidth - this.wpn.width;
-	this.wpn.fixedToCamera = true;
-	
-	this.textStyle = { font: "bold 20px Consols", fill: "#ffff00", align: "center" };
-	this.healthLabel = game.add.text(0, 5, "Health", this.textStyle);
-	this.healthLabel.fixedToCamera = true;
-	this.repLabel = game.add.text(0, this.healthLabel.height + 10, "Rep", this.textStyle);
-	this.repLabel.fixedToCamera = true;
-	
-	this.scoreLabel = game.add.text(0, 0, "Score: 0", this.textStyle);
-	this.scoreLabel.x = window.innerWidth - (1.5 * this.scoreLabel.width);
-	this.scoreLabel.y = window.innerHeight - this.scoreLabel.height;
-	this.scoreLabel.fixedToCamera = true;
-	
-	this.dayLabel = game.add.text(0, 0, "Score: 0", this.textStyle);
-	this.dayLabel.x = window.innerWidth - (1.5 * this.dayLabel.width);
-	this.dayLabel.y = window.innerHeight - (2 * this.dayLabel.height);
-	this.dayLabel.fixedToCamera = true;
-	
-	this.emptyHealthBar = game.add.sprite(this.healthLabel.width + 5, 0, 'hud_emptyHealth');
-	this.emptyHealthBar.fixedToCamera = true;
-	this.fullHealthBar = game.add.sprite(this.healthLabel.width + 7, 2, 'hud_fullHealth');
-	this.fullHealthBar.fixedToCamera = true;
-	this.fullHealthBar.width /= 2;
-	
-	this.emptyRepBar = game.add.sprite(this.healthLabel.width + 5, this.emptyHealthBar.height, 'hud_emptyHealth');
-	this.emptyRepBar.fixedToCamera = true;
-	this.fullRepBar = game.add.sprite(this.healthLabel.width + 7, this.emptyHealthBar.height + 2, 'hud_fullRep');
-	this.fullRepBar.fixedToCamera = true;
-	this.fullRepBar.width /= 2;
-	
-	
-=======
     /**
      * HUD elements
      * 
@@ -177,7 +135,6 @@ Play.create = function() {
     this.fullRepBar.width /= 2;
 
 
->>>>>>> develop
     /**
      * Debug Stuff
      */

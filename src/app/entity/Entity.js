@@ -325,9 +325,6 @@ Entity.prototype.toString = function() {
     return (results && results.length > 1) ? results[1] : '';
  };
 
- Entity.prototype.update = function() {
-    this.idleHere();
- };
 
 /**
  * Get the center of the Hitbox of the entity
