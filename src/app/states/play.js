@@ -5,8 +5,8 @@ const Monster = require('../entity/Monster');
 const NPC = require('../entity/NPC');
 const Factory = require('../factory/Factory');
 const dataStore = require('../util/data');
-
 const Map = require('../util/Map');
+
 const _ = require('lodash');
 
 let Play = {};
@@ -16,7 +16,11 @@ Play.init = function() {
 };
 
 Play.create = function() {
-    // Anand did this part. I don't even know.
+    const self = this;
+
+    /**
+     * Map creation
+     */
     this.map = game.add.tilemap('map');
     this.map.addTilesetImage('outdoors', 'tileset');
     this.bgLayer = this.map.createLayer('bgLayer');
@@ -48,12 +52,29 @@ Play.create = function() {
     /**
      * Setting datastore callback interval
      */
-    const self = this;
+
     setInterval(function() {
         dataStore.storeEntity(self.player);
         self.monsterGroup.forEachAlive(dataStore.storeEntity);
         self.npcGroup.forEachAlive(dataStore.storeEntity);
     }, 1000);
+
+    /**
+     * Build the datastructure keeping track of Entities
+     * 
+     * Period: 1.5 sec
+     */
+    setInterval(function() {
+        let entities = [];
+        // entities.push(this.player.centerXY());
+        self.monsterGroup.forEachAlive(function(monster) {
+            entities.push(monster.centerXY());
+        });
+        self.npcGroup.forEachAlive(function(npc) {
+            entities.push(npc.centerXY());
+        });
+        Map.create(entities);
+    }, 1500);
 
     /**
      * Day night cycle
@@ -62,12 +83,15 @@ Play.create = function() {
     this.light.beginFill(0x18007A);
     this.light.alpha = 0;
     this.light.drawRect(0, 0, game.camera.width, game.camera.height);
-    console.log(game.camera.width);
     this.light.fixedToCamera = true;
     this.light.endFill();
     this.dayTime = true;
 
-    // HUD elements
+    /**
+     * HUD elements
+     * 
+     * @todo(anand): Can this be improved? May be making code slow.
+     */
     this.wasd = game.add.sprite(0, 0, 'hud_wasd');
     this.wasd.y = window.innerHeight - this.wasd.height;
     this.wasd.fixedToCamera = true;
@@ -334,16 +358,5 @@ Play.populateBoard = function() {
     ]);
 };
 
-Play.generateMap = function() {
-    let entities = [];
-    // entities.push(this.player.centerXY());
-    this.monsterGroup.forEachAlive(function(monster) {
-        entities.push(monster.centerXY());
-    }, this);
-    this.npcGroup.forEachAlive(function(npc) {
-        entities.push(npc.centerXY());
-    }, this);
-    Map.create(entities);
-};
 
 module.exports = Play;

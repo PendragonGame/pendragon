@@ -35,7 +35,7 @@ Map.create = function(entities, dimensions) {
 /**
  * 
  * 
- * @param {any} entity  
+ * @param {Object} entity  
  */
 Map.insert = function(entity) {
     if (tree === null || list.length === 0) {
@@ -90,14 +90,3 @@ Map.printMap = function() {
 };
 
 module.exports = Map;
-
-/**
- * @typedef {Entity}
- */
-
-/**
- * @typedef {Object} Neighbors
- * @property {Entity} entity - The `Entity`
- * @property {number} distance - The distance to the `Entity`
- */
-
