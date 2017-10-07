@@ -4,6 +4,7 @@ const NavMesh = require('../ai/Nav-mesh.js');
 const Monster = require('../entity/Monster');
 const NPC = require('../entity/NPC');
 const Factory = require('../factory/Factory');
+const dataStore = require('../util/data');
 
 let Play = {};
 
