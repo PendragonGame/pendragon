@@ -4,6 +4,7 @@ const NavMesh = require('../ai/Nav-mesh.js');
 const Monster = require('../entity/Monster');
 const NPC = require('../entity/NPC');
 const Factory = require('../factory/Factory');
+const dataStore = require('../util/data');
 
 let Play = {};
 
@@ -87,6 +88,19 @@ Play.create = function() {
     this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
     this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
 
+    /**
+     * Setting datastore callback interval
+     */
+    const self = this;
+    setInterval(function() {
+        dataStore.storeEntity(self.player);
+        self.monsterGroup.forEachAlive(dataStore.storeEntity);
+        self.npcGroup.forEachAlive(dataStore.storeEntity);
+    }, 1000);
+
+    /**
+     * Day night cycle
+     */
     this.light = game.add.graphics();
     this.light.beginFill(0x18007A);
     this.light.alpha = 0;
