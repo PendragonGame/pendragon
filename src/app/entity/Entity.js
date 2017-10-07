@@ -111,15 +111,15 @@ Entity.prototype.setAnimations = function(frames) {
      this.animations.add('idle_right', [143], 10, true);
      this.animations.add('idle_down', [130], 10, true);
      this.animations.add('idle_left', [117], 10, true);
-	 
-	 this.animations.add('die', [260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 271, 271, 
+
+	 this.animations.add('die', [260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 271, 271,
 								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
 								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
 								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
 								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
 								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
 								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 272],
-								 25, 
+								 25,
 								 true);
 
 
@@ -239,7 +239,7 @@ Entity.prototype.die = function() {
 	this.body.velocity.x = 0;
 	this.body.velocity.y = 0;
 	this.animations.play('die', 10, false);
-}
+};
 
 /*
 *  This function changes the size of the Entity's hit box based on what
@@ -374,6 +374,17 @@ Entity.prototype.setDirection= function(direction) {
     } else {
         console.error('Invalid direction');
     }
+};
+
+Entity.prototype.seriailze = function() {
+    let obj = {};
+    obj.id = this.id;
+    obj.x = this.x;
+    obj.y = this.y;
+    obj.key = this.key;
+    obj.alive = this.alive;
+    obj.type = this.type;
+    return obj;
 };
 
 /**
