@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+
 let h;
 let w;
 let offx;
@@ -51,8 +52,8 @@ function Entity(x, y, key) {
     /**
      * Miscellaneous attributes. 
      */
-    this.speed = 90;
-    this.sprintSpeed = 150;
+    this.speed = 65;
+    this.sprintSpeed = 170;
 
     // Set the default animations
     this.setAnimations();
@@ -78,6 +79,8 @@ function Entity(x, y, key) {
      * State can be 'idling', 'walking', 'attacking'
      */
     this.state = 'idling';
+    this.idleTimer = 0;
+    this.directionLimiter = 0;
 }
 
 Entity.prototype = Object.create(Phaser.Sprite.prototype);
@@ -108,6 +111,16 @@ Entity.prototype.setAnimations = function(frames) {
      this.animations.add('idle_right', [143], 10, true);
      this.animations.add('idle_down', [130], 10, true);
      this.animations.add('idle_left', [117], 10, true);
+	 
+	 this.animations.add('die', [260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 271, 271, 
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 272],
+								 25, 
+								 true);
 
 
     this.animations.add('walk_up',
@@ -167,9 +180,10 @@ Entity.prototype.moveInDirection = function(direction, sprint) {
         let dir = '';
         if (_.isString(direction) && _.includes(DIRECTIONS, direction)) {
             dir = direction.toLowerCase();
-        } else if (_.isNumber(direction) && _.inRange(direction, 1, 5)) {
+        } else if (_.isNumber(direction) && _.inRange(direction, 0, 4)) {
             dir = DIRECTIONS[direction];
         } else {
+            console.log(direction);
             console.error('Invalid direction');
             return;
         }
@@ -208,7 +222,6 @@ Entity.prototype.idleHere = function() {
     this.state = 'idling';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
-
     this.animations.play('idle_' + this.direction, 1, false);
     this.adjustHitbox('idle');
 };
@@ -220,6 +233,13 @@ Entity.prototype.attack = function() {
     this.animations.play('slash_' + this.direction, 20, true);
     this.adjustHitbox('slash');
 };
+
+Entity.prototype.die = function() {
+	this.state = 'dead';
+	this.body.velocity.x = 0;
+	this.body.velocity.y = 0;
+	this.animations.play('die', 10, false);
+}
 
 /*
 *  This function changes the size of the Entity's hit box based on what
@@ -257,6 +277,87 @@ Entity.prototype.adjustHitbox = function(state) {
                     break;
             }
             break;
+    }
+};
+/**
+ * This function tells an entity object to travel to a desired location
+ * 
+ * @param {number} x
+ * @param {number} y
+ * @param {navMesh} navMesh -navigation mesh object
+ * @return {boolean} return true if finished, otherwise false.
+ */
+Entity.prototype.gotoXY = function(x, y, navMesh) {
+    // destination point
+    const p2 = new Phaser.Point(x, y);
+    // the entities location, respective to the center of its hit box
+    const trueX = this.x+this.body.width /
+    2 + this.body.offset.x;
+    const trueY = this.y+this.body.height /
+          2 + this.body.offset.y;
+    const p1 = new Phaser.Point(trueX, trueY);
+    // cool library magic
+    const path = navMesh.findPath(p1, p2);
+    /* 0. up
+    *  1. right
+    *  2. down
+    *  3. left
+    */
+    if (path) {
+        // check to see if the target location is reached within 5 units
+        if (path.length === 2 && Math.abs(path[1].x - trueX) < 5
+        && Math.abs(path[1].y - trueY) < 5) {
+        this.idleHere();
+        return true;
+}
+    let currentTime = game.time.now;
+    // limit the amount of direction changes to about 1 per 150 ms
+    if (currentTime - this.directionLimiter >= 150) {
+            // confusing code that ram won't understand
+            Math.abs(path[1].x - trueX) >= Math.abs(path[1].y - trueY) ?
+            this.moveInDirection(((path[1].x - trueX < 0)*2)+1, false) :
+            this.moveInDirection((path[1].y - trueY > 0)*2, false);
+            this.directionLimiter = currentTime;
+    }
+    } else {
+        // if lost don't move
+        this.idleHere();
+        this.destinationX = undefined;
+        this.destinationY = undefined;
+    }
+    return false;
+};
+
+/**
+ * Allow an Entity object to wander 
+ * @param {navMesh} navMesh the maps navigation mesh
+ * @param {Phaser.Point} topLeft top left cornor of the bounds (x,y) default 0,0
+ * @param {Phaser.Point} botRight bottom left cornor of the bounds (x,y) 
+ * default map width,hieght
+ */
+Entity.prototype.wander = function(navMesh,
+     topLeft = new Phaser.Point(0, 0),
+      botRight = new Phaser.Point(game.world.width, game.world.height)) {
+        if (this.state === 'dead') {
+            return;
+        }
+    // check if the npc is still thinking about going somewhere
+        if (this.idleTimer != 0) {
+        this.idleTimer -= 1;
+        return;
+        }
+    // check if the npc is en route, otherrwise find a new route
+    if (!(this.destinationX && this.destinationY)) {
+        this.destinationX = game.rnd.integerInRange(topLeft.x, botRight.x);
+        this.destinationY = game.rnd.integerInRange(topLeft.y, botRight.y);
+    }
+    // if destination is reached, clear current destination.
+    // add a random timer to wait before wandering elsewhere
+    // max about 12 seconds
+    if (this.gotoXY(this.destinationX, this.destinationY, navMesh)) {
+        this.destinationX = undefined;
+        this.destinationY = undefined;
+        this.idleTimer = game.rnd.integerInRange(1, 600);
     }
 };
 

@@ -1,6 +1,6 @@
 'use strict';
-
 const Player = require('../entity/Player');
+const NavMesh = require('../ai/Nav-mesh.js');
 const Monster = require('../entity/Monster');
 const NPC = require('../entity/NPC');
 const Factory = require('../factory/Factory');
@@ -26,6 +26,8 @@ Play.create = function() {
     this.bgLayer.resizeWorld();
     this.game = game;
 
+    this.navMesh = new NavMesh(this.map);
+
     // Input for game
     this.keyboard = game.input.keyboard;
 
@@ -35,7 +37,7 @@ Play.create = function() {
      */
     this.monsterGroup = game.add.group();
     this.monsterFactory = new Factory(Monster, this.monsterGroup);
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 100; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
          */
@@ -66,7 +68,6 @@ Play.create = function() {
         window.innerHeight / 2,
         'player');
 
-
     /**
      * Add all Entities to the same group.
      */
@@ -76,6 +77,7 @@ Play.create = function() {
         this.npcGroup,
         this.monsterGroup,
     ]);
+	this.player.bringToTop();
 
     /**
      * Center camera on player
@@ -84,6 +86,16 @@ Play.create = function() {
 
     this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
     this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
+
+    this.light = game.add.graphics();
+    this.light.beginFill(0x18007A);
+    this.light.alpha = 0;
+    this.light.drawRect(0, 0, game.camera.width, game.camera.height);
+    console.log(game.camera.width);
+    this.light.fixedToCamera = true;
+    this.light.endFill();
+    this.dayTime = true;
+
     /**
      * Debug Stuff
      */
@@ -96,7 +108,20 @@ Play.update = function() {
     /**
      * Debug Stuff
      */
-    // game.debug.body(this.monsterGroup);
+     //game.debug.body(this.player);
+
+     // day / night cycle
+     if (this.dayTime) {
+        this.light.alpha += .0001;
+    } else {
+        this.light.alpha -= .0007;
+    }
+    if (this.light.alpha <= 0) {
+        this.dayTime = true;
+       }
+    if (this.light.alpha >= .5) {
+    this.dayTime = false;
+    }
 
     /**
      * Deal with collision of entities
@@ -109,6 +134,15 @@ Play.update = function() {
     /**
      * NPC Code
      */
+    // this.navMesh.navMesh.debugClear(); // Clears the overlay
+    for (let i = 0, len = this.npcGroup.children.length; i < len; i++) {
+        (this.npcGroup.children[i]).wander(this.navMesh);
+    }
+    for (let i = 0, len = this.monsterGroup.children.length; i < len; i++) {
+        (this.monsterGroup.children[i]).wander(this.navMesh);
+    }
+
+
     // Intersection for NPC
     // this.game.physics.arcade.collide(this.enemy, this.blockLayer,
     //                                     npcCollision, null, this);
@@ -141,7 +175,6 @@ Play.update = function() {
     //         this.enemy.moveInDirection('left', false);
     //         break;
     // }
-
 
     /**
      * PLAYER CODE
@@ -208,6 +241,16 @@ Play.update = function() {
  * @param {any} entity2 
  */
 function entityCollision(entity1, entity2) {
+	//entity2 seems to be the Player, and entity1 is the Enemy
+	entity1.body.immovable = true;
+	if (entity1.frame === 272) {
+		entity1.kill();
+		return;
+	}
+	if (entity2.frame === 272) {
+		entity2.kill();
+		return;
+	}
     /**
      * @todo(anand): Handle code to get injured
      */
@@ -217,19 +260,22 @@ function entityCollision(entity1, entity2) {
     || game.physics.arcade.collide(entity2, this.blockOverlap)) {
         return;
     }
-
-    entity1.body.velocity.x = 0;
-    entity1.body.velocity.y = 0;
-    entity2.body.velocity.x = 0;
-    entity2.body.velocity.y = 0;
-
-    if (entity1.state == 'attacking') entity1.attack();
-    else entity1.idleHere();
+	
+    if (entity2.state == 'attacking') {
+		entity2.attack();
+		if (entity1.state !== 'dead') { 
+		  entity1.die();
+		  entity1.body.enable = false;
+		}
+	}
+    else {
+		if (entity1.state !== 'dead') entity1.idleHere();
+	}
 
     if (entity2.state == 'attacking') entity2.attack();
     else entity2.idleHere();
 
-    console.debug('[Collision] ' + entity1 + ' - ' + entity2);
+    console.log('[Collision] ' + entity1 + ' - ' + entity2);
 }
 
 module.exports = Play;
