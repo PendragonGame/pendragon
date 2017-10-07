@@ -13,11 +13,11 @@ Play.init = function() {
 
 Play.create = function() {
     // Anand did this part. I don't even know.
-    this.map = game.add.tilemap('map1');
+    this.map = game.add.tilemap('map');
     this.map.addTilesetImage('outdoors', 'tileset');
     this.bgLayer = this.map.createLayer('bgLayer');
-    this.bgOverlap = this.map.createLayer('bgOverlap');
     this.bgOverlap2 = this.map.createLayer('bgOverlap2');
+    this.bgOverlap = this.map.createLayer('bgOverlap');
     this.blockOverlap = this.map.createLayer('blkOverlap');
     this.blockLayer = this.map.createLayer('blkLayer');
     game.add.existing(this.blockLayer);
@@ -64,8 +64,8 @@ Play.create = function() {
      * Create the Player, setting location and naming as 'player'.
      * Giving him Physics and allowing collision with the world boundaries.
      */
-    this.player = new Player(window.innerWidth / 2,
-        window.innerHeight / 2,
+    this.player = new Player(game.world.width / 2,
+        game.world.height / 2 + 200,
         'player');
 
     /**
