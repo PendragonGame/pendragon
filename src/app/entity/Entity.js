@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const uuid = require('../util/uuid');
 
 let h;
 let w;
@@ -83,9 +84,10 @@ function Entity(x, y, key) {
     this.directionLimiter = 0;
 
     /**
-     * Type. Here it is a generic Entity
+     * Type and ID
      */
     this.type = 'generic';
+    this.id = uuid();
 }
 
 Entity.prototype = Object.create(Phaser.Sprite.prototype);

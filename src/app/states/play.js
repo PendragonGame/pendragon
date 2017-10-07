@@ -63,18 +63,11 @@ Play.create = function() {
      * Build the datastructure keeping track of Entities
      * 
      * Period: 1.5 sec
+     * 
+     * What I did here is call the things immediately and then
      */
-    setInterval(function() {
-        let entities = [];
-        // entities.push(this.player.centerXY());
-        self.monsterGroup.forEachAlive(function(monster) {
-            entities.push(monster.centerXY());
-        });
-        self.npcGroup.forEachAlive(function(npc) {
-            entities.push(npc.centerXY());
-        });
-        Map.create(entities);
-    }, 1500);
+    this.generateMap();
+
 
     /**
      * Day night cycle
@@ -233,23 +226,22 @@ Play.update = function() {
     } else if (this.player.state !== 'attacking') {
         this.player.idleHere();
     }
-    this.generateMap();
 
     /**
      * Deciding which character to render on top of the other.
      * 
      * @todo(anand): Only do this check for the nearest 4 neighbors.
      */
-    let self = this;
-    let nearest4 = Map.nearest(this.player.centerXY(), 4, 100);
-    console.debug(JSON.stringify(nearest4));
+    const self = this;
+    let nearest4 = Map.nearest(this.player);
     _.forEach(nearest4, function(entity) {
-        if ((self.player.y + self.player.height) > (entity.y + entity.height)) {
+        console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
+        if ((self.player.y + self.player.height) > (entity[0].y + entity[0].height)) {
             game.world.bringToTop(self.player);
             // console.log('player on top');
         } else {
             // console.log('entity on top');
-            game.world.bringToTop(entity);
+            game.world.bringToTop(entity[0]);
         }
     });
 };
@@ -307,6 +299,8 @@ function entityCollision(entity1, entity2) {
     else entity2.idleHere();
 
     console.log('[Collision] ' + entity1 + ' - ' + entity2);
+    console.log('[Collision] E1' + JSON.stringify(entity1.trueXY()));
+    console.log('[Collision] E2' + JSON.stringify(entity2.trueXY()));
 }
 
 Play.populateBoard = function() {
@@ -342,9 +336,9 @@ Play.populateBoard = function() {
      * Create the Player, setting location and naming as 'player'.
      * Giving him Physics and allowing collision with the world boundaries.
      */
-    this.player = new Player(window.innerWidth / 2,
-        window.innerHeight / 2,
-        'player');
+    this.player = new Player(game.world.width/2,
+                            game.world.height/2 + 200,
+                            'player');
 
 
     /**
@@ -356,6 +350,21 @@ Play.populateBoard = function() {
         this.npcGroup,
         this.monsterGroup,
     ]);
+};
+
+Play.generateMap = function() {
+    let entities = [];
+    // entities.push(this.player);
+    // I see no point in adding the player
+    this.monsterGroup.forEachAlive(function(monster) {
+        entities.push(monster);
+    });
+    this.npcGroup.forEachAlive(function(npc) {
+        entities.push(npc);
+    });
+    Map.create(entities);
+
+    setTimeout(this.generateMap, 1500);
 };
 
 

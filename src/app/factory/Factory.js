@@ -39,7 +39,6 @@ Factory.prototype.next = function(x, y, key) {
     this.group.add(sprite);
     sprite.setDirection(Math.floor(Math.random() * 4) + 1);
     sprite.idleHere();
-    Map.insert(sprite.centerXY());
     return sprite;
 };
 

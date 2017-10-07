@@ -1,16 +1,18 @@
 const kdTree = require('../lib/kdtreejs/kdTree');
 const _ = require('lodash');
 const Play = require('../states/play');
+const Entity = require('../entity/Entity');
 
 let distanceFormula2 = function(e1, e2) {
-    return Math.pow(e1.x - e2.y, 2)
-            + Math.pow(e1.x - e2.y, 2);
+    return Math.pow(e1.x - e2.x, 2)
+            + Math.pow(e1.y - e2.y, 2);
 };
 
 let tree = null;
 let list = {};
 
 let Map = {};
+
 
 /**
  * Create a new map
@@ -19,6 +21,9 @@ let Map = {};
  * @param {any} dimensions
  */
 Map.create = function(entities, dimensions) {
+    if (entities.length === 0 || !(entities[0] instanceof Entity)) {
+        throw new TypeError('Invalid array');
+    }
     let dim = dimensions;
     if (dim === undefined) dim = ['x', 'y'];
     let points = _.map(entities, function(entity, idx) {
@@ -55,23 +60,31 @@ Map.insert = function(entity) {
 /**
  * 
  * 
- * @param {Object} point - Point or Entity
+ * @param {Object} entity - Entity
  * @param {number} count - Number of neighbors
  * @param {any} maxDistance - Range to check within
  * @return {Array.Neighbors}
  */
-Map.nearest = function(point, count, maxDistance) {
+Map.nearest = function(entity, count, maxDistance) {
+    if (!(entity instanceof Entity)) {
+        throw new TypeError('Invalid array');
+    }
+    point = {
+        x: entity.trueXY().x,
+        y: entity.trueXY().y,
+        id: entity.id,
+    };
     maxDistance = Math.pow(maxDistance, 2);
     if (count === undefined) {
         count = 1;
     }
+    const self = this;
     return _.map(tree.nearest(point, count, maxDistance),
                 function(point) {
-                    return {
-                        x: point[0].x,
-                        y: point[0].y,
-                        dist: Math.sqrt(point[1]),
-                    };
+                    return [
+                        self.getByID(point[0].id),
+                        Math.sqrt(point[1]),
+                    ];
                 });
 };
 
