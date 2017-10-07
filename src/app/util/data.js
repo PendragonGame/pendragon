@@ -1,5 +1,5 @@
 'use strict';
-const ipcFrontend = require('electron');
+const {ipcRenderer} = require('electron');
 
 /**
  * Update entity by sending information to backend
@@ -8,7 +8,7 @@ const ipcFrontend = require('electron');
  */
 let storeEntity = function(entity) {
     let data = entity.serialize();
-    ipcFrontend.send('storeEntity', data);
+    ipcRenderer.send('storeEntity', data);
 };
 module.exports.storeEntity = storeEntity;
 

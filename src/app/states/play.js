@@ -90,7 +90,12 @@ Play.create = function() {
     /**
      * Setting datastore callback interval
      */
-    setInterval(this.storeState, 1000);
+    const self = this;
+    setInterval(function() {
+        dataStore.storeEntity(self.player);
+        self.monsterGroup.forEachAlive(dataStore.storeEntity);
+        self.npcGroup.forEachAlive(dataStore.storeEntity);
+    }, 1000);
     /**
      * Debug Stuff
      */
