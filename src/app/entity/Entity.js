@@ -376,7 +376,7 @@ Entity.prototype.setDirection= function(direction) {
     }
 };
 
-Entity.prototype.seriailze = function() {
+Entity.prototype.serialize = function() {
     let obj = {};
     obj.id = this.id;
     obj.x = this.x;
