@@ -91,7 +91,6 @@ Play.create = function() {
     this.light.beginFill(0x18007A);
     this.light.alpha = 0;
     this.light.drawRect(0, 0, game.camera.width, game.camera.height);
-    console.log(game.camera.width);
     this.light.fixedToCamera = true;
     this.light.endFill();
     this.dayTime = true;
