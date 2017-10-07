@@ -6,7 +6,7 @@ Load.preload = function() {
         fill: '#ffffff',
     });
 
-    game.load.tilemap('map1', 'assets/tilemaps/map1.json',
+    game.load.tilemap('map', 'assets/tilemaps/map2.json',
      null, Phaser.Tilemap.TILED_JSON);
     game.load.image('tileset', 'assets/tilemaps/outdoors.png');
     game.load.spritesheet('enemy', 'assets/sprites/OrcEnemy.png', 64, 64, 273);
