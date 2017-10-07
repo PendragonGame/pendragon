@@ -62,6 +62,9 @@ const moment = require('moment');
 function SaveGame(key, timestamp) {
     this.key = key;
     this.timestamp = timestamp || false;
+    this.playerData = null;
+    this.monsterData = {};
+    this.npcData = {};
 }
 
 SaveGame.prototype.storeEntity = function(data) {
@@ -83,8 +86,10 @@ SaveGame.prototype.storeState = function() {
     };
     let key = '';
 
+    if (entities.player === null) return;
+
     storage.set(this.key, entities, function(err) {
-        throw err;
+        if (err) throw err;
     });
 
     // storage.set('player', playerData, function(err) {

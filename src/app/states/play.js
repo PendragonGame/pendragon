@@ -51,13 +51,10 @@ Play.create = function() {
 
     /**
      * Setting datastore callback interval
+     * 
+     * Start autosaving 10 seconds after game starts
      */
-
-    setInterval(function() {
-        dataStore.autosaveEntity(self.player);
-        self.monsterGroup.forEachAlive(dataStore.autosaveEntity);
-        self.npcGroup.forEachAlive(dataStore.autosaveEntity);
-    }, 1000);
+    setTimeout(this.autosaveData(), 10000);
 
     /**
      * Build the datastructure keeping track of Entities
@@ -365,6 +362,15 @@ Play.generateMap = function() {
     Map.create(entities);
 
     setTimeout(this.generateMap, 1500);
+};
+
+Play.autosaveData = function() {
+    const self = this;
+    dataStore.autosaveEntity(self.player);
+    self.monsterGroup.forEachAlive(dataStore.autosaveEntity);
+    self.npcGroup.forEachAlive(dataStore.autosaveEntity);
+
+    setTimeout(this.autosaveData, 1000);
 };
 
 

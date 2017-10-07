@@ -55,4 +55,6 @@ ipcMain.on('manualSaveEntity', function(ev, arg) {
     ManualSave.storeEntity(arg);
 });
 
-setInterval(Autosave.storeState, 1000);
+setInterval(function() {
+    Autosave.storeState();
+}, 1000);
