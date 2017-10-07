@@ -15,6 +15,11 @@ function Monster(x, y, key) {
     /**
      * @todo(anand): As of now, nothing. Need to add Attributes
      */
+
+     /**
+      * Type of Entity
+      */
+      this.type = 'monster';
 }
 
 Monster.prototype = Object.create(NPC.prototype);
