@@ -138,6 +138,10 @@ Play.create = function() {
     /**
      * Debug Stuff
      */
+
+    // this.monsterGroup.children[0].x = game.world.width+200;
+    // this.monsterGroup.children[0].y = game.world.height+200;
+    
 };
 
 Play.update = function() {

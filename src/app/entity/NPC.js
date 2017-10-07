@@ -116,7 +116,7 @@ NPC.prototype.wander = function(navMesh,
  * @param {navmesh} navMesh the navMesh of the map
  */
 NPC.prototype.attack = function(target, navMesh) {
-    this.gotoXY(target.trueXY().x, target.trueXY.y, navMesh);
+    this.gotoXY(target.trueXY().x, target.trueXY().y, navMesh);
 };
 
 NPC.prototype.aIUpdate = function() {
