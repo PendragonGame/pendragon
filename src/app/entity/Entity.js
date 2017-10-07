@@ -1,7 +1,6 @@
 'use strict';
 
 const _ = require('lodash');
-const uuid = require('../util/uuid');
 
 let h;
 let w;
@@ -50,12 +49,11 @@ function Entity(x, y, key) {
      */
     this.weapon = null;
 
-
     /**
      * Miscellaneous attributes. 
      */
-    this.speed = 90;
-    this.sprintSpeed = 150;
+    this.speed = 65;
+    this.sprintSpeed = 170;
 
     // Set the default animations
     this.setAnimations();
@@ -81,12 +79,8 @@ function Entity(x, y, key) {
      * State can be 'idling', 'walking', 'attacking'
      */
     this.state = 'idling';
-
-    /**
-     * generating unique ID for Entity
-     */
-
-    this.id = uuid();
+    this.idleTimer = 0;
+    this.directionLimiter = 0;
 }
 
 Entity.prototype = Object.create(Phaser.Sprite.prototype);
@@ -117,6 +111,16 @@ Entity.prototype.setAnimations = function(frames) {
      this.animations.add('idle_right', [143], 10, true);
      this.animations.add('idle_down', [130], 10, true);
      this.animations.add('idle_left', [117], 10, true);
+	 
+	 this.animations.add('die', [260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 271, 271, 
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 272],
+								 25, 
+								 true);
 
 
     this.animations.add('walk_up',
@@ -144,7 +148,6 @@ Entity.prototype.setAnimations = function(frames) {
     this.animations.add('slash_right',
                         [195, 196, 197, 198, 199, 200],
                         10, true);
-
 };
 
 
@@ -219,7 +222,6 @@ Entity.prototype.idleHere = function() {
     this.state = 'idling';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
-
     this.animations.play('idle_' + this.direction, 1, false);
     this.adjustHitbox('idle');
 };
@@ -231,6 +233,13 @@ Entity.prototype.attack = function() {
     this.animations.play('slash_' + this.direction, 20, true);
     this.adjustHitbox('slash');
 };
+
+Entity.prototype.die = function() {
+	this.state = 'dead';
+	this.body.velocity.x = 0;
+	this.body.velocity.y = 0;
+	this.animations.play('die', 10, false);
+}
 
 /*
 *  This function changes the size of the Entity's hit box based on what
@@ -276,6 +285,7 @@ Entity.prototype.adjustHitbox = function(state) {
  * @param {number} x
  * @param {number} y
  * @param {navMesh} navMesh -navigation mesh object
+ * @return {boolean} return true if finished, otherwise false.
  */
 Entity.prototype.gotoXY = function(x, y, navMesh) {
     // destination point
@@ -298,29 +308,57 @@ Entity.prototype.gotoXY = function(x, y, navMesh) {
         if (path.length === 2 && Math.abs(path[1].x - trueX) < 5
         && Math.abs(path[1].y - trueY) < 5) {
         this.idleHere();
-        return;
+        return true;
 }
-
-
-        // confusing code that ram won't understand
-        Math.abs(path[1].x - trueX) >= Math.abs(path[1].y - trueY) ?
-         this.moveInDirection(((path[1].x - trueX < 0)*2)+1, false) :
-          this.moveInDirection((path[1].y - trueY > 0)*2, false);
+    let currentTime = game.time.now;
+    // limit the amount of direction changes to about 1 per 150 ms
+    if (currentTime - this.directionLimiter >= 150) {
+            // confusing code that ram won't understand
+            Math.abs(path[1].x - trueX) >= Math.abs(path[1].y - trueY) ?
+            this.moveInDirection(((path[1].x - trueX < 0)*2)+1, false) :
+            this.moveInDirection((path[1].y - trueY > 0)*2, false);
+            this.directionLimiter = currentTime;
+    }
     } else {
         // if lost don't move
         this.idleHere();
+        this.destinationX = undefined;
+        this.destinationY = undefined;
     }
+    return false;
 };
 
-Entity.prototype.serialize = function() {
-    let obj = {};
-    obj.id = this.id;
-    obj.x = this.x;
-    obj.y = this.y;
-    obj.key = this.key;
-    obj.alive = this.alive;
-    obj.type = this.type;
-    return obj;
+/**
+ * Allow an Entity object to wander 
+ * @param {navMesh} navMesh the maps navigation mesh
+ * @param {Phaser.Point} topLeft top left cornor of the bounds (x,y) default 0,0
+ * @param {Phaser.Point} botRight bottom left cornor of the bounds (x,y) 
+ * default map width,hieght
+ */
+Entity.prototype.wander = function(navMesh,
+     topLeft = new Phaser.Point(0, 0),
+      botRight = new Phaser.Point(game.world.width, game.world.height)) {
+        if (this.state === 'dead') {
+            return;
+        }
+    // check if the npc is still thinking about going somewhere
+        if (this.idleTimer != 0) {
+        this.idleTimer -= 1;
+        return;
+        }
+    // check if the npc is en route, otherrwise find a new route
+    if (!(this.destinationX && this.destinationY)) {
+        this.destinationX = game.rnd.integerInRange(topLeft.x, botRight.x);
+        this.destinationY = game.rnd.integerInRange(topLeft.y, botRight.y);
+    }
+    // if destination is reached, clear current destination.
+    // add a random timer to wait before wandering elsewhere
+    // max about 12 seconds
+    if (this.gotoXY(this.destinationX, this.destinationY, navMesh)) {
+        this.destinationX = undefined;
+        this.destinationY = undefined;
+        this.idleTimer = game.rnd.integerInRange(1, 600);
+    }
 };
 
 /**
