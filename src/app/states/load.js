@@ -9,6 +9,12 @@ Load.preload = function() {
     game.load.tilemap('map1', 'assets/tilemaps/map1.json',
      null, Phaser.Tilemap.TILED_JSON);
     game.load.image('tileset', 'assets/tilemaps/outdoors.png');
+	
+	game.load.image('hud_wasd', 'assets/HUD-elements/HUD_wasd.png');
+	game.load.image('hud_weapon', 'assets/HUD-elements/HUD_weapon.png');
+	game.load.image('hud_emptyHealth', 'assets/HUD-elements/HUD_emptyHealth.png');
+	game.load.image('hud_fullHealth', 'assets/HUD-elements/HUD_fullHealth.png');
+	
     game.load.spritesheet('enemy', 'assets/sprites/OrcEnemy.png', 64, 64, 273);
     game.load.spritesheet('woman', 'assets/sprites/woman.png', 64, 64, 273);
     game.load.spritesheet('player', 'assets/sprites/armor.png', 64, 64, 273);

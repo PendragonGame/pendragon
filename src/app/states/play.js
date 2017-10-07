@@ -96,6 +96,36 @@ Play.create = function() {
     this.light.endFill();
     this.dayTime = true;
 
+    //HUD elements	
+	let wasd = game.add.sprite(0, 0, 'hud_wasd');
+	wasd.y = window.innerHeight - wasd.height;
+	wasd.fixedToCamera = true;
+	
+	let wpn = game.add.sprite(0, 0, 'hud_weapon');
+	wpn.width /= 2;
+	wpn.height /= 2;
+	wpn.x = window.innerWidth - wpn.width;
+	wpn.fixedToCamera = true;
+	
+	let textStyle = { font: "bold 20px Consolas", fill: "#ffffff", align: "center" };
+	let healthLabel = game.add.text(0, 5, "Health", textStyle);
+	healthLabel.fixedToCamera = true;
+	let repLabel = game.add.text(0, healthLabel.height + 10, "Rep", textStyle);
+	repLabel.fixedToCamera = true;
+	
+	let scoreLabel = game.add.text(0, 0, "Score: 0", textStyle);
+	scoreLabel.x = window.innerWidth - scoreLabel.width;
+	scoreLabel.y = window.innerHeight - scoreLabel.height;
+	scoreLabel.fixedToCamera = true;
+	
+	let emptyHealthBar = game.add.sprite(healthLabel.width + 5, 0, 'hud_emptyHealth');
+	emptyHealthBar.fixedToCamera = true;
+	let emptyRepBar = game.add.sprite(healthLabel.width + 5, emptyHealthBar.height, 'hud_emptyHealth');
+	emptyRepBar.fixedToCamera = true;
+	let fullHealthBar = game.add.sprite(healthLabel.width + 7, 2, 'hud_fullHealth');
+	fullHealthBar.fixedToCamera = true;
+	fullHealthBar.width /= 2;
+	
     /**
      * Debug Stuff
      */
