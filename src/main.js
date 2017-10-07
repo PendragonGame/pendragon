@@ -6,6 +6,7 @@ const dbStore = require('./data-store/dbStore');
 
 let mainWindow;
 
+
 /**
  * 
  */
