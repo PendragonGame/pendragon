@@ -121,7 +121,7 @@ Play.create = function() {
 	this.wpn.x = window.innerWidth - this.wpn.width;
 	this.wpn.fixedToCamera = true;
 	
-	this.textStyle = { font: "bold 20px Consolas", fill: "#ffff00", align: "center" };
+	this.textStyle = { font: "bold 20px Consols", fill: "#ffff00", align: "center" };
 	this.healthLabel = game.add.text(0, 5, "Health", this.textStyle);
 	this.healthLabel.fixedToCamera = true;
 	this.repLabel = game.add.text(0, this.healthLabel.height + 10, "Rep", this.textStyle);
