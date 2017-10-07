@@ -1,0 +1,127 @@
+{
+    "obj": 1729.489604773147,
+    "left": {
+        "obj": 1570.6822726077785,
+        "left": null,
+        "right": null,
+        "parent": null,
+        "dimension": 1
+    },
+    "right": {
+        "obj": [2385.102766951694, 1542.5564272168579],
+        "left": null,
+        "right": {
+            "obj": [2183.1271849742398, 566.6155794636488],
+            "left": null,
+            "right": {
+                "obj": [666.1790129700837, 1349.8717660895397],
+                "left": null,
+                "right": {
+                    "obj": [2770.1318133942113, 964.4800730511855],
+                    "left": null,
+                    "right": {
+                        "obj": [3079.2789987998194, 1464.8076915317822],
+                        "left": null,
+                        "right": {
+                            "obj": [1200.6003568597544, 909.5299696564497],
+                            "left": null,
+                            "right": {
+                                "obj": [3173.730600231665, 1561.4672491016313],
+                                "left": null,
+                                "right": {
+                                    "obj": [2932.6860613670096, 492.9232982528555],
+                                    "left": null,
+                                    "right": {
+                                        "obj": [3169.6267281324144, 948.9368680975821],
+                                        "left": null,
+                                        "right": {
+                                            "obj": [599.4303554445063, 1002.4248536171333],
+                                            "left": null,
+                                            "right": {
+                                                "obj": [169.6907147348701, 981.0591355278727],
+                                                "left": null,
+                                                "right": {
+                                                    "obj": [199.6274372765478, 270.9441759243511],
+                                                    "left": null,
+                                                    "right": {
+                                                        "obj": [1403.4701125604033, 119.66427293487159],
+                                                        "left": null,
+                                                        "right": {
+                                                            "obj": [844.7653859820242, 392.8774207215394],
+                                                            "left": null,
+                                                            "right": {
+                                                                "obj": [1700.5356627952337, 445.68325711600954],
+                                                                "left": null,
+                                                                "right": {
+                                                                    "obj": [155.42199589185785, 646.464030934631],
+                                                                    "left": null,
+                                                                    "right": {
+                                                                        "obj": [1114.3454986231345, 161.2857050777256],
+                                                                        "left": null,
+                                                                        "right": {
+                                                                            "obj": [1998.0816484316601, 791.249363752577],
+                                                                            "left": null,
+                                                                            "right": {
+                                                                                "obj": [1194.565046765439, 655.391014794564],
+                                                                                "left": null,
+                                                                                "right": null,
+                                                                                "parent": null,
+                                                                                "dimension": 1
+                                                                            },
+                                                                            "parent": null,
+                                                                            "dimension": 0
+                                                                        },
+                                                                        "parent": null,
+                                                                        "dimension": 1
+                                                                    },
+                                                                    "parent": null,
+                                                                    "dimension": 0
+                                                                },
+                                                                "parent": null,
+                                                                "dimension": 1
+                                                            },
+                                                            "parent": null,
+                                                            "dimension": 0
+                                                        },
+                                                        "parent": null,
+                                                        "dimension": 1
+                                                    },
+                                                    "parent": null,
+                                                    "dimension": 0
+                                                },
+                                                "parent": null,
+                                                "dimension": 1
+                                            },
+                                            "parent": null,
+                                            "dimension": 0
+                                        },
+                                        "parent": null,
+                                        "dimension": 1
+                                    },
+                                    "parent": null,
+                                    "dimension": 0
+                                },
+                                "parent": null,
+                                "dimension": 1
+                            },
+                            "parent": null,
+                            "dimension": 0
+                        },
+                        "parent": null,
+                        "dimension": 1
+                    },
+                    "parent": null,
+                    "dimension": 0
+                },
+                "parent": null,
+                "dimension": 1
+            },
+            "parent": null,
+            "dimension": 0
+        },
+        "parent": null,
+        "dimension": 1
+    },
+    "parent": null,
+    "dimension": 0
+}
