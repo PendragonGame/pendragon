@@ -138,11 +138,6 @@ Play.create = function() {
     /**
      * Debug Stuff
      */
-
-    this.monsterGroup.children[0].x = this.player.x + 140;
-    this.monsterGroup.children[0].y = this.player.y+100;
-    this.monsterGroup.children[1].x = this.player.x + 180;
-    this.monsterGroup.children[1].y = this.player.y+170;
 };
 
 Play.update = function() {
@@ -153,7 +148,7 @@ Play.update = function() {
      * Debug Stuff
      */
      // game.debug.body(this.player);
-    //  this.navMesh.navMesh.debugClear(); // Clears the overlay
+    // this.navMesh.navMesh.debugClear(); // Clears the overlay
      
 
      // day / night cycle
@@ -178,15 +173,22 @@ Play.update = function() {
     game.physics.arcade.collide(this.entitiesGroup, this.entitiesGroup,
         entityCollision, null, this);
 
+
     /**
      * NPC Code
      */
     // this.navMesh.navMesh.debugClear(); // Clears the overlay
+    let tL = new Phaser.Point(772, 448);
+    let bR = new Phaser.Point(3426, 2893);
+    let tL2 = new Phaser.Point(3151, 568);
+    let bR2 = new Phaser.Point(4452, 3565);    
     for (let i = 0, len = this.npcGroup.children.length; i < len; i++) {
-        (this.npcGroup.children[i]).wander(this.navMesh);
+        this.npcGroup.children[i].updateAI(this.navMesh,
+             tL, bR, this.player, 'neutral');
     }
     for (let i = 0, len = this.monsterGroup.children.length; i < len; i++) {
-        (this.monsterGroup.children[i]).aggro(this.player, this.navMesh);
+        this.monsterGroup.children[i].updateAI(this.navMesh,
+             tL2, bR2, this.player, 'aggressive');
     }
 
     /**
@@ -314,32 +316,38 @@ function entityCollision(entity1, entity2) {
 }
 
 Play.populateBoard = function() {
+    let npcBounds = [
+        [new Phaser.Point(1397, 1344), new Phaser.Point(1684, 1472)],
+        [new Phaser.Point(778, 1328), new Phaser.Point(1065, 1553)],
+        [new Phaser.Point(1660, 735), new Phaser.Point(1690, 1065)],
+        [new Phaser.Point(1800, 2200), new Phaser.Point(3000, 2700)]];
+
+     let monsterBounds = [
+         [new Phaser.Point(3415, 2886), new Phaser.Point(3952, 1501)]];
+
     /**
      * Generate a factory and a few monsters
      */
     this.monsterGroup = game.add.group();
-    this.monsterFactory = new Factory(Monster, this.monsterGroup);
-    for (let i = 0; i < 10; i++) {
+    this.monsterFactory = new Factory(Monster, this.monsterGroup,
+         monsterBounds, 30);
+    for (let i = 0; i < 30; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
          */
-        let rndx = ((Math.random() * 0.75) + 0.125) * this.map.widthInPixels;
-        let rndy = ((Math.random() * 0.75) + 0.125) * this.map.heightInPixels;
-        this.monsterFactory.next(rndx, rndy, 'enemy');
+        this.monsterFactory.next(null, null, 'enemy');
     }
 
     /**
      * Generate a factory and a few NPCs
      */
     this.npcGroup = game.add.group();
-    this.npcFactory = new Factory(NPC, this.npcGroup);
-    for (let i = 0; i < 10; i++) {
+    this.npcFactory = new Factory(NPC, this.npcGroup, npcBounds, 40);
+    for (let i = 0; i < 40; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
          */
-        let rndx = ((Math.random() * 0.5) + 0.025) * this.map.widthInPixels;
-        let rndy = ((Math.random() * 0.5) + 0.025) * this.map.heightInPixels;
-        this.npcFactory.next(rndx, rndy, 'woman');
+        this.npcFactory.next(null, null, 'woman');
     }
 
     /**
@@ -361,6 +369,7 @@ Play.populateBoard = function() {
         this.monsterGroup,
     ]);
 };
+
 
 Play.generateMap = function() {
     let entities = [];
