@@ -51,7 +51,6 @@ app.on('ready', () => {
 });
 
 ipcMain.on('saveEntity', function(ev, arg) {
-    // Autosave.storeEntity(arg);
     dbStore.storeEntity(arg);
 });
 
@@ -62,4 +61,16 @@ ipcMain.on('manualSaveState', function(ev, arg) {
 setInterval(function() {
     dbStore.autosave();
 }, 1000);
+
+ipcMain.on('listSaveStates', function(ev, arg) {
+    let p = dbStore.getStates();
+    p.then((keys) => {
+        ev.sender.send('reply-listSaveStates', {data: keys, success: true});
+    })
+    .catch((reason) => {
+        console.error('Failed to load keys:');
+        console.error(reason);
+        ev.sender.send('reply-listSaveStates', {data: null, success: false});
+    });
+});
 

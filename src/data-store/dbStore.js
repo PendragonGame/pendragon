@@ -19,7 +19,7 @@ let availableKeys = [];
  * 
  * @param {any} data 
  */
-let storeEntity = function(data) {
+let storeEntity = function (data) {
     if (data.type === 'player') {
         playerData = data;
     } else if (data.type === 'monster') {
@@ -29,19 +29,19 @@ let storeEntity = function(data) {
     }
 };
 
-let autosave = function() {
+let autosave = function () {
     let entities = {
         player: playerData,
         monsters: monsterData,
         npc: npcData,
     };
     if (entities.player === null) return;
-    storage.set('autosave.entities', entities, function(err) {
+    storage.set('autosave.entities', entities, function (err) {
         if (err) throw err;
     });
 };
 
-let manualSave = function() {
+let manualSave = function () {
     let entities = {
         player: playerData,
         monsters: monsterData,
@@ -55,23 +55,36 @@ let manualSave = function() {
     /**
      * NOTE(anand): There may be a problem with loading because the timestamp is urlencoded
      */
-    storage.set(key, entities, function(err) {
+    storage.set(key, entities, function (err) {
         if (err) throw err;
     });
-}
+};
 
 
+/**
+ * Get the saved state keys.
+ * 
+ * @return {Promise}
+ */
 let getStates = function() {
-    storage.keys(function(err, keys) {
-        if (err) throw err;
-          for (let key of keys) {
-            console.log('There is a key called: ' + key);
-        }
+    return new Promise(function(resolve, reject) {
+        storage.keys((err, keys) => {
+            if (err) {
+                reject(err);
+            }
+            _.forEach(keys, (k) => console.log(k));
+            resolve(keys);
+        });
     });
 };
 
 let loadState = function(key) {
-
+    return new Promise(function(resolve, reject) {
+        storage.get(key, (err, data) => {
+            if (err) reject(err);
+            resolve(data);
+        });
+    });
 };
 
 /**
@@ -84,8 +97,8 @@ module.exports.manualSave = manualSave;
 /**
  * Load game functions
  */
-
- /**
-  * Helper functions
-  */
+module.exports.loadState = loadState;
+/**
+ * Helper functions
+ */
 module.exports.getStates = getStates;
