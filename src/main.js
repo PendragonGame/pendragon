@@ -52,8 +52,9 @@ ipcMain.on('saveEntity', function(ev, arg) {
     // Autosave.storeEntity(arg);
     dbStore.storeEntity(arg);
 });
-ipcMain.on('manualSaveEntity', function(ev, arg) {
-    dbStore.storeEntity(arg);
+
+ipcMain.on('manualSaveState', function(ev, arg) {
+    dbStore.manualSave();
 });
 
 setInterval(function() {

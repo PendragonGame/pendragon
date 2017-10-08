@@ -78,23 +78,15 @@ Play.create = function() {
     this.light.endFill();
     this.dayTime = true;
 
+
     /**
      * HUD elements
      * 
      * @todo(anand): Can this be improved? May be making code slow.
      */
-    this.hud_save = game.add.sprite(0, 0, 'HUD_save');
-    this.hud_save.y = window.innerHeight - this.hud_save.height;
-    this.hud_save.fixedToCamera = true;
-
-    /**
-     * save button
-     * 
-     */
-   // function createSaveButton() {
-   //     button = game.add.button(game.world.centerX - 95, 400, 'HUD_save', actionOnClick, this, 2, 1, 0);
-   //  }
-  
+    this.wasd = game.add.sprite(0, 0, 'hud_wasd');
+    this.wasd.y = window.innerHeight - this.wasd.height;
+    this.wasd.fixedToCamera = true;
 
     this.wpn = game.add.sprite(0, 0, 'hud_weapon');
     this.wpn.width /= 2;
@@ -142,6 +134,47 @@ Play.create = function() {
     this.fullRepBar.fixedToCamera = true;
     this.fullRepBar.width /= 2;
 
+    /**
+     * save button
+     * 
+     */
+    // function saveButton() {
+    let saveButton = game.add.button(this.wasd.width + 60, window.innerHeight - 27,
+        'hud_save', function() {
+            console.log('Save Button Clicked');
+            console.log('Manually saving');
+            dataStore.manualSaveState();
+        }, 2, 1, 0);
+    saveButton.width = 70;
+    saveButton.height = 30;
+    /**
+    * 
+    *hover over for button
+    */
+    saveButton.onInputOver.add(function over() {
+        console.log('Hovering over Save Button');
+    });
+    saveButton.fixedToCamera = true;
+
+    /**
+    * load button
+    * 
+    */
+    // function saveButton() {
+    let loadButton = game.add.button(this.wasd.width + 140, window.innerHeight - 27,
+            'hud_load', function() {
+                console.log('Load Button Clicked');
+            }, 2, 1, 0);
+    loadButton.width = 70;
+    loadButton.height = 30;
+    /**
+    * 
+    *hover over for button
+    */
+    loadButton.onInputOver.add(function over() {
+        console.log('Hovering over Load Button');
+    });
+    loadButton.fixedToCamera = true;
 
     /**
      * Debug Stuff
@@ -243,7 +276,7 @@ Play.update = function() {
     const self = this;
     let nearest4 = Map.nearest(this.player);
     _.forEach(nearest4, function(entity) {
-        console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
+        // console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
         if ((self.player.y + self.player.height) > (entity[0].y + entity[0].height)) {
             game.world.bringToTop(self.player);
             // console.log('player on top');

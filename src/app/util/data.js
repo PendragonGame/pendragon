@@ -21,7 +21,7 @@ module.exports.autosaveEntity = function(entity) {
  * 
  * @param {any} entity 
  */
-module.exports.manualSaveEntity = function(entity) {
-    storeEntity(entity, 'manualSaveEntity');
+module.exports.manualSaveState = function() {
+    ipcRenderer.send('manualSaveState', true);
 };
 

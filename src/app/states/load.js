@@ -15,7 +15,8 @@ Load.preload = function() {
     game.load.image('hud_emptyHealth', 'assets/HUD-elements/HUD_emptyHealth.png');
     game.load.image('hud_fullHealth', 'assets/HUD-elements/HUD_fullHealth.png');
     game.load.image('hud_fullRep', 'assets/HUD-elements/HUD_fullRep.png');
-    game.load.image('HUD_save', 'assets/HUD-elements/HUD_save.png');
+    game.load.image('hud_save', 'assets/HUD-elements/HUD_save_word.png');
+    game.load.image('hud_load', 'assets/HUD-elements/HUD_load_word.png');
 
     game.load.spritesheet('enemy', 'assets/sprites/OrcEnemy.png', 64, 64, 273);
     game.load.spritesheet('woman', 'assets/sprites/woman.png', 64, 64, 273);
