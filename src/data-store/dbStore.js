@@ -7,6 +7,7 @@ let playerData = null;
 let monsterData = {};
 let npcData = {};
 
+let availableKeys = [];
 
 /**
  * @todo let highScore = 0;
@@ -59,13 +60,13 @@ let manualSave = function() {
     });
 }
 
-/**
- * Get the Manually Saved States
- */
+
 let getStates = function() {
     storage.keys(function(err, keys) {
         if (err) throw err;
-        return keys;
+          for (let key of keys) {
+            console.log('There is a key called: ' + key);
+        }
     });
 };
 
@@ -73,7 +74,18 @@ let loadState = function(key) {
 
 };
 
-
+/**
+ * Save game functions
+ */
 module.exports.storeEntity = storeEntity;
 module.exports.autosave = autosave;
 module.exports.manualSave = manualSave;
+
+/**
+ * Load game functions
+ */
+
+ /**
+  * Helper functions
+  */
+module.exports.getStates = getStates;

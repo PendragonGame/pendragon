@@ -8,6 +8,8 @@ let mainWindow;
 // const Autosave = new dbStore.SaveGame('autosave.entities');
 // const ManualSave = new dbStore.SaveGame('entities');
 
+let x = dbStore.getStates();
+console.log(x);
 
 /**
  * 
