@@ -29,7 +29,8 @@ let gossipLoop = function() {
         for (let i = 0; i < List.length; i++) {
             let point = List[i];
             let nearest = Tree.nearest(point, kNN, gossipRadius);
-            let gossipMongers = Sampling.sample_from_array(nearest, numTargets, false);
+            let n = Math.min(numTargets, nearest.length);
+            let gossipMongers = Sampling.sample_from_array(nearest, n, false);
             postMessage({
                 targets: gossipMongers,
                 source: point.id,
