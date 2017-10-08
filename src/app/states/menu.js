@@ -44,7 +44,7 @@ Menu.create = function() {
    this.settings.x -= 220/2;
     // text for settings
     this.settingsText = game.add.text(game.world.centerX-200/2,
-         180, 'Settings');
+         180, 'Load');
     this.settingsText.font = 'Fauna One';
     this.settingsText.fill = '#000000';
     this.settingsText.fontSize = '40pt';

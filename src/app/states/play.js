@@ -55,6 +55,7 @@ Play.create = function() {
      * Start autosaving 10 seconds after game starts
      */
     setTimeout(this.autosaveData(), 10000);
+    
 
     /**
      * Build the datastructure keeping track of Entities
@@ -82,15 +83,25 @@ Play.create = function() {
      * 
      * @todo(anand): Can this be improved? May be making code slow.
      */
-    this.wasd = game.add.sprite(0, 0, 'hud_wasd');
-    this.wasd.y = window.innerHeight - this.wasd.height;
-    this.wasd.fixedToCamera = true;
+    this.hud_save = game.add.sprite(0, 0, 'HUD_save');
+    this.hud_save.y = window.innerHeight - this.hud_save.height;
+    this.hud_save.fixedToCamera = true;
+
+    /**
+     * save button
+     * 
+     */
+   // function createSaveButton() {
+   //     button = game.add.button(game.world.centerX - 95, 400, 'HUD_save', actionOnClick, this, 2, 1, 0);
+   //  }
+  
 
     this.wpn = game.add.sprite(0, 0, 'hud_weapon');
     this.wpn.width /= 2;
     this.wpn.height /= 2;
     this.wpn.x = window.innerWidth - this.wpn.width;
     this.wpn.fixedToCamera = true;
+
 
     this.textStyle = {
         font: 'bold 20px Consolas',
@@ -371,6 +382,13 @@ Play.autosaveData = function() {
     self.npcGroup.forEachAlive(dataStore.autosaveEntity);
 
     setTimeout(this.autosaveData, 1000);
+};
+
+Play.manualSaveData = function() {
+    const self = this;
+    dataStore.manualSaveEntity(sel.player);
+    self.monsterGroup.forEachAlive(dataStore.manualSaveEntity);
+    self.npcGroup.forEachAlive(dataStore.manualSaveEntity);
 };
 
 

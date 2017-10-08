@@ -13,9 +13,14 @@ let storeEntity = function(entity, channel) {
 };
 
 module.exports.autosaveEntity = function(entity) {
-    storeEntity(entity, 'autosaveEntity');
+    storeEntity(entity, 'saveEntity');
 };
 
+/**
+ * Not going to use this
+ * 
+ * @param {any} entity 
+ */
 module.exports.manualSaveEntity = function(entity) {
     storeEntity(entity, 'manualSaveEntity');
 };
