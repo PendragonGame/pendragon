@@ -1,6 +1,7 @@
 const kdTree = require('../lib/kdtreejs/kdTree');
 const shuffle = require('knuth-shuffle').knuthShuffle;
 const Sampling = require('discrete-sampling');
+const _ = require('lodash');
 
 /* ############### Algorithm parameters ############### */
 /**
@@ -21,23 +22,27 @@ const kNN = 10;
 let Tree = null;
 let List = [];
 
+let init = false;
+
 let gossipLoop = function() {
     /**
      * @todo(anand): is this the best idea?
      */
-    while (true) {
         for (let i = 0; i < List.length; i++) {
             let point = List[i];
-            let nearest = Tree.nearest(point, kNN, gossipRadius);
-            let n = Math.min(numTargets, nearest.length);
-            let gossipMongers = Sampling.sample_from_array(nearest, n, false);
+            let nearest = Tree.nearest(point, kNN + 1, gossipRadius);
+            let gossipMongers = _.chain(nearest)
+                            .filter((p) => p[1] !== 0)
+                            .map((e) => e[0])
+                            .value();
+            let n = Math.min(numTargets, gossipMongers.length);
+            gossipMongers = Sampling.sample_from_array(gossipMongers, n, false);
             postMessage({
                 targets: gossipMongers,
                 source: point.id,
             });
         }
         shuffle(List);
-    }
 };
 
 let distance2 = function(a, b) {
@@ -66,7 +71,8 @@ onmessage = function(obj) {
     /**
      * @todo(anand): Handle other actions.
      */
-    console.log(obj);
+    // console.log(obj);
+    Tree = null;
     Tree = new kdTree.kdTree(obj.data.tree, distance2, ['x', 'y']);
     List = toList(Tree);
     gossipLoop();

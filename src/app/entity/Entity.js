@@ -427,7 +427,7 @@ Entity.prototype.trueXY = function() {
 
 Entity.prototype.learnInfo = function(rumor) {
     this.information.push(rumor);
-} 
+};
 
 
 /**

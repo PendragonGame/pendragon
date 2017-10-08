@@ -26,7 +26,7 @@ Ripple.prototype.triggerConversation = function(e) {
     let info = source.information[game.rnd.integerInRange(0,
                                             source.information.length - 1)];
     for (let i = 0; i < targets.length; i++) {
-        Map.getByID(targets[i].id).learnInfo(info);
+        Map.getByID(targets[i][0].id).learnInfo(info);
         /**
          * @todo(anand): Trigger convo box;
          */
