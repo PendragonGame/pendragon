@@ -163,9 +163,27 @@ NPC.prototype.aggro = function(target, navMesh) {
         }
     }
 };
-
-NPC.prototype.aIUpdate = function(navMesh) {
-
+/**
+ * @param {navmesh} navMesh the navMesh of the map
+ * @param {Phaser.Point} topLeft top left bounds the entity can wander in.
+ * @param {Phaser.Point} botRight bottom right bounds the entity can wander in.
+ * @param {Entity} player the player!
+ */
+NPC.prototype.aIUpdate = function(navMesh, topLeft, botRight, player) {
+    this.aiStatus = 'neutral';
+    switch (aiStatus) {
+        case 'nuetral':
+            this.wander(navMesh, topLeft, botRight);
+            break;
+        case 'agressive':
+            if (Math.sqrt(Math.pow(play.trueXY().x - this.trueXY().x, 2) + Math.pow(play.trueXY().y - this.trueXY().y, 2)) < 256) {
+                this.aggro(player, navMesh);
+            }
+            this.aggro(navMesh);
+            break;
+        default:
+            break;
+    }
 };
 
 module.exports = NPC;
