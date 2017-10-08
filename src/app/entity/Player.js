@@ -18,9 +18,9 @@ function Player(x, y, key) {
      */
     this.maxHP = 100;
     this.HP = 100;
-	this.score = 0;
+    this.score = 0;
     this.daysSurvived = 1;
-    
+
     this.type = 'player';
 }
 

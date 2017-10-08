@@ -8,6 +8,8 @@ const dataStore = require('../util/data');
 const Map = require('../util/Map');
 const Ripple = require('../ripple/engine');
 
+const Sampling = require('discrete-sampling');
+
 const _ = require('lodash');
 
 let Play = {};
@@ -49,39 +51,6 @@ Play.create = function() {
 
     this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
     this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
-
-    /**
-     * Setting datastore callback interval
-     */
-
-    setInterval(function() {
-        dataStore.storeEntity(self.player);
-        self.monsterGroup.forEachAlive(dataStore.storeEntity);
-        self.npcGroup.forEachAlive(dataStore.storeEntity);
-    }, 1000);
-
-    /**
-     * Build the datastructure keeping track of Entities
-     * 
-     * Period: 1.5 sec
-     * 
-     * What I did here is call the things immediately and then
-     */
-    // this.generateMap();
-    (function mapGenerate() {
-        let entities = [];
-        // entities.push(this.player);
-        // I see no point in adding the player
-        self.monsterGroup.forEachAlive(function(monster) {
-            entities.push(monster);
-        });
-        self.npcGroup.forEachAlive(function(npc) {
-            entities.push(npc);
-        });
-        Map.create(entities);
-        setTimeout(mapGenerate, 1500);
-    })();
-    this.rippleGossip = new Ripple();
 
     /**
      * Day night cycle
@@ -157,6 +126,40 @@ Play.create = function() {
     this.monsterGroup.children[0].y = this.player.y+100;
     this.monsterGroup.children[1].x = this.player.x + 180;
     this.monsterGroup.children[1].y = this.player.y+170;
+
+
+       /**
+     * Setting datastore callback interval
+     */
+
+    setInterval(function() {
+        dataStore.storeEntity(self.player);
+        self.monsterGroup.forEachAlive(dataStore.storeEntity);
+        self.npcGroup.forEachAlive(dataStore.storeEntity);
+    }, 1000);
+
+    /**
+     * Build the datastructure keeping track of Entities
+     * 
+     * Period: 1.5 sec
+     * 
+     * What I did here is call the things immediately and then
+     */
+    // this.generateMap();
+    (function mapGenerate() {
+        let entities = [];
+        // entities.push(this.player);
+        // I see no point in adding the player
+        self.monsterGroup.forEachAlive(function(monster) {
+            entities.push(monster);
+        });
+        self.npcGroup.forEachAlive(function(npc) {
+            entities.push(npc);
+        });
+        Map.create(entities);
+        setTimeout(mapGenerate, 1500);
+    })();
+    this.rippleGossip = new Ripple();
 };
 
 Play.update = function() {
@@ -355,34 +358,46 @@ function entityCollision(entity1, entity2) {
      * We shouldn't be assuming that entity 2 is always going to be Player
      * also, other entities can attack too
      */
+    /**
+     * The type of person who died
+     */
+    let dead = null;
+    let perp = null;
+    let action = '';
     if (entity2.state == 'attacking') {
         entity2.attack();
         if (entity1.state !== 'dead') {
+          dead = entity1;
+          perp = entity2;
+          action = 'kill';
           entity1.die();
           entity1.body.enable = false;
-          if (this.monsterGroup.children.indexOf(entity1) > -1) {
-              this.player.score++;
-          }
         }
     }
     if (entity1.state === 'attacking') {
         entity1.attack();
         if (entity2.state !== 'dead') {
+          perp = entity1;
+          dead = entity2;
+          action = 'kill';
           entity2.die();
           entity2.body.enable = false;
-          /**
-           * @todo(anand): Need to implement Game Over
-           */
         }
     }
-    // if (entity1.state !== 'dead') entity1.idleHere();
-
-    // if (entity2.state == 'attacking') entity2.attack();
-    // else entity2.idleHere();
-
-    // console.log('[Collision] ' + entity1 + ' - ' + entity2);
-    // console.log('[Collision] E1' + JSON.stringify(entity1.trueXY()));
-    // console.log('[Collision] E2' + JSON.stringify(entity2.trueXY()));
+    /**
+     * @todo(anand): Need to implement Game Over
+     */
+    if ((dead.type === 'monster' && perp.type === 'player' && action == 'kill')
+     || (dead.type === 'npc' && perp === 'player' && action == 'kill')) {
+      this.player.score++;
+      let witness = Sampling.sample_from_array(Map.nearest(this.player, 3, 128), 1);
+      this.rippleGossip.createRumor(
+        witness,
+        dead,
+        perp,
+        action
+      );
+    }
 }
 
 Play.populateBoard = function() {

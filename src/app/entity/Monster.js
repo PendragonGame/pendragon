@@ -21,6 +21,8 @@ function Monster(x, y, key) {
       */
       this.type = 'monster';
       this.reputation = -0.25;
+
+      this.dislike = ['npc'];
 }
 
 Monster.prototype = Object.create(NPC.prototype);

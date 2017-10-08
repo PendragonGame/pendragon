@@ -68,7 +68,7 @@ Ripple.prototype.createRumor = function(
         id: uuid(),
         targetType: target.type,
         perp: p,
-        action: 'action',
+        action: action,
     };
     witness.learnInfo(rumor);
     return rumor;

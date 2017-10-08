@@ -25,6 +25,12 @@ function NPC(x, y, key) {
      * Type of Entity
      */
     this.type = 'npc';
+
+    /**
+     * For all `NPC`s, I am defaulting the people they dislike
+     * to monsters. This will be overridden in `Monster`.
+     */
+    this.dislike = ['monster'];
 }
 NPC.prototype = Object.create(Entity.prototype);
 NPC.prototype.constructor = NPC;
