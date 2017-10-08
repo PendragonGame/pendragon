@@ -20,6 +20,7 @@ function Monster(x, y, key) {
       * Type of Entity
       */
       this.type = 'monster';
+      this.reputation = -0.25;
 }
 
 Monster.prototype = Object.create(NPC.prototype);
