@@ -1,6 +1,7 @@
 'use strict';
 const storage = require('electron-json-storage');
 const moment = require('moment');
+const _ = require('lodash');
 
 let playerData = null;
 let monsterData = {};
@@ -57,6 +58,20 @@ let manualSave = function() {
         if (err) throw err;
     });
 }
+
+/**
+ * Get the Manually Saved States
+ */
+let getStates = function() {
+    storage.keys(function(err, keys) {
+        if (err) throw err;
+        return keys;
+    });
+};
+
+let loadState = function(key) {
+
+};
 
 
 module.exports.storeEntity = storeEntity;
