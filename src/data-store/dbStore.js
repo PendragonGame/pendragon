@@ -49,6 +49,10 @@ let manualSave = function() {
 
     let timestamp = moment().toISOString();
     let key = timestamp + '.entities';
+    console.log('Saving entity to: ' + key);
+    /**
+     * NOTE(anand): There may be a problem with loading because the timestamp is urlencoded
+     */
     storage.set(key, entities, function(err) {
         if (err) throw err;
     });
