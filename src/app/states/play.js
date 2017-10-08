@@ -6,6 +6,7 @@ const NPC = require('../entity/NPC');
 const Factory = require('../factory/Factory');
 const dataStore = require('../util/data');
 const Map = require('../util/Map');
+const Ripple = require('../ripple/engine');
 
 const _ = require('lodash');
 
@@ -66,8 +67,21 @@ Play.create = function() {
      * 
      * What I did here is call the things immediately and then
      */
-    this.generateMap();
-
+    // this.generateMap();
+    (function mapGenerate() {
+        let entities = [];
+        // entities.push(this.player);
+        // I see no point in adding the player
+        self.monsterGroup.forEachAlive(function(monster) {
+            entities.push(monster);
+        });
+        self.npcGroup.forEachAlive(function(npc) {
+            entities.push(npc);
+        });
+        Map.create(entities);
+        setTimeout(mapGenerate, 1500);
+    })();
+    this.rippleGossip = new Ripple();
 
     /**
      * Day night cycle
