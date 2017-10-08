@@ -25,3 +25,23 @@ module.exports.manualSaveState = function() {
     ipcRenderer.send('manualSaveState', true);
 };
 
+module.exports.getSaveStates = function() {
+    ipcRenderer.send('listSaveStates', true);
+    return new Promise(function(resolve, reject) {
+        ipcRenderer.on('reply-listSaveStates', (ev, arg) => {
+            if (!arg.success) reject('Failed to list keys');
+            resolve(arg.data);
+        });
+    });
+};
+
+module.exports.loadState = function(key) {
+    ipcRenderer.send('loadState', true);
+    return new Promise(function(resolve, reject) {
+        ipcRenderer.on('reply-loadState', (ev, arg) => {
+            if (!arg.success) reject('Failed to load key');
+            resolve(arg.data);
+        });
+    });
+};
+
