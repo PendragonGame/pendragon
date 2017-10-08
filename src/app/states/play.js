@@ -6,6 +6,7 @@ const NPC = require('../entity/NPC');
 const Factory = require('../factory/Factory');
 const dataStore = require('../util/data');
 const Map = require('../util/Map');
+const Ripple = require('../ripple/engine');
 
 const _ = require('lodash');
 
@@ -66,8 +67,21 @@ Play.create = function() {
      * 
      * What I did here is call the things immediately and then
      */
-    this.generateMap();
-
+    // this.generateMap();
+    (function mapGenerate() {
+        let entities = [];
+        // entities.push(this.player);
+        // I see no point in adding the player
+        self.monsterGroup.forEachAlive(function(monster) {
+            entities.push(monster);
+        });
+        self.npcGroup.forEachAlive(function(npc) {
+            entities.push(npc);
+        });
+        Map.create(entities);
+        setTimeout(mapGenerate, 1500);
+    })();
+    this.rippleGossip = new Ripple();
 
     /**
      * Day night cycle
@@ -235,7 +249,7 @@ Play.update = function() {
     const self = this;
     let nearest4 = Map.nearest(this.player);
     _.forEach(nearest4, function(entity) {
-        console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
+        // console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
         if ((self.player.y + self.player.height) > (entity[0].y + entity[0].height)) {
             game.world.bringToTop(self.player);
             // console.log('player on top');

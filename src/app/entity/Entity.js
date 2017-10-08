@@ -88,6 +88,12 @@ function Entity(x, y, key) {
      */
     this.type = 'generic';
     this.id = uuid();
+
+    /**
+     * Reputation and Gossip
+     */
+    this.reputation = 0;
+    this.information = [];
 }
 
 Entity.prototype = Object.create(Phaser.Sprite.prototype);
@@ -418,6 +424,10 @@ Entity.prototype.trueXY = function() {
         y: self.y + self.body.height/2 + self.body.offset.y,
     };
 };
+
+Entity.prototype.learnInfo = function(rumor) {
+    this.information.push(rumor);
+} 
 
 
 /**

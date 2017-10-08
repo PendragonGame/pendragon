@@ -1,4 +1,8 @@
-const {app, BrowserWindow, ipcMain} = require('electron');
+const {
+    app,
+    BrowserWindow,
+    ipcMain
+} = require('electron');
 const path = require('path');
 const url = require('url');
 const is = require('electron-is');
@@ -15,6 +19,9 @@ function createWindow() {
         width: 640,
         height: 640,
         resizable: false,
+        webPreferences: {
+            nodeIntegrationInWorker: true
+        },
     });
 
     mainWindow.loadURL(url.format({
