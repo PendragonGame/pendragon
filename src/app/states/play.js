@@ -180,14 +180,66 @@ Play.update = function() {
 
     /**
      * NPC Code
+     * 
+     * Threshold distance to attack is 8 tiles.
+     * => 4 tiles on either side
+     * => Distance to player = 128
+     * => 128^2 = 16384
      */
     // this.navMesh.navMesh.debugClear(); // Clears the overlay
-    for (let i = 0, len = this.npcGroup.children.length; i < len; i++) {
-        (this.npcGroup.children[i]).wander(this.navMesh);
-    }
-    for (let i = 0, len = this.monsterGroup.children.length; i < len; i++) {
-        (this.monsterGroup.children[i]).aggro(this.player, this.navMesh);
-    }
+    this.npcGroup.forEachAlive((e) => {
+        if (this.getPlayerDistance2(e) < 16384) {
+            /**
+             * NOTE(anand):
+             * 
+             * At this point, the NPC can either attack the player
+             * or run away if they dont like the player
+             * or do nothing otherwise.
+             * 
+             * What I will do is this.
+             * 
+             * If Reputation is below 0 (it will always be >= -1):
+             * Generate a random number between -1 and 0. 
+             * - If the number lies between -1 and the reputation
+             *   - avoid the player
+             * - Else
+             *   - attck the player
+             * Else (Rep >= 0)
+             * - wander
+             */
+            if (e.reputation < 0) {
+                let decision = -Math.random();
+                if (decision < e.reputation) {
+                    e.wander(this.navMesh);
+                } else {
+                    e.aggro(this.player, this.navMesh);
+                }
+            }
+        } else {
+            e.wander(this.navMesh);
+        }
+    });
+    this.monsterGroup.forEachAlive((e) => {
+        if (this.getPlayerDistance2(e) < 16384 && e.reputation < 0) {
+            /**
+             * NOTE(anand):
+             * 
+             * For monster, I will attack regardless,
+             * but I will sprint if I realllllly don't
+             * like the player (less than -0.8?)
+             */
+            e.aggro(this.player, this.navMesh, (Math.random() < -0.8));
+        } else {
+            e.wander(this.navMesh);
+        }
+    });
+
+    // for (let i = 0, len = this.npcGroup.children.length; i < len; i++) {
+    //     (this.npcGroup.children[i]).wander(this.navMesh);
+    // }
+    // for (let i = 0, len = this.monsterGroup.children.length; i < len; i++) {
+    //     (this.monsterGroup.children[i]).aggro(this.player, this.navMesh);
+    // }
 
     /**
      * PLAYER CODE
@@ -300,8 +352,14 @@ function entityCollision(entity1, entity2) {
         }
     }
     if (entity1.state === 'attacking') {
-        entity2.die();
-        entity2.body.enable = false;
+        entity1.attack();
+        if (entity2.state !== 'dead') {
+          entity2.die();
+          entity2.body.enable = false;
+          /**
+           * @todo(anand): Need to implement Game Over
+           */
+        }
     }
     // if (entity1.state !== 'dead') entity1.idleHere();
 
@@ -375,6 +433,20 @@ Play.generateMap = function() {
     Map.create(entities);
 
     setTimeout(this.generateMap, 1500);
+};
+
+/**
+ * This will return the distance to the player squared.
+ * 
+ * Square root calculation is not trivial.
+ * 
+ * @param {Entity} entity 
+ * @return {number}
+ */
+Play.getPlayerDistance2 = function(entity) {
+    let player = this.player.trueXY();
+    let e = entity.trueXY();
+    return Math.pow(player.x - e.x, 2) + Math.pow(player.y - e.y, 2);
 };
 
 

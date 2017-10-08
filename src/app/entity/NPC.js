@@ -115,9 +115,10 @@ NPC.prototype.wander = function(navMesh,
  * Make the npc attack a target
  * @param {Entity} target target to attack
  * @param {navmesh} navMesh the navMesh of the map
+ * @param {boolean=} sprint the navMesh of the map
  * @return {boolean} target no longer exists (probably dead)
  */
-NPC.prototype.aggro = function(target, navMesh) {
+NPC.prototype.aggro = function(target, navMesh, sprint = false) {
     if (!target) {
         console.warn('target does not exist');
         this.idleHere();
@@ -133,14 +134,14 @@ NPC.prototype.aggro = function(target, navMesh) {
          // approach from left
          if (target.trueXY().x-this.trueXY().x < 0) {
             if (this.gotoXY(target.trueXY().x+32, target.trueXY().y,
-             navMesh, true)) {
+             navMesh, sprint)) {
                 this.setDirection('left');
                 this.attack();
             }
         } else {
             // approach from right
             if (this.gotoXY(target.trueXY().x-32, target.trueXY().y,
-             navMesh, true)) {
+             navMesh, sprint)) {
                 this.setDirection('right');
                 this.attack();
             }
@@ -149,14 +150,14 @@ NPC.prototype.aggro = function(target, navMesh) {
         // approach from up
         if (target.trueXY().y-this.trueXY().y < 0) {
             if (this.gotoXY(target.trueXY().x, target.trueXY().y+32,
-             navMesh, true)) {
+             navMesh, sprint)) {
                 this.setDirection('up');
                 this.attack();
             }
         } else {
         // approach from down
             if (this.gotoXY(target.trueXY().x, target.trueXY().y-32,
-             navMesh, true)) {
+             navMesh, sprint)) {
                 this.setDirection('down');
                 this.attack();
             }
