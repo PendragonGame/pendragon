@@ -27,4 +27,8 @@ function Player(x, y, key) {
 Player.prototype = Object.create(Entity.prototype);
 Player.prototype.constructor = Player;
 
+// Player.prototype.die = function() {
+//     Entity.die.call(this);
+// };
+
 module.exports = Player;

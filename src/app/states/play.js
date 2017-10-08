@@ -139,9 +139,10 @@ Play.create = function() {
      * Debug Stuff
      */
 
-    // this.monsterGroup.children[0].x = game.world.width+200;
-    // this.monsterGroup.children[0].y = game.world.height+200;
-    
+    this.monsterGroup.children[0].x = this.player.x + 140;
+    this.monsterGroup.children[0].y = this.player.y+100;
+    this.monsterGroup.children[1].x = this.player.x + 180;
+    this.monsterGroup.children[1].y = this.player.y+170;
 };
 
 Play.update = function() {
@@ -152,6 +153,8 @@ Play.update = function() {
      * Debug Stuff
      */
      // game.debug.body(this.player);
+    //  this.navMesh.navMesh.debugClear(); // Clears the overlay
+     
 
      // day / night cycle
      if (this.dayTime) {
@@ -183,17 +186,13 @@ Play.update = function() {
         (this.npcGroup.children[i]).wander(this.navMesh);
     }
     for (let i = 0, len = this.monsterGroup.children.length; i < len; i++) {
-        if (i === 0) {
-            (this.monsterGroup.children[i]).attack(this.player, this.navMesh);
-            break;
-        }
-        (this.monsterGroup.children[i]).wander(this.navMesh);
+        (this.monsterGroup.children[i]).aggro(this.player, this.navMesh);
     }
 
     /**
      * PLAYER CODE
      */
-
+    if (this.player.state === 'dead') return;
     // Displays the hitbox for the Player
     // this.game.debug.body(this.player);
 
@@ -243,7 +242,7 @@ Play.update = function() {
     const self = this;
     let nearest4 = Map.nearest(this.player);
     _.forEach(nearest4, function(entity) {
-        console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
+        // console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
         if ((self.player.y + self.player.height) > (entity[0].y + entity[0].height)) {
             game.world.bringToTop(self.player);
             // console.log('player on top');
@@ -299,16 +298,19 @@ function entityCollision(entity1, entity2) {
               this.player.score++;
           }
         }
-    } else {
-        if (entity1.state !== 'dead') entity1.idleHere();
     }
+    if (entity1.state === 'attacking') {
+        entity2.die();
+        entity2.body.enable = false;
+    }
+    // if (entity1.state !== 'dead') entity1.idleHere();
 
-    if (entity2.state == 'attacking') entity2.attack();
-    else entity2.idleHere();
+    // if (entity2.state == 'attacking') entity2.attack();
+    // else entity2.idleHere();
 
-    console.log('[Collision] ' + entity1 + ' - ' + entity2);
-    console.log('[Collision] E1' + JSON.stringify(entity1.trueXY()));
-    console.log('[Collision] E2' + JSON.stringify(entity2.trueXY()));
+    // console.log('[Collision] ' + entity1 + ' - ' + entity2);
+    // console.log('[Collision] E1' + JSON.stringify(entity1.trueXY()));
+    // console.log('[Collision] E2' + JSON.stringify(entity2.trueXY()));
 }
 
 Play.populateBoard = function() {

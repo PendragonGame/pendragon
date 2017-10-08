@@ -127,7 +127,7 @@ Entity.prototype.setAnimations = function(frames) {
                                  271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
                                  271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 272],
                                  25,
-                                 true);
+                                 false);
 
 
     this.animations.add('walk_up',
@@ -234,18 +234,29 @@ Entity.prototype.idleHere = function() {
 };
 
 Entity.prototype.attack = function() {
+    self = this;
+    console.log('attacking');
     this.state = 'attacking';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
-    this.animations.play('slash_' + this.direction, 20, true);
+    this.animations.play('slash_' + this.direction, 20, false).onComplete.add(function() {
+        // this.animations.frame
+        console.log('attack finished');
+       self.idleHere();
+    });
     this.adjustHitbox('slash');
 };
 
 Entity.prototype.die = function() {
+    // const self = this;
     this.state = 'dead';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
     this.animations.play('die', 10, false);
+    const self = this;
+    setTimeout(function() {
+        self.kill();
+    }, 5000);
 };
 
 /*

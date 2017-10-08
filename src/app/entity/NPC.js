@@ -35,9 +35,10 @@ NPC.prototype.constructor = NPC;
  * @param {number} x
  * @param {number} y
  * @param {navMesh} navMesh -navigation mesh object
+ * @param {boolean} sprint if true go fast 
  * @return {boolean} return true if finished, otherwise false.
  */
-NPC.prototype.gotoXY = function(x, y, navMesh) {
+NPC.prototype.gotoXY = function(x, y, navMesh, sprint = false) {
     // destination point
     const p2 = new Phaser.Point(x, y);
     // the entities location, respective to the center of its hit box
@@ -57,7 +58,7 @@ NPC.prototype.gotoXY = function(x, y, navMesh) {
         // check to see if the target location is reached within 5 units
         if (path.length === 2 && Math.abs(path[1].x - trueX) < 5
         && Math.abs(path[1].y - trueY) < 5) {
-        this.idleHere();
+        if (this.state !== 'attacking') this.idleHere();
         return true;
 }
     let currentTime = game.time.now;
@@ -65,8 +66,8 @@ NPC.prototype.gotoXY = function(x, y, navMesh) {
     if (currentTime - this.directionLimiter >= 150) {
             // confusing code that ram won't understand
             Math.abs(path[1].x - trueX) >= Math.abs(path[1].y - trueY) ?
-            this.moveInDirection(((path[1].x - trueX < 0)*2)+1, false) :
-            this.moveInDirection((path[1].y - trueY > 0)*2, false);
+            this.moveInDirection(((path[1].x - trueX < 0)*2)+1, sprint) :
+            this.moveInDirection((path[1].y - trueY > 0)*2, sprint);
             this.directionLimiter = currentTime;
     }
     } else {
@@ -114,12 +115,56 @@ NPC.prototype.wander = function(navMesh,
  * Make the npc attack a target
  * @param {Entity} target target to attack
  * @param {navmesh} navMesh the navMesh of the map
+ * @return {boolean} target no longer exists (probably dead)
  */
-NPC.prototype.attack = function(target, navMesh) {
-    this.gotoXY(target.trueXY().x, target.trueXY().y, navMesh);
+NPC.prototype.aggro = function(target, navMesh) {
+    if (!target) {
+        console.warn('target does not exist');
+        this.idleHere();
+        return true;
+    }
+    if (target.state === 'dead') {
+        this.idleHere();
+        return true;
+    }
+    // check your location relative to target
+    if (Math.abs(target.trueXY().x-this.trueXY().x)
+     >= Math.abs(target.trueXY().y - this.trueXY().y)) {
+         // approach from left
+         if (target.trueXY().x-this.trueXY().x < 0) {
+            if (this.gotoXY(target.trueXY().x+32, target.trueXY().y,
+             navMesh, true)) {
+                this.setDirection('left');
+                this.attack();
+            }
+        } else {
+            // approach from right
+            if (this.gotoXY(target.trueXY().x-32, target.trueXY().y,
+             navMesh, true)) {
+                this.setDirection('right');
+                this.attack();
+            }
+        }
+    } else {
+        // approach from up
+        if (target.trueXY().y-this.trueXY().y < 0) {
+            if (this.gotoXY(target.trueXY().x, target.trueXY().y+32,
+             navMesh, true)) {
+                this.setDirection('up');
+                this.attack();
+            }
+        } else {
+        // approach from down
+            if (this.gotoXY(target.trueXY().x, target.trueXY().y-32,
+             navMesh, true)) {
+                this.setDirection('down');
+                this.attack();
+            }
+        }
+    }
 };
 
-NPC.prototype.aIUpdate = function() {
+NPC.prototype.aIUpdate = function(navMesh) {
 
 };
 
