@@ -6,5 +6,10 @@ game.state.add('Boot', States.Boot);
 game.state.add('Load', States.Load);
 game.state.add('Play', States.Play);
 game.state.add('Menu', States.Menu);
+<<<<<<< HEAD
 game.state.add('Game Over', States.GameOver);
+=======
+game.state.add('LoadMenu', States.LoadMenu);
+
+>>>>>>> save-load-entities
 game.state.start('Boot');

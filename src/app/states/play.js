@@ -16,8 +16,6 @@ Play.init = function() {
 };
 
 Play.create = function() {
-    const self = this;
-
     /**
      * Map creation
      */
@@ -51,13 +49,10 @@ Play.create = function() {
 
     /**
      * Setting datastore callback interval
+     * 
+     * Start autosaving 10 seconds after game starts
      */
-
-    setInterval(function() {
-        dataStore.storeEntity(self.player);
-        self.monsterGroup.forEachAlive(dataStore.storeEntity);
-        self.npcGroup.forEachAlive(dataStore.storeEntity);
-    }, 1000);
+    setTimeout(this.autosaveData(), 10000);
 
     /**
      * Build the datastructure keeping track of Entities
@@ -80,6 +75,7 @@ Play.create = function() {
     this.light.endFill();
     this.dayTime = true;
 
+
     /**
      * HUD elements
      * 
@@ -94,6 +90,7 @@ Play.create = function() {
     this.wpn.height /= 2;
     this.wpn.x = window.innerWidth - this.wpn.width;
     this.wpn.fixedToCamera = true;
+
 
     this.textStyle = {
         font: 'bold 20px Consolas',
@@ -134,6 +131,54 @@ Play.create = function() {
     this.fullRepBar.fixedToCamera = true;
     this.fullRepBar.width /= 2;
 
+    /**
+     * save button
+     * 
+     */
+    // function saveButton() {
+    let saveButton = game.add.button(this.wasd.width + 60, window.innerHeight - 27,
+        'hud_save', function() {
+            console.log('Save Button Clicked');
+            console.log('Manually saving');
+            let savedText = game.add.text(10, -20, 'Saved');
+            savedText.font = 'Fauna One';
+            savedText.fill = '#000000';
+            savedText.fontSize = '12pt';
+            savedText.lifespan = 770;
+            savedText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
+            saveButton.addChild(savedText);
+            dataStore.manualSaveState();
+        }, 2, 1, 0);
+    saveButton.width = 70;
+    saveButton.height = 30;
+    /**
+    * 
+    *hover over for button
+    */
+    saveButton.onInputOver.add(function over() {
+        console.log('Hovering over Save Button');
+    });
+    saveButton.fixedToCamera = true;
+
+    /**
+    * menu button
+    * 
+    */
+    // function menuButton() {
+    let menuButton = game.add.button(this.wasd.width + 140, window.innerHeight - 27,
+            'hud_menu', function() {
+                console.log('Menu Button Clicked');
+            }, 2, 1, 0);
+    menuButton.width = 70;
+    menuButton.height = 30;
+    /**
+    * 
+    *hover over for button
+    */
+    menuButton.onInputOver.add(function over() {
+        console.log('Hovering over Menu Button');
+    });
+    menuButton.fixedToCamera = true;
 
     /**
      * Debug Stuff
@@ -238,7 +283,7 @@ Play.update = function() {
     const self = this;
     let nearest4 = Map.nearest(this.player);
     _.forEach(nearest4, function(entity) {
-        console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
+        // console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
         if ((self.player.y + self.player.height) > (entity[0].y + entity[0].height)) {
             game.world.bringToTop(self.player);
             // console.log('player on top');
@@ -368,6 +413,22 @@ Play.generateMap = function() {
     Map.create(entities);
 
     setTimeout(this.generateMap, 1500);
+};
+
+Play.autosaveData = function() {
+    const self = this;
+    dataStore.autosaveEntity(self.player);
+    self.monsterGroup.forEachAlive(dataStore.autosaveEntity);
+    self.npcGroup.forEachAlive(dataStore.autosaveEntity);
+
+    setTimeout(this.autosaveData, 1000);
+};
+
+Play.manualSaveData = function() {
+    const self = this;
+    dataStore.manualSaveEntity(sel.player);
+    self.monsterGroup.forEachAlive(dataStore.manualSaveEntity);
+    self.npcGroup.forEachAlive(dataStore.manualSaveEntity);
 };
 
 
