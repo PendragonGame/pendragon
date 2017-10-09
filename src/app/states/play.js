@@ -409,12 +409,15 @@ function entityCollision(entity1, entity2) {
                     break;
             }
         }
-        let witness = Sampling.sample_from_array(Map.nearest(this.player, 10, 256), 1);
-        this.rippleGossip.createRumor(
-            witness[0][0],
-            dead,
-            perp,
-            action);
+        let witnesses = Sampling.sample_from_array(Map.nearest(this.player, 10, 256), 1, false);
+        if (witnesses[0][0].id !== dead.id) {
+            let witness = witnesses[0][0];
+            this.rippleGossip.createRumor(
+                witness,
+                dead,
+                perp,
+                action);
+        }      
     }
 }
 

@@ -259,6 +259,8 @@ Entity.prototype.die = function() {
     this.state = 'dead';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
+    this.alive = false;
+    // this.exists = false;
     this.animations.play('die', 10, false);
     const self = this;
     setTimeout(function() {
@@ -380,6 +382,7 @@ Entity.prototype.learnInfo = function(rumor) {
                   * 0.1.
                   */
                 this.reputation = Math.max(-1, this.reputation - 0.1);
+                this.converse('That person sucks!');
             } else if (this.dislike.includes(rumor.targetType)) {
                 /**
                  * If the current entity dislikes the type of entity
@@ -387,6 +390,7 @@ Entity.prototype.learnInfo = function(rumor) {
                  * rep increases by 0.1
                  */
                 this.reputation = Math.min(1, this.reputation + 0.25);
+                this.converse('I LOVE THAT PERSON!');
             }
     }
 };
