@@ -330,7 +330,28 @@ Entity.prototype.serialize = function() {
     obj.key = this.key;
     obj.alive = this.alive;
     obj.type = this.type;
+    obj.information = this.information;
+    obj.reputation = this.reputation;
+    if (this.type === 'player') {
+        obj.score = this.score;
+        obj.daysSurvived = this.daysSurvived;
+    }
     return obj;
+};
+
+Entity.prototype.deserialize = function(obj) {
+    this.id = obj.id;
+    this.x = obj.x;
+    this.y = obj.y;
+    this.key = obj.key;
+    this.alive = obj.alive;
+    this.type = obj.type;
+    this.information = obj.information;
+    this.reputation = obj.reputation;
+    if (this.type === 'player') {
+        this.score = obj.score;
+        this.daysSurvived = obj.daysSurvived;
+    }
 };
 
 /**

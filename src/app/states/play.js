@@ -11,17 +11,33 @@ const Ripple = require('../ripple/engine');
 const Sampling = require('discrete-sampling');
 
 const _ = require('lodash');
+const npcBounds = [
+    [new Phaser.Point(1397, 1344), new Phaser.Point(1684, 1472)],
+    [new Phaser.Point(778, 1328), new Phaser.Point(1065, 1553)],
+    [new Phaser.Point(1660, 735), new Phaser.Point(1690, 1065)],
+    [new Phaser.Point(1800, 2200), new Phaser.Point(3000, 2700)],
+];
+
+const monsterBounds = [
+    [new Phaser.Point(3415, 2886), new Phaser.Point(3952, 1501)],
+];
+
+let loadedData = null;
 
 let Play = {};
 
-Play.init = function() {
-
+Play.init = function(data) {
+    if (data) {
+        loadedData = data;
+    };
 };
 
-Play.create = function() {
-    const self = this;
+Play.setLoadData = function(data) {
+    loadedData = data;
+};
 
-    /**
+Play.preload = function() {
+     /**
      * Map creation
      */
     this.map = game.add.tilemap('map');
@@ -36,32 +52,10 @@ Play.create = function() {
     this.blockLayer.resizeWorld();
     this.bgLayer.resizeWorld();
     this.game = game;
-
     this.navMesh = new NavMesh(this.map);
 
     // Input for game
     this.keyboard = game.input.keyboard;
-
-    this.populateBoard();
-    this.player.bringToTop();
-    /**
-     * Center camera on player
-     */
-    this.game.camera.follow(this.player);
-
-    this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
-    this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
-
-    /**
-     * Day night cycle
-     */
-    this.light = game.add.graphics();
-    this.light.beginFill(0x18007A);
-    this.light.alpha = 0;
-    this.light.drawRect(0, 0, game.camera.width, game.camera.height);
-    this.light.fixedToCamera = true;
-    this.light.endFill();
-    this.dayTime = true;
 
     /**
      * HUD elements
@@ -77,6 +71,7 @@ Play.create = function() {
     this.wpn.height /= 2;
     this.wpn.x = window.innerWidth - this.wpn.width;
     this.wpn.fixedToCamera = true;
+
 
     this.textStyle = {
         font: 'bold 20px Consolas',
@@ -119,13 +114,113 @@ Play.create = function() {
     this.fullRepBar.width /= 2;
 
     /**
-     * Setting datastore callback interval
+     * save button
+     * 
      */
+    // function saveButton() {
+    let saveButton = game.add.button(this.wasd.width + 60, window.innerHeight - 27,
+        'hud_save',
+        function() {
+            console.log('Save Button Clicked');
+            console.log('Manually saving');
+            let savedText = game.add.text(10, -20, 'Saved');
+            savedText.font = 'Fauna One';
+            savedText.fill = '#000000';
+            savedText.fontSize = '12pt';
+            savedText.lifespan = 770;
+            savedText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
+            saveButton.addChild(savedText);
+            dataStore.manualSaveState();
+        }, 2, 1, 0);
+    saveButton.width = 70;
+    saveButton.height = 30;
+    /**
+     * 
+     *hover over for button
+     */
+    saveButton.onInputOver.add(function over() {
+        console.log('Hovering over Save Button');
+    });
+    saveButton.fixedToCamera = true;
+    this.saveButton = saveButton;
+    /**
+     * menu button
+     * 
+     */
+    // function menuButton() {
+    let menuButton = game.add.button(this.wasd.width + 140, window.innerHeight - 27,
+        'hud_menu',
+        function() {
+            console.log('Menu Button Clicked');
+        }, 2, 1, 0);
+    menuButton.width = 70;
+    menuButton.height = 30;
+    /**
+     * 
+     *hover over for button
+     */
+    menuButton.onInputOver.add(function over() {
+        console.log('Hovering over Menu Button');
+    });
+    menuButton.fixedToCamera = true;
+    this.menuButton = menuButton;
 
-    setInterval(function() {
-        dataStore.storeEntity(self.player);
-        self.monsterGroup.forEachAlive(dataStore.storeEntity);
-        self.npcGroup.forEachAlive(dataStore.storeEntity);
+    this.hudGroup = game.add.group();
+    this.hudGroup.addMultiple([
+        this.menuButton,
+        this.saveButton,
+        this.wasd,
+        this.wpn,
+        this.healthLabel,
+        this.repLabel,
+        this.scoreLabel,
+        this.dayLabel,
+        this.emptyHealthBar,
+        this.fullHealthBar,
+        this.emptyRepBar,
+        this.fullRepBar,
+    ]);
+};
+
+Play.create = function() {
+    // this.player.bringToTop();
+    /**
+     * Check if we should load game.
+     */
+    if (loadedData) {
+        this.loadBoard(loadedData);
+    } else {
+        this.populateBoard();
+    }
+    /**
+     * Center camera on player
+     */
+    this.game.camera.follow(this.player);
+
+    this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
+    this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
+
+
+    /**
+     * Day night cycle
+     */
+    this.light = game.add.graphics();
+    this.light.beginFill(0x18007A);
+    this.light.alpha = 0;
+    this.light.drawRect(0, 0, game.camera.width, game.camera.height);
+    this.light.fixedToCamera = true;
+    this.light.endFill();
+    this.dayTime = true;
+
+    /**
+     * Setting datastore callback interval
+     * 
+     * Start autosaving 10 seconds after game starts
+     */
+    setInterval(() => {
+        dataStore.autosaveEntity(this.player);
+        this.monsterGroup.forEachAlive(dataStore.autosaveEntity);
+        this.npcGroup.forEachAlive(dataStore.autosaveEntity);
     }, 1000);
 
     /**
@@ -135,21 +230,13 @@ Play.create = function() {
      * 
      * What I did here is call the things immediately and then
      */
-    // this.generateMap();
-    (function mapGenerate() {
-        let entities = [];
-        // entities.push(this.player);
-        // I see no point in adding the player
-        self.monsterGroup.forEachAlive(function(monster) {
-            entities.push(monster);
-        });
-        self.npcGroup.forEachAlive(function(npc) {
-            entities.push(npc);
-        });
-        Map.create(entities);
-        setTimeout(mapGenerate, 1500);
-    })();
-    this.rippleGossip = new Ripple();
+    this.generateMap();
+
+    game.world.bringToTop(this.hudGroup);
+
+    setTimeout(() => {
+        this.rippleGossip = new Ripple();
+    }, 2000);
 };
 
 Play.update = function() {
@@ -160,7 +247,6 @@ Play.update = function() {
      * Debug Stuff
      */
     // game.debug.body(this.player);
-    // this.navMesh.navMesh.debugClear(); // Clears the overlay
 
     // day / night cycle
     if (this.dayTime) {
@@ -293,18 +379,18 @@ Play.update = function() {
      * 
      * @todo(anand): Only do this check for the nearest 4 neighbors.
      */
-    Map.nearest(this.player)
-        .forEach((entity) => {
-            // console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
-            if ((this.player.y + this.player.height) >
-                (entity[0].y + entity[0].height)) {
-                game.world.bringToTop(this.player);
-                // console.log('player on top');
-            } else {
-                // console.log('entity on top');
-                game.world.bringToTop(entity[0]);
-            }
-        });
+    const self = this;
+    let nearest4 = Map.nearest(this.player);
+    _.forEach(nearest4, function(entity) {
+        // console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
+        if ((self.player.y + self.player.height) > (entity[0].y + entity[0].height)) {
+            game.world.bringToTop(self.player);
+            // console.log('player on top');
+        } else {
+            // console.log('entity on top');
+            game.world.bringToTop(entity[0]);
+        }
+    });
 
     let totalEntities = 1 +
         this.monsterGroup.total +
@@ -409,29 +495,30 @@ function entityCollision(entity1, entity2) {
                     break;
             }
         }
-        let witnesses = Sampling.sample_from_array(Map.nearest(this.player, 10, 256), 1, false);
-        if (witnesses[0][0].id !== dead.id) {
-            let witness = witnesses[0][0];
-            this.rippleGossip.createRumor(
-                witness,
-                dead,
-                perp,
-                action);
-        }      
+        let nearest = Map.nearest(this.player, 10, 256);
+        let witnesses = Sampling.sample_from_array(nearest, Math.min(1, nearest.length), false);
+        nearest = Map.nearest(this.player, 10, 256);
+        witnesses = Sampling.sample_from_array(nearest, Math.min(1, nearest.length), false);
+        if (!witnesses) return;
+        try {
+            /**
+             * @todo(anand): MAJOR HACK ALERT!!!!
+             */
+            if (witnesses[0][0].state !== 'dead') {
+                let witness = witnesses[0][0];
+                this.rippleGossip.createRumor(
+                    witness,
+                    dead,
+                    perp,
+                    action);
+            }
+        } catch (e) {
+            return;
+        }
     }
 }
 
 Play.populateBoard = function() {
-    let npcBounds = [
-        [new Phaser.Point(1397, 1344), new Phaser.Point(1684, 1472)],
-        [new Phaser.Point(778, 1328), new Phaser.Point(1065, 1553)],
-        [new Phaser.Point(1660, 735), new Phaser.Point(1690, 1065)],
-        [new Phaser.Point(1800, 2200), new Phaser.Point(3000, 2700)],
-    ];
-
-    let monsterBounds = [
-        [new Phaser.Point(3415, 2886), new Phaser.Point(3952, 1501)],
-    ];
 
     /**
      * Generate a factory and a few monsters
@@ -466,6 +553,62 @@ Play.populateBoard = function() {
         game.world.height / 2 + 200,
         'player');
 
+    /**
+     * Add all Entities to the same group.
+     */
+    this.entitiesGroup = game.add.group();
+    this.entitiesGroup.addMultiple([
+        this.player,
+        this.npcGroup,
+        this.monsterGroup,
+    ]);
+};
+
+Play.loadBoard = function(data) {
+    let playerData = data.player;
+    let monstersData = data.monsters;
+    let npcData = data.npc;
+
+    /**
+     * Generate a factory and a few monsters
+     */
+    this.monsterGroup = game.add.group();
+    this.monsterFactory = new Factory(Monster, this.monsterGroup,
+        monsterBounds, Object.keys(monstersData).length);
+    let i = 0;
+    for (let id in monstersData) {
+        if (Object.prototype.hasOwnProperty.call(monstersData, id)) {
+            i = i + 1;
+            console.debug('Monster #' + i);
+            let e = monstersData[id];
+            let E = this.monsterFactory.next(e.x, e.y, e.key);
+            E.deserialize(e);
+        }
+    }
+
+    /**
+     * Generate a factory and a few NPCs
+     */
+    i = 0;
+    this.npcGroup = game.add.group();
+    this.npcFactory = new Factory(NPC, this.npcGroup, npcBounds,
+        Object.keys(npcData).length);
+    for (let id in npcData) {
+        if (Object.prototype.hasOwnProperty.call(npcData, id)) {
+            i = i + 1;
+            console.debug('NPC #' + i);
+            let e = npcData[id];
+            let E = this.npcFactory.next(e.x, e.y, e.key);
+            E.deserialize(e);
+        }
+    }
+
+    /**
+     * Create the Player, setting location and naming as 'player'.
+     * Giving him Physics and allowing collision with the world boundaries.
+     */
+    this.player = new Player(playerData.x, playerData.y, playerData.key);
+    this.player.deserialize(playerData);
 
     /**
      * Add all Entities to the same group.
@@ -480,18 +623,33 @@ Play.populateBoard = function() {
 
 
 Play.generateMap = function() {
-    let entities = [];
-    // entities.push(this.player);
-    // I see no point in adding the player
-    this.monsterGroup.forEachAlive(function(monster) {
-        entities.push(monster);
-    });
-    this.npcGroup.forEachAlive(function(npc) {
-        entities.push(npc);
-    });
-    Map.create(entities);
+    setTimeout(() => {
+        let entities = [];
+        // entities.push(this.player);
+        // I see no point in adding the player
+        this.monsterGroup.forEachAlive(function(monster) {
+            entities.push(monster);
+        });
+        this.npcGroup.forEachAlive(function(npc) {
+            entities.push(npc);
+        });
+        Map.create(entities);
+    }, 1500);
+};
 
-    setTimeout(this.generateMap, 1500);
+Play.autosaveData = function() {
+    setTimeout(() => {
+        dataStore.autosaveEntity(this.player);
+        this.monsterGroup.forEachAlive(dataStore.autosaveEntity);
+        this.npcGroup.forEachAlive(dataStore.autosaveEntity);
+    }, 1000);
+};
+
+Play.manualSaveData = function() {
+    const self = this;
+    dataStore.manualSaveEntity(sel.player);
+    self.monsterGroup.forEachAlive(dataStore.manualSaveEntity);
+    self.npcGroup.forEachAlive(dataStore.manualSaveEntity);
 };
 
 /**

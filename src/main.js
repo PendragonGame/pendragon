@@ -9,7 +9,11 @@ const is = require('electron-is');
 const dbStore = require('./data-store/dbStore');
 
 let mainWindow;
+// const Autosave = new dbStore.SaveGame('autosave.entities');
+// const ManualSave = new dbStore.SaveGame('entities');
 
+let x = dbStore.getStates();
+console.log(x);
 
 /**
  * 
@@ -53,8 +57,39 @@ app.on('ready', () => {
     }
 });
 
-ipcMain.on('storeEntity', function(ev, arg) {
+ipcMain.on('saveEntity', function(ev, arg) {
     dbStore.storeEntity(arg);
 });
 
-setInterval(dbStore.storeState, 1000);
+ipcMain.on('manualSaveState', function(ev, arg) {
+    dbStore.manualSave();
+});
+
+setInterval(function() {
+    dbStore.autosave();
+}, 1000);
+
+ipcMain.on('listSaveStates', function(ev, arg) {
+    let p = dbStore.getStates();
+    p.then((keys) => {
+        ev.sender.send('reply-listSaveStates', {data: keys, success: true});
+    })
+    .catch((reason) => {
+        console.error('Failed to load keys:');
+        console.error(reason);
+        ev.sender.send('reply-listSaveStates', {data: null, success: false});
+    });
+});
+
+ipcMain.on('loadState', function(ev, arg) {
+    let p = dbStore.loadState(arg);
+    p.then((data) => {
+        ev.sender.send('reply-loadState', {data: data, success: true});
+    })
+    .catch((reason) => {
+        console.error('Failed to load key:');
+        console.error(reason);
+        ev.sender.send('reply-listSaveStates', {data: null, success: false});
+    });
+});
+
