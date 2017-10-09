@@ -15,7 +15,7 @@
       "name": "Anand Balakrishnan"
     }
   ],
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A RPG with realistic gossip",
   "main": "main.js",
   "scripts": {
