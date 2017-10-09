@@ -394,6 +394,15 @@ Entity.prototype.serialize = function() {
     return obj;
 };
 
+Entity.prototype.deserialize = function(obj) {
+    this.id = obj.id;
+    this.x = obj.x;
+    this.y = obj.y;
+    this.key = obj.key;
+    this.alive = obj.alive;
+    this.type = obj.type;
+};
+
 /**
  * Return the Name of the function.
  * This is a hack and should be used only for debugging.

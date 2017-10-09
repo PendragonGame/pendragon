@@ -38,7 +38,7 @@ module.exports.getSaveStates = function() {
 };
 
 module.exports.loadState = function(key) {
-    ipcRenderer.send('loadState', true);
+    ipcRenderer.send('loadState', key);
     loadedState = new Promise(function(resolve, reject) {
         ipcRenderer.on('reply-loadState', (ev, arg) => {
             if (!arg.success) reject('Failed to load key');
@@ -50,5 +50,9 @@ module.exports.loadState = function(key) {
 
 module.exports.getLoadedState = function(key) {
     return loadedState;
-}
+};
+
+module.exports.resetLoadState = function () {
+    loadedState = null;
+};
 

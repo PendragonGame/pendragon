@@ -1,5 +1,11 @@
 let Load = {};
 
+let loadedData = null;
+
+Load.init = function(data) {
+    loadedData = data;
+}
+
 Load.preload = function() {
     game.add.text(80, 150, 'loading...', {
         font: '30px Courier',
@@ -25,7 +31,7 @@ Load.preload = function() {
 };
 
 Load.create = function() {
-    game.state.start('Play');
+    game.state.start('Play', true, false, loadedData);
 };
 
 module.exports = Load;

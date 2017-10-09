@@ -2,15 +2,31 @@ const dataStore = require('../util/data');
 const moment = require('moment');
 
 let LoadMenu = {};
+
+/**
+ * 
+ * 
+ * @param {any} key 
+ */
+function loadGame() {
+    console.log('Loading: ' + this.key);
+    dataStore.loadState(this.key)
+        .then((data) => {
+            game.state.start('Load', true, false, data);
+        });
+}
+
 /**
  * 
  * @param {*} x 
  * @param {*} y 
  * @param {*} text 
+ * @param {*} key
  * @param {*} func
  */
-function MenuButton(x, y, text, func) {
+function MenuButton(x, y, text, key, func) {
     // add text over the button
+    this.key = key;
     this.text = game.add.text(x,
         y, text);
     this.text.anchor.setTo(.5, .5);
@@ -53,10 +69,8 @@ function ButtonList(saves) {
         saves.splice(autosaveIndex, 1);
         this.autosave = new MenuButton(game.camera.width / 2,
             100, 'Autosave',
-            function() {
-                console.log('load autosave');
-                dataStore.loadState('autosave');
-            }
+            'autosave',
+            loadGame
         );
     }
     let currentH = 160;
@@ -68,10 +82,8 @@ function ButtonList(saves) {
             this.saveButtons.push(new MenuButton(game.camera.width / 2,
                 currentH,
                 saves[i].title,
-                function() {
-                    console.log('loading ' + saves[i].key);
-                    dataStore.loadState(saves[i].key);
-                }));
+                saves[i].key,
+                loadGame));
             currentH += 60;
             if (currentH > 460) {
                 break;
@@ -93,10 +105,8 @@ function ButtonList(saves) {
                 this.saveButtons[i] = (new MenuButton(game.camera.width / 2,
                     currentH,
                     saves[i].title,
-                    function() {
-                        console.log('loading ' + saves[i].key);
-                        dataStore.loadState(saves[i].key);
-                    }));
+                    saves[i].key,
+                    loadGame));
                 currentH += 60;
                 if (currentH > 460) {
                     break;
@@ -120,10 +130,8 @@ function ButtonList(saves) {
                 this.saveButtons[i] = (new MenuButton(game.camera.width / 2,
                     currentH,
                     saves[i].title,
-                    function() {
-                        console.log('loading ' + saves[i].key);
-                        dataStore.loadState(saves[i].key);
-                    }));
+                    saves[i].key,
+                    loadGame));
                 currentH += 60;
                 if (currentH > 460) {
                     break;

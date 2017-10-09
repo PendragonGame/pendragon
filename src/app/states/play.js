@@ -9,14 +9,22 @@ const Map = require('../util/Map');
 
 const _ = require('lodash');
 
+let loadedData = null;
+
 let Play = {};
 
-Play.init = function() {
-
+Play.init = function(data) {
+    if (data) {
+        loadedData = data;
+    };
 };
 
-Play.create = function() {
-    /**
+Play.setLoadData = function(data) {
+    loadedData = data;
+};
+
+Play.preload = function() {
+     /**
      * Map creation
      */
     this.map = game.add.tilemap('map');
@@ -31,50 +39,10 @@ Play.create = function() {
     this.blockLayer.resizeWorld();
     this.bgLayer.resizeWorld();
     this.game = game;
-
     this.navMesh = new NavMesh(this.map);
 
     // Input for game
     this.keyboard = game.input.keyboard;
-
-    this.populateBoard();
-    this.player.bringToTop();
-    /**
-     * Center camera on player
-     */
-    this.game.camera.follow(this.player);
-
-    this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
-    this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
-
-    /**
-     * Setting datastore callback interval
-     * 
-     * Start autosaving 10 seconds after game starts
-     */
-    setTimeout(this.autosaveData(), 10000);
-
-    /**
-     * Build the datastructure keeping track of Entities
-     * 
-     * Period: 1.5 sec
-     * 
-     * What I did here is call the things immediately and then
-     */
-    this.generateMap();
-
-
-    /**
-     * Day night cycle
-     */
-    this.light = game.add.graphics();
-    this.light.beginFill(0x18007A);
-    this.light.alpha = 0;
-    this.light.drawRect(0, 0, game.camera.width, game.camera.height);
-    this.light.fixedToCamera = true;
-    this.light.endFill();
-    this.dayTime = true;
-
 
     /**
      * HUD elements
@@ -100,7 +68,7 @@ Play.create = function() {
     this.healthLabel = game.add.text(0, 5, 'Health', this.textStyle);
     this.healthLabel.fixedToCamera = true;
     this.repLabel = game.add.text(0, this.healthLabel.height + 10,
-                                'Rep', this.textStyle);
+        'Rep', this.textStyle);
     this.repLabel.fixedToCamera = true;
 
     this.scoreLabel = game.add.text(0, 0, 'Score: 0', this.textStyle);
@@ -114,20 +82,20 @@ Play.create = function() {
     this.dayLabel.fixedToCamera = true;
 
     this.emptyHealthBar = game.add.sprite(this.healthLabel.width + 5, 0,
-                                            'hud_emptyHealth');
+        'hud_emptyHealth');
     this.emptyHealthBar.fixedToCamera = true;
     this.fullHealthBar = game.add.sprite(this.healthLabel.width + 7, 2,
-                                            'hud_fullHealth');
+        'hud_fullHealth');
     this.fullHealthBar.fixedToCamera = true;
     this.fullHealthBar.width /= 2;
 
     this.emptyRepBar = game.add.sprite(this.healthLabel.width + 5,
-                                        this.emptyHealthBar.height,
-                                        'hud_emptyHealth');
+        this.emptyHealthBar.height,
+        'hud_emptyHealth');
     this.emptyRepBar.fixedToCamera = true;
     this.fullRepBar = game.add.sprite(this.healthLabel.width + 7,
-                                        this.emptyHealthBar.height + 2,
-                                        'hud_fullRep');
+        this.emptyHealthBar.height + 2,
+        'hud_fullRep');
     this.fullRepBar.fixedToCamera = true;
     this.fullRepBar.width /= 2;
 
@@ -137,7 +105,8 @@ Play.create = function() {
      */
     // function saveButton() {
     let saveButton = game.add.button(this.wasd.width + 60, window.innerHeight - 27,
-        'hud_save', function() {
+        'hud_save',
+        function() {
             console.log('Save Button Clicked');
             console.log('Manually saving');
             let savedText = game.add.text(10, -20, 'Saved');
@@ -152,50 +121,122 @@ Play.create = function() {
     saveButton.width = 70;
     saveButton.height = 30;
     /**
-    * 
-    *hover over for button
-    */
+     * 
+     *hover over for button
+     */
     saveButton.onInputOver.add(function over() {
         console.log('Hovering over Save Button');
     });
     saveButton.fixedToCamera = true;
-
+    this.saveButton = saveButton;
     /**
-    * menu button
-    * 
-    */
+     * menu button
+     * 
+     */
     // function menuButton() {
     let menuButton = game.add.button(this.wasd.width + 140, window.innerHeight - 27,
-            'hud_menu', function() {
-                console.log('Menu Button Clicked');
-            }, 2, 1, 0);
+        'hud_menu',
+        function() {
+            console.log('Menu Button Clicked');
+        }, 2, 1, 0);
     menuButton.width = 70;
     menuButton.height = 30;
     /**
-    * 
-    *hover over for button
-    */
+     * 
+     *hover over for button
+     */
     menuButton.onInputOver.add(function over() {
         console.log('Hovering over Menu Button');
     });
     menuButton.fixedToCamera = true;
+    this.menuButton = menuButton;
 
+    this.hudGroup = game.add.group();
+    this.hudGroup.addMultiple([
+        this.menuButton,
+        this.saveButton,
+        this.wasd,
+        this.wpn,
+        this.healthLabel,
+        this.repLabel,
+        this.scoreLabel,
+        this.dayLabel,
+        this.emptyHealthBar,
+        this.fullHealthBar,
+        this.emptyRepBar,
+        this.fullRepBar,
+    ]);
+};
+
+Play.create = function() {
+    // this.player.bringToTop();
+    /**
+     * Check if we should load game.
+     */
+    if (loadedData) {
+        this.loadBoard(loadedData);
+    } else {
+        this.populateBoard();
+    }
+    /**
+     * Center camera on player
+     */
+    this.game.camera.follow(this.player);
+
+    this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
+    this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
+
+
+    /**
+     * Day night cycle
+     */
+    this.light = game.add.graphics();
+    this.light.beginFill(0x18007A);
+    this.light.alpha = 0;
+    this.light.drawRect(0, 0, game.camera.width, game.camera.height);
+    this.light.fixedToCamera = true;
+    this.light.endFill();
+    this.dayTime = true;
+
+    /**
+     * Setting datastore callback interval
+     * 
+     * Start autosaving 10 seconds after game starts
+     */
+    setInterval(() => {
+        dataStore.autosaveEntity(this.player);
+        this.monsterGroup.forEachAlive(dataStore.autosaveEntity);
+        this.npcGroup.forEachAlive(dataStore.autosaveEntity);
+    }, 1000);
+
+    /**
+     * Build the datastructure keeping track of Entities
+     * 
+     * Period: 1.5 sec
+     * 
+     * What I did here is call the things immediately and then
+     */
+    this.generateMap();
+
+    game.world.bringToTop(this.hudGroup);
     /**
      * Debug Stuff
      */
+    console.log(this.player.trueXY());
 };
 
 Play.update = function() {
+    console.log(this.player.trueXY());
     while (this.fullHealthBar.width < 146) this.fullHealthBar.width += 1;
     this.scoreLabel.text = 'Score: ' + this.player.score;
     this.dayLabel.text = 'Day ' + this.player.daysSurvived;
     /**
      * Debug Stuff
      */
-     // game.debug.body(this.player);
+    // game.debug.body(this.player);
 
-     // day / night cycle
-     if (this.dayTime) {
+    // day / night cycle
+    if (this.dayTime) {
         this.light.alpha += .0001;
     } else {
         this.light.alpha -= .0007;
@@ -203,7 +244,7 @@ Play.update = function() {
     if (this.light.alpha <= 0 && this.dayTime === false) {
         this.dayTime = true;
         this.player.daysSurvived++;
-       }
+    }
     if (this.light.alpha >= .5) {
         this.dayTime = false;
     }
@@ -330,11 +371,11 @@ function entityCollision(entity1, entity2) {
     if (entity2.state == 'attacking') {
         entity2.attack();
         if (entity1.state !== 'dead') {
-          entity1.die();
-          entity1.body.enable = false;
-          if (this.monsterGroup.children.indexOf(entity1) > -1) {
-              this.player.score++;
-          }
+            entity1.die();
+            entity1.body.enable = false;
+            if (this.monsterGroup.children.indexOf(entity1) > -1) {
+                this.player.score++;
+            }
         }
     } else {
         if (entity1.state !== 'dead') entity1.idleHere();
@@ -381,10 +422,58 @@ Play.populateBoard = function() {
      * Create the Player, setting location and naming as 'player'.
      * Giving him Physics and allowing collision with the world boundaries.
      */
-    this.player = new Player(game.world.width/2,
-                            game.world.height/2 + 200,
-                            'player');
+    this.player = new Player(game.world.width / 2,
+        game.world.height / 2 + 200,
+        'player');
 
+    /**
+     * Add all Entities to the same group.
+     */
+    this.entitiesGroup = game.add.group();
+    this.entitiesGroup.addMultiple([
+        this.player,
+        this.npcGroup,
+        this.monsterGroup,
+    ]);
+};
+
+Play.loadBoard = function(data) {
+    let playerData = data.player;
+    let monstersData = data.monsters;
+    let npcData = data.npc;
+
+    /**
+     * Generate a factory and a few monsters
+     */
+    this.monsterGroup = game.add.group();
+    this.monsterFactory = new Factory(Monster, this.monsterGroup);
+    for (let id in monstersData) {
+        if (Object.prototype.hasOwnProperty.call(monstersData, id)) {
+            let e = monstersData[id];
+            let E = this.monsterFactory.next(e.x, e.y, e.key);
+            E.deserialize(e);
+        }
+    }
+
+    /**
+     * Generate a factory and a few NPCs
+     */
+    this.npcGroup = game.add.group();
+    this.npcFactory = new Factory(NPC, this.npcGroup);
+    for (let id in npcData) {
+        if (Object.prototype.hasOwnProperty.call(npcData, id)) {
+            let e = npcData[id];
+            let E = this.monsterFactory.next(e.x, e.y, e.key);
+            E.deserialize(e);
+        }
+    }
+
+    /**
+     * Create the Player, setting location and naming as 'player'.
+     * Giving him Physics and allowing collision with the world boundaries.
+     */
+    this.player = new Player(playerData.x, playerData.y, playerData.key);
+    this.player.deserialize(playerData);
 
     /**
      * Add all Entities to the same group.
@@ -398,27 +487,26 @@ Play.populateBoard = function() {
 };
 
 Play.generateMap = function() {
-    let entities = [];
-    // entities.push(this.player);
-    // I see no point in adding the player
-    this.monsterGroup.forEachAlive(function(monster) {
-        entities.push(monster);
-    });
-    this.npcGroup.forEachAlive(function(npc) {
-        entities.push(npc);
-    });
-    Map.create(entities);
-
-    setTimeout(this.generateMap, 1500);
+    setTimeout(() => {
+        let entities = [];
+        // entities.push(this.player);
+        // I see no point in adding the player
+        this.monsterGroup.forEachAlive(function(monster) {
+            entities.push(monster);
+        });
+        this.npcGroup.forEachAlive(function(npc) {
+            entities.push(npc);
+        });
+        Map.create(entities);
+    }, 1500);
 };
 
 Play.autosaveData = function() {
-    const self = this;
-    dataStore.autosaveEntity(self.player);
-    self.monsterGroup.forEachAlive(dataStore.autosaveEntity);
-    self.npcGroup.forEachAlive(dataStore.autosaveEntity);
-
-    setTimeout(this.autosaveData, 1000);
+    setTimeout(() => {
+        dataStore.autosaveEntity(this.player);
+        this.monsterGroup.forEachAlive(dataStore.autosaveEntity);
+        this.npcGroup.forEachAlive(dataStore.autosaveEntity);
+    }, 1000);
 };
 
 Play.manualSaveData = function() {

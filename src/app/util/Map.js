@@ -66,6 +66,9 @@ Map.insert = function(entity) {
  * @return {Array.Neighbors}
  */
 Map.nearest = function(entity, count, maxDistance) {
+    if (tree === null) {
+        return [];
+    }
     if (!(entity instanceof Entity)) {
         throw new TypeError('Invalid array');
     }

@@ -88,8 +88,10 @@ let getStates = function() {
 let loadState = function(key) {
     return new Promise(function(resolve, reject) {
         key = key + '.entities';
+        console.log('Loading key: ' + key);
         storage.get(key, (err, data) => {
             if (err) reject(err);
+            console.log('Loaded key: ' + key);
             resolve(data);
         });
     });
