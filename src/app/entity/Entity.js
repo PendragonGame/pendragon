@@ -94,6 +94,7 @@ function Entity(x, y, key) {
      */
     this.reputation = 0;
     this.information = [];
+    this.dislike = [];
 }
 
 Entity.prototype = Object.create(Phaser.Sprite.prototype);
@@ -356,8 +357,38 @@ Entity.prototype.trueXY = function() {
     };
 };
 
+/**
+ * 
+ * 
+ * @param {Object} rumor 
+ */
 Entity.prototype.learnInfo = function(rumor) {
+    if (this.information.some((e) => e.id === rumor.id)) {
+        /**
+         * Do nothing if we already know this information.
+         */
+        return;
+    }
     this.information.push(rumor);
+
+    switch (rumor.action) {
+        case 'kill':
+            if (rumor.targetType === this.type) {
+                 /**
+                  * If the type that was killed was the same as 
+                  * the current `Entity`'s type, reputation drop by
+                  * 0.1.
+                  */
+                this.reputation -= 0.1;
+            } else if (this.dislike.includes(rumor.targetType)) {
+                /**
+                 * If the current entity dislikes the type of entity
+                 * that was killed,
+                 * rep increases by 0.1
+                 */
+                this.reputation += 0.1;
+            }
+    }
 };
 
 

@@ -86,7 +86,7 @@ Play.create = function() {
     this.healthLabel = game.add.text(0, 5, 'Health', this.textStyle);
     this.healthLabel.fixedToCamera = true;
     this.repLabel = game.add.text(0, this.healthLabel.height + 10,
-                                'Rep', this.textStyle);
+        'Rep', this.textStyle);
     this.repLabel.fixedToCamera = true;
 
     this.scoreLabel = game.add.text(0, 0, 'Score: 0', this.textStyle);
@@ -100,35 +100,25 @@ Play.create = function() {
     this.dayLabel.fixedToCamera = true;
 
     this.emptyHealthBar = game.add.sprite(this.healthLabel.width + 5, 0,
-                                            'hud_emptyHealth');
+        'hud_emptyHealth');
     this.emptyHealthBar.fixedToCamera = true;
     this.fullHealthBar = game.add.sprite(this.healthLabel.width + 7, 2,
-                                            'hud_fullHealth');
+        'hud_fullHealth');
     this.fullHealthBar.fixedToCamera = true;
     this.fullHealthBar.width /= 2;
 
     this.emptyRepBar = game.add.sprite(this.healthLabel.width + 5,
-                                        this.emptyHealthBar.height,
-                                        'hud_emptyHealth');
+        this.emptyHealthBar.height,
+        'hud_emptyHealth');
     this.emptyRepBar.fixedToCamera = true;
     this.fullRepBar = game.add.sprite(this.healthLabel.width + 7,
-                                        this.emptyHealthBar.height + 2,
-                                        'hud_fullRep');
+        this.emptyHealthBar.height + 2,
+        'hud_fullRep');
     this.fullRepBar.fixedToCamera = true;
+    this.barRealWidth = this.fullRepBar.width;
     this.fullRepBar.width /= 2;
 
-
     /**
-     * Debug Stuff
-     */
-
-    this.monsterGroup.children[0].x = this.player.x + 140;
-    this.monsterGroup.children[0].y = this.player.y+100;
-    this.monsterGroup.children[1].x = this.player.x + 180;
-    this.monsterGroup.children[1].y = this.player.y+170;
-
-
-       /**
      * Setting datastore callback interval
      */
 
@@ -169,12 +159,11 @@ Play.update = function() {
     /**
      * Debug Stuff
      */
-     // game.debug.body(this.player);
+    // game.debug.body(this.player);
     // this.navMesh.navMesh.debugClear(); // Clears the overlay
-     
 
-     // day / night cycle
-     if (this.dayTime) {
+    // day / night cycle
+    if (this.dayTime) {
         this.light.alpha += .0001;
     } else {
         this.light.alpha -= .0007;
@@ -182,7 +171,7 @@ Play.update = function() {
     if (this.light.alpha <= 0 && this.dayTime === false) {
         this.dayTime = true;
         this.player.daysSurvived++;
-       }
+    }
     if (this.light.alpha >= .5) {
         this.dayTime = false;
     }
@@ -207,15 +196,52 @@ Play.update = function() {
     let tL = new Phaser.Point(772, 448);
     let bR = new Phaser.Point(3426, 2893);
     let tL2 = new Phaser.Point(3151, 568);
-    let bR2 = new Phaser.Point(4452, 3565);    
-    for (let i = 0, len = this.npcGroup.children.length; i < len; i++) {
-        this.npcGroup.children[i].updateAI(this.navMesh,
-             tL, bR, this.player, 'neutral');
-    }
-    for (let i = 0, len = this.monsterGroup.children.length; i < len; i++) {
-        this.monsterGroup.children[i].updateAI(this.navMesh,
-             tL2, bR2, this.player, 'aggressive');
-    }
+    let bR2 = new Phaser.Point(4452, 3565);
+
+    this.npcGroup.forEachAlive((e) => {
+        /**
+         * NOTE(anand):
+         * 
+         * At this point, the NPC can either attack the player
+         * or run away if they dont like the player
+         * or do nothing otherwise.
+         * 
+         * What I will do is this.
+         * 
+         * If Reputation is below 0 (it will always be >= -1):
+         * Generate a random number between -1 and 0. 
+         * - If the number lies between -1 and the reputation
+         *   - avoid the player
+         * - Else
+         *   - attck the player
+         * Else (Rep >= 0)
+         * - wander
+         */
+        let attitude = 'neutral';
+        if (e.reputation < 0) {
+            let decision = -Math.random();
+            if (decision > e.reputation) {
+                attitude = 'aggressive';
+            }
+        }
+        e.updateAI(this.navMesh, tL, bR, this.player, attitude);
+    });
+    this.monsterGroup.forEachAlive((e) => {
+        /**
+         * NOTE(anand):
+         * 
+         * For monster, I will attack regardless,
+         * but I will sprint if I realllllly don't
+         * like the player (less than -0.8?)
+         */
+        let attitude = 'aggressive';
+        if (e.reputation < -0.8) {
+            // Really aggro
+            e.slowSprint = e.sprintSpeed;
+            e.sprintSpeed = 2 * e.slowSprint;
+        }
+        e.updateAI(this.navMesh, tL2, bR2, this.player, attitude);
+    });
 
     /**
      * PLAYER CODE
@@ -267,18 +293,38 @@ Play.update = function() {
      * 
      * @todo(anand): Only do this check for the nearest 4 neighbors.
      */
-    const self = this;
-    let nearest4 = Map.nearest(this.player);
-    _.forEach(nearest4, function(entity) {
-        // console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
-        if ((self.player.y + self.player.height) > (entity[0].y + entity[0].height)) {
-            game.world.bringToTop(self.player);
-            // console.log('player on top');
-        } else {
-            // console.log('entity on top');
-            game.world.bringToTop(entity[0]);
-        }
-    });
+    Map.nearest(this.player)
+        .forEach((entity) => {
+            // console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
+            if ((this.player.y + this.player.height) >
+                (entity[0].y + entity[0].height)) {
+                game.world.bringToTop(this.player);
+                // console.log('player on top');
+            } else {
+                // console.log('entity on top');
+                game.world.bringToTop(entity[0]);
+            }
+        });
+
+    let totalEntities = 1
+                        + this.monsterGroup.total
+                        + this.npcGroup.total;
+    let repNum = 0;
+    let repSum = 0;
+    Map.nearest(this.player, totalEntities, game.camera.width/2)
+        .forEach((point) => {
+            /**
+             * Get the average reputation of all the entities withing
+             * the screen.
+             */
+            if (point[0].alive) {
+                repSum += point[0].reputation;
+                repNum += 1;
+            }
+        });
+    let avgRep = (isNaN(repSum/repNum)) ? 0 : repSum/repNum;
+    console.log('Average Reputation: ' + avgRep);
+    this.fullRepBar.width = (this.barRealWidth/2) * (1 + (avgRep));
 };
 
 
@@ -326,38 +372,38 @@ function entityCollision(entity1, entity2) {
     if (entity2.state == 'attacking') {
         entity2.attack();
         if (entity1.state !== 'dead') {
-          dead = entity1;
-          perp = entity2;
-          action = 'kill';
-          entity1.die();
-          entity1.body.enable = false;
+            entity1.die();
+            entity1.body.enable = false;
         }
+        dead = entity1;
+        perp = entity2;
+        action = 'kill';
     }
     if (entity1.state === 'attacking') {
         entity1.attack();
         if (entity2.state !== 'dead') {
-          perp = entity1;
-          dead = entity2;
-          action = 'kill';
-          entity2.die();
-          entity2.body.enable = false;
+            entity2.die();
+            entity2.body.enable = false;
         }
+        perp = entity1;
+        dead = entity2;
+        action = 'kill';
     }
     /**
      * @todo(anand): Need to implement Game Over
      */
     if (dead && perp && action) {
-        if ((dead.type === 'monster' && perp.type === 'player' && action == 'kill')
-        || (dead.type === 'npc' && perp === 'player' && action == 'kill')) {
-         this.player.score++;
-         let witness = Sampling.sample_from_array(Map.nearest(this.player, 3, 128), 1);
-         this.rippleGossip.createRumor(
-           witness,
-           dead,
-           perp,
-           action
-         );
-       }
+        if ((dead.type === 'monster' && perp.type === 'player' && action == 'kill') ||
+            (dead.type === 'npc' && perp === 'player' && action == 'kill')) {
+            this.player.score++;
+            let witness = Sampling.sample_from_array(Map.nearest(this.player, 3, 128), 1);
+            this.rippleGossip.createRumor(
+                witness[0][0],
+                dead,
+                perp,
+                action
+            );
+        }
     }
 }
 
@@ -366,17 +412,19 @@ Play.populateBoard = function() {
         [new Phaser.Point(1397, 1344), new Phaser.Point(1684, 1472)],
         [new Phaser.Point(778, 1328), new Phaser.Point(1065, 1553)],
         [new Phaser.Point(1660, 735), new Phaser.Point(1690, 1065)],
-        [new Phaser.Point(1800, 2200), new Phaser.Point(3000, 2700)]];
+        [new Phaser.Point(1800, 2200), new Phaser.Point(3000, 2700)],
+    ];
 
-     let monsterBounds = [
-         [new Phaser.Point(3415, 2886), new Phaser.Point(3952, 1501)]];
+    let monsterBounds = [
+        [new Phaser.Point(3415, 2886), new Phaser.Point(3952, 1501)],
+    ];
 
     /**
      * Generate a factory and a few monsters
      */
     this.monsterGroup = game.add.group();
     this.monsterFactory = new Factory(Monster, this.monsterGroup,
-         monsterBounds, 30);
+        monsterBounds, 30);
     for (let i = 0; i < 30; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
@@ -400,9 +448,9 @@ Play.populateBoard = function() {
      * Create the Player, setting location and naming as 'player'.
      * Giving him Physics and allowing collision with the world boundaries.
      */
-    this.player = new Player(game.world.width/2,
-                            game.world.height/2 + 200,
-                            'player');
+    this.player = new Player(game.world.width / 2,
+        game.world.height / 2 + 200,
+        'player');
 
 
     /**
