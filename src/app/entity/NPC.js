@@ -20,7 +20,7 @@ function NPC(x, y, key) {
      */
     this.maxHP = 100;
     this.HP = 100;
-
+    this.sprintSpeed = 130;
     /**
      * Type of Entity
      */
@@ -107,6 +107,12 @@ NPC.prototype.wander = function(navMesh,
     if (!(this.destinationX && this.destinationY)) {
         this.destinationX = game.rnd.integerInRange(topLeft.x, botRight.x);
         this.destinationY = game.rnd.integerInRange(topLeft.y, botRight.y);
+        if (Math.sqrt(Math.pow(this.destinationX - this.trueXY().x, 2) +
+        Math.pow(this.destinationY - this.trueXY().y, 2)) > 256) {
+            // reset if path is too long
+            this.destinationX = undefined;
+            this.destinationY = undefined;
+        }
     }
     // if destination is reached, clear current destination.
     // add a random timer to wait before wandering elsewhere
@@ -114,7 +120,7 @@ NPC.prototype.wander = function(navMesh,
     if (this.gotoXY(this.destinationX, this.destinationY, navMesh)) {
         this.destinationX = undefined;
         this.destinationY = undefined;
-        this.idleTimer = game.rnd.integerInRange(1, 600);
+        this.idleTimer = game.rnd.integerInRange(1, 1200);
     }
 };
 /**
@@ -170,9 +176,41 @@ NPC.prototype.aggro = function(target, navMesh, sprint = false) {
         }
     }
 };
-
-NPC.prototype.aIUpdate = function(navMesh) {
-
+/**
+ * @param {navmesh} navMesh the navMesh of the map
+ * @param {Phaser.Point} topLeft top left bounds the entity can wander in.
+ * @param {Phaser.Point} botRight bottom right bounds the entity can wander in.
+ * @param {Entity} player the player!
+ * @param {string} behavior neutral or aggresive for now
+ */
+NPC.prototype.updateAI = function(navMesh, topLeft,
+     botRight, player, behavior) {
+    if (this.state === 'dead') return;
+    this.aiStatus = behavior;
+    switch (this.aiStatus) {
+        case ('neutral'):
+            this.wander(navMesh, topLeft, botRight);
+            break;
+        case ('aggressive'):
+            if (Math.sqrt(Math.pow(player.trueXY().x - this.trueXY().x, 2) +
+             Math.pow(player.trueXY().y - this.trueXY().y, 2)) < 192) {
+                 // if in range aggro to player
+                this.aggro(player, navMesh);
+                this.aggroStatus = true;
+            } else {
+                if (this.aggroStatus) {
+                    // aggro out of range, stop maybe? then continue wandering
+                    this.idleHere();
+                    this.aggroStatus = false;
+                }
+                // otherwise wander around
+                this.wander(navMesh, topLeft, botRight);
+            }
+            break;
+        default:
+            console.warn('no behavior defined');
+            break;
+    }
 };
 
 module.exports = NPC;

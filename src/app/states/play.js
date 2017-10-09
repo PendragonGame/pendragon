@@ -170,7 +170,7 @@ Play.update = function() {
      * Debug Stuff
      */
      // game.debug.body(this.player);
-    //  this.navMesh.navMesh.debugClear(); // Clears the overlay
+    // this.navMesh.navMesh.debugClear(); // Clears the overlay
      
 
      // day / night cycle
@@ -195,6 +195,7 @@ Play.update = function() {
     game.physics.arcade.collide(this.entitiesGroup, this.entitiesGroup,
         entityCollision, null, this);
 
+
     /**
      * NPC Code
      * 
@@ -203,60 +204,18 @@ Play.update = function() {
      * => Distance to player = 128
      * => 128^2 = 16384
      */
-    // this.navMesh.navMesh.debugClear(); // Clears the overlay
-    this.npcGroup.forEachAlive((e) => {
-        if (this.getPlayerDistance2(e) < 16384) {
-            /**
-             * NOTE(anand):
-             * 
-             * At this point, the NPC can either attack the player
-             * or run away if they dont like the player
-             * or do nothing otherwise.
-             * 
-             * What I will do is this.
-             * 
-             * If Reputation is below 0 (it will always be >= -1):
-             * Generate a random number between -1 and 0. 
-             * - If the number lies between -1 and the reputation
-             *   - avoid the player
-             * - Else
-             *   - attck the player
-             * Else (Rep >= 0)
-             * - wander
-             */
-            if (e.reputation < 0) {
-                let decision = -Math.random();
-                if (decision < e.reputation) {
-                    e.wander(this.navMesh);
-                } else {
-                    e.aggro(this.player, this.navMesh);
-                }
-            }
-        } else {
-            e.wander(this.navMesh);
-        }
-    });
-    this.monsterGroup.forEachAlive((e) => {
-        if (this.getPlayerDistance2(e) < 16384 && e.reputation < 0) {
-            /**
-             * NOTE(anand):
-             * 
-             * For monster, I will attack regardless,
-             * but I will sprint if I realllllly don't
-             * like the player (less than -0.8?)
-             */
-            e.aggro(this.player, this.navMesh, (Math.random() < -0.8));
-        } else {
-            e.wander(this.navMesh);
-        }
-    });
-
-    // for (let i = 0, len = this.npcGroup.children.length; i < len; i++) {
-    //     (this.npcGroup.children[i]).wander(this.navMesh);
-    // }
-    // for (let i = 0, len = this.monsterGroup.children.length; i < len; i++) {
-    //     (this.monsterGroup.children[i]).aggro(this.player, this.navMesh);
-    // }
+    let tL = new Phaser.Point(772, 448);
+    let bR = new Phaser.Point(3426, 2893);
+    let tL2 = new Phaser.Point(3151, 568);
+    let bR2 = new Phaser.Point(4452, 3565);    
+    for (let i = 0, len = this.npcGroup.children.length; i < len; i++) {
+        this.npcGroup.children[i].updateAI(this.navMesh,
+             tL, bR, this.player, 'neutral');
+    }
+    for (let i = 0, len = this.monsterGroup.children.length; i < len; i++) {
+        this.monsterGroup.children[i].updateAI(this.navMesh,
+             tL2, bR2, this.player, 'aggressive');
+    }
 
     /**
      * PLAYER CODE
@@ -403,32 +362,38 @@ function entityCollision(entity1, entity2) {
 }
 
 Play.populateBoard = function() {
+    let npcBounds = [
+        [new Phaser.Point(1397, 1344), new Phaser.Point(1684, 1472)],
+        [new Phaser.Point(778, 1328), new Phaser.Point(1065, 1553)],
+        [new Phaser.Point(1660, 735), new Phaser.Point(1690, 1065)],
+        [new Phaser.Point(1800, 2200), new Phaser.Point(3000, 2700)]];
+
+     let monsterBounds = [
+         [new Phaser.Point(3415, 2886), new Phaser.Point(3952, 1501)]];
+
     /**
      * Generate a factory and a few monsters
      */
     this.monsterGroup = game.add.group();
-    this.monsterFactory = new Factory(Monster, this.monsterGroup);
-    for (let i = 0; i < 10; i++) {
+    this.monsterFactory = new Factory(Monster, this.monsterGroup,
+         monsterBounds, 30);
+    for (let i = 0; i < 30; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
          */
-        let rndx = ((Math.random() * 0.75) + 0.125) * this.map.widthInPixels;
-        let rndy = ((Math.random() * 0.75) + 0.125) * this.map.heightInPixels;
-        this.monsterFactory.next(rndx, rndy, 'enemy');
+        this.monsterFactory.next(null, null, 'enemy');
     }
 
     /**
      * Generate a factory and a few NPCs
      */
     this.npcGroup = game.add.group();
-    this.npcFactory = new Factory(NPC, this.npcGroup);
-    for (let i = 0; i < 10; i++) {
+    this.npcFactory = new Factory(NPC, this.npcGroup, npcBounds, 40);
+    for (let i = 0; i < 40; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
          */
-        let rndx = ((Math.random() * 0.5) + 0.025) * this.map.widthInPixels;
-        let rndy = ((Math.random() * 0.5) + 0.025) * this.map.heightInPixels;
-        this.npcFactory.next(rndx, rndy, 'woman');
+        this.npcFactory.next(null, null, 'woman');
     }
 
     /**
@@ -450,6 +415,7 @@ Play.populateBoard = function() {
         this.monsterGroup,
     ]);
 };
+
 
 Play.generateMap = function() {
     let entities = [];
