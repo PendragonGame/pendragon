@@ -13,6 +13,19 @@
             padding: 0px;
             margin: 0px;
         }
+        /* press-start-2p-regular - latin */
+        @font-face {
+            font-family: 'Press Start 2P';
+            font-style: normal;
+            font-weight: 400;
+            src: url('./assets/fonts/press-start-2p-v5-latin-regular.eot'); /* IE9 Compat Modes */
+            src: local('Press Start 2P Regular'), local('PressStart2P-Regular'),
+             url('./assets/fonts/press-start-2p-v5-latin/press-start-2p-v5-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+             url('./assets/fonts/press-start-2p-v5-latin/press-start-2p-v5-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+             url('./assets/fonts/press-start-2p-v5-latin/fonts/press-start-2p-v5-latin-regular.woff') format('woff'), /* Modern Browsers */
+             url('./assets/fonts/press-start-2p-v5-latin/press-start-2p-v5-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+             url('./assets/fonts/press-start-2p-v5-latin/press-start-2p-v5-latin-regular.svg#PressStart2P') format('svg'); /* Legacy iOS */
+}
         /* fauna-one-regular - latin */
         @font-face {
             font-family: 'Fauna One';
@@ -31,8 +44,8 @@
 </head>
 
 <body>
-    <div class="fontLoader" style="font-family: Fauna One;">-</div>
-    <div id="game" style="font-family: Fauna One;"></div>
+    <div class="fontLoader" style="font-family: 'Press Start 2P';">lol</div>
+    <div id="game" style="font-family: Press Start 2P Regular;"></div>
     <script src="lib/phaser.js"></script>
     <!-- <script src="lib/phaser-navmesh.min.js"></script> -->
     <script src="app.js"></script>
