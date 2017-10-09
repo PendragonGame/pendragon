@@ -17,7 +17,7 @@ let npcData = {};
  * 
  * @param {any} data 
  */
-let storeEntity = function (data) {
+let storeEntity = function(data) {
     if (data.type === 'player') {
         playerData = data;
     } else if (data.type === 'monster') {
@@ -27,19 +27,19 @@ let storeEntity = function (data) {
     }
 };
 
-let autosave = function () {
+let autosave = function() {
     let entities = {
         player: playerData,
         monsters: monsterData,
         npc: npcData,
     };
     if (entities.player === null) return;
-    storage.set('autosave.entities', entities, function (err) {
+    storage.set('autosave.entities', entities, function(err) {
         if (err) throw err;
     });
 };
 
-let manualSave = function () {
+let manualSave = function() {
     let entities = {
         player: playerData,
         monsters: monsterData,
@@ -53,7 +53,7 @@ let manualSave = function () {
     /**
      * NOTE(anand): There may be a problem with loading because the timestamp is urlencoded
      */
-    storage.set(key, entities, function (err) {
+    storage.set(key, entities, function(err) {
         if (err) throw err;
     });
 };

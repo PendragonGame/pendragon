@@ -222,11 +222,9 @@ Play.create = function() {
     /**
      * Debug Stuff
      */
-    console.log(this.player.trueXY());
 };
 
 Play.update = function() {
-    console.log(this.player.trueXY());
     while (this.fullHealthBar.width < 146) this.fullHealthBar.width += 1;
     this.scoreLabel.text = 'Score: ' + this.player.score;
     this.dayLabel.text = 'Day ' + this.player.daysSurvived;
@@ -384,9 +382,9 @@ function entityCollision(entity1, entity2) {
     if (entity2.state == 'attacking') entity2.attack();
     else entity2.idleHere();
 
-    console.log('[Collision] ' + entity1 + ' - ' + entity2);
-    console.log('[Collision] E1' + JSON.stringify(entity1.trueXY()));
-    console.log('[Collision] E2' + JSON.stringify(entity2.trueXY()));
+    // console.log('[Collision] ' + entity1 + ' - ' + entity2);
+    // console.log('[Collision] E1' + JSON.stringify(entity1.trueXY()));
+    // console.log('[Collision] E2' + JSON.stringify(entity2.trueXY()));
 }
 
 Play.populateBoard = function() {
