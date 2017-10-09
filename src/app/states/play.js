@@ -163,24 +163,24 @@ Play.create = function() {
     saveButton.fixedToCamera = true;
 
     /**
-    * load button
+    * menu button
     * 
     */
-    // function saveButton() {
-    let loadButton = game.add.button(this.wasd.width + 140, window.innerHeight - 27,
-            'hud_load', function() {
-                console.log('Load Button Clicked');
+    // function menuButton() {
+    let menuButton = game.add.button(this.wasd.width + 140, window.innerHeight - 27,
+            'hud_menu', function() {
+                console.log('Menu Button Clicked');
             }, 2, 1, 0);
-    loadButton.width = 70;
-    loadButton.height = 30;
+    menuButton.width = 70;
+    menuButton.height = 30;
     /**
     * 
     *hover over for button
     */
-    loadButton.onInputOver.add(function over() {
-        console.log('Hovering over Load Button');
+    menuButton.onInputOver.add(function over() {
+        console.log('Hovering over Menu Button');
     });
-    loadButton.fixedToCamera = true;
+    menuButton.fixedToCamera = true;
 
     /**
      * Debug Stuff
