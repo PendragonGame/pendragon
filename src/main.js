@@ -74,3 +74,15 @@ ipcMain.on('listSaveStates', function(ev, arg) {
     });
 });
 
+ipcMain.on('loadState', function(ev, arg) {
+    let p = dbStore.loadState(arg);
+    p.then((data) => {
+        ev.sender.send('reply-loadState', {data: data, success: true});
+    })
+    .catch((reason) => {
+        console.error('Failed to load key:');
+        console.error(reason);
+        ev.sender.send('reply-listSaveStates', {data: null, success: false});
+    });
+});
+

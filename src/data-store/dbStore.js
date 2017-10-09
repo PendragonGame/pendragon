@@ -7,8 +7,6 @@ let playerData = null;
 let monsterData = {};
 let npcData = {};
 
-let availableKeys = [];
-
 /**
  * @todo let highScore = 0;
  */
@@ -72,14 +70,24 @@ let getStates = function() {
             if (err) {
                 reject(err);
             }
-            _.forEach(keys, (k) => console.log(k));
-            resolve(keys);
+            resolve(_.map(keys, (e, i) => {
+                console.log('Found key: ' + e);
+                /**
+                 * The key is formatted such:
+                 * <ISO8601 Timestamp>.entities
+                 * 
+                 * Here, I am getting the index of the dot before 'entities'
+                 * and returning the timestamp
+                 */
+                return e.slice(0, e.indexOf('entities') - 1);
+            }));
         });
     });
 };
 
 let loadState = function(key) {
     return new Promise(function(resolve, reject) {
+        key = key + '.entities';
         storage.get(key, (err, data) => {
             if (err) reject(err);
             resolve(data);
