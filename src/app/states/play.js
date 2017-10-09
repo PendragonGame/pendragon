@@ -325,6 +325,11 @@ Play.update = function() {
     let avgRep = (isNaN(repSum/repNum)) ? 0 : repSum/repNum;
     console.log('Average Reputation: ' + avgRep);
     this.fullRepBar.width = (this.barRealWidth/2) * (1 + (avgRep));
+    if (this.fullRepBar.width < this.barRealWidth/2) {
+        this.fullRepBar.tint = 0x800000;
+    } else {
+        this.fullRepBar.tint = 0x00ff00;
+    }
 };
 
 
