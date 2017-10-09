@@ -489,6 +489,7 @@ function entityCollision(entity1, entity2) {
         let witnesses = Sampling.sample_from_array(nearest, Math.min(1, nearest.length), false);
         nearest = Map.nearest(this.player, 10, 256);
         witnesses = Sampling.sample_from_array(nearest, Math.min(1, nearest.length), false);
+        if (!witnesses) return;
         if (witnesses[0][0].state !== 'dead') {
             let witness = witnesses[0][0];
             this.rippleGossip.createRumor(
