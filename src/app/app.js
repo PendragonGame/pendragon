@@ -6,5 +6,5 @@ game.state.add('Boot', States.Boot);
 game.state.add('Load', States.Load);
 game.state.add('Play', States.Play);
 game.state.add('Menu', States.Menu);
-
+game.state.add('Game Over', States.GameOver);
 game.state.start('Boot');
