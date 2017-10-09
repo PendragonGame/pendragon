@@ -62,7 +62,7 @@
   "electronVersion": "1.7.6",
   "build": {
     "appId": "com.github.pendragon",
-    "productName": "Pendragon Prototype",
+    "productName": "Pendragon",
     "asar": true,
     "directories": {
       "output": "../dist"
