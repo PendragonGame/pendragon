@@ -21,3 +21,19 @@ Are you seriously telling me that NPCs have a _hive mind_! Obviously not, so we 
 
 Head over to our [releases](https://github.com/PendragonGame/pendragon/releases) page and download the latest packaged app, extract it (if it is in a zip or tar file) and click on the app to run it (.app file for Mac, .exe for Windows, .AppImage and executable for Linux).
 
+## For Contributors:
+
+1. Clone the repo 
+2. Change directories into the `src/` folder
+3. `npm install` when in `src/` folder 
+4. `npm start` to boot up the game
+
+The source directory contains the following:
+
+- `app/`: The frontend of the application running on [PhaserJS Community Edition](https://photonstorm.github.io/phaser-ce/)
+  - `states/`: The Phaser `States`
+  - `entity/`: The `Entity` abstraction and its sub-classes.
+  - `factory/`: The `Entity` factory abstraction.
+- `main.js`: The backend main script
+  - `data-store`: The database manager.
+
