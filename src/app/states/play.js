@@ -19,7 +19,8 @@ const npcBounds = [
 ];
 
 const monsterBounds = [
-    [new Phaser.Point(3415, 2886), new Phaser.Point(3952, 1501)],
+    [new Phaser.Point(3510, 2907), new Phaser.Point(3908, 3458)],
+    [new Phaser.Point(3464, 688), new Phaser.Point(3868, 1274)],
 ];
 
 let loadedData = null;
