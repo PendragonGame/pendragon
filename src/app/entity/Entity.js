@@ -197,7 +197,7 @@ Entity.prototype.moveInDirection = function(direction, sprint) {
         } else if (_.isNumber(direction) && _.inRange(direction, 0, 4)) {
             dir = DIRECTIONS[direction];
         } else {
-            console.log(direction);
+            console.error(direction);
             console.error('Invalid direction');
             return;
         }
@@ -242,13 +242,13 @@ Entity.prototype.idleHere = function() {
 
 Entity.prototype.attack = function() {
     self = this;
-    console.log('attacking');
+    // console.log('attacking');
     this.state = 'attacking';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
     this.animations.play('slash_' + this.direction, 20, false).onComplete.add(function() {
         // this.animations.frame
-        console.log('attack finished');
+        // console.log('attack finished');
        self.idleHere();
     });
     this.adjustHitbox('slash');
@@ -379,14 +379,14 @@ Entity.prototype.learnInfo = function(rumor) {
                   * the current `Entity`'s type, reputation drop by
                   * 0.1.
                   */
-                this.reputation -= 0.1;
+                this.reputation = Math.max(-1, this.reputation - 0.1);
             } else if (this.dislike.includes(rumor.targetType)) {
                 /**
                  * If the current entity dislikes the type of entity
                  * that was killed,
                  * rep increases by 0.1
                  */
-                this.reputation += 0.1;
+                this.reputation = Math.min(1, this.reputation + 0.25);
             }
     }
 };

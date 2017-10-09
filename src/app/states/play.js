@@ -306,12 +306,12 @@ Play.update = function() {
             }
         });
 
-    let totalEntities = 1
-                        + this.monsterGroup.total
-                        + this.npcGroup.total;
+    let totalEntities = 1 +
+        this.monsterGroup.total +
+        this.npcGroup.total;
     let repNum = 0;
     let repSum = 0;
-    Map.nearest(this.player, totalEntities, game.camera.width/2)
+    Map.nearest(this.player, totalEntities, game.camera.width / 2)
         .forEach((point) => {
             /**
              * Get the average reputation of all the entities withing
@@ -322,13 +322,15 @@ Play.update = function() {
                 repNum += 1;
             }
         });
-    let avgRep = (isNaN(repSum/repNum)) ? 0 : repSum/repNum;
-    console.log('Average Reputation: ' + avgRep);
-    this.fullRepBar.width = (this.barRealWidth/2) * (1 + (avgRep));
-    if (this.fullRepBar.width < this.barRealWidth/2) {
+    let avgRep = (isNaN(repSum / repNum)) ? 0 : repSum / repNum;
+    // console.log('Average Reputation: ' + avgRep);
+    this.fullRepBar.width = (this.barRealWidth / 2) * (1 + (avgRep));
+    if (this.fullRepBar.width < this.barRealWidth / 2) {
         this.fullRepBar.tint = 0x800000;
+    } else if (this.fullRepBar.width > this.barRealWidth / 2) {
+        this.fullRepBar.tint = 0x66ff33;
     } else {
-        this.fullRepBar.tint = 0x00ff00;
+        this.fullRepBar.tint = 0x999999;
     }
 };
 
@@ -343,7 +345,6 @@ Play.update = function() {
  */
 function entityCollision(entity1, entity2) {
     // entity2 seems to be the Player, and entity1 is the Enemy
-    entity1.body.immovable = true;
     if (entity1.frame === 272) {
         entity1.kill();
         return;
@@ -398,17 +399,22 @@ function entityCollision(entity1, entity2) {
      * @todo(anand): Need to implement Game Over
      */
     if (dead && perp && action) {
-        if ((dead.type === 'monster' && perp.type === 'player' && action == 'kill') ||
-            (dead.type === 'npc' && perp === 'player' && action == 'kill')) {
-            this.player.score++;
-            let witness = Sampling.sample_from_array(Map.nearest(this.player, 3, 128), 1);
-            this.rippleGossip.createRumor(
-                witness[0][0],
-                dead,
-                perp,
-                action
-            );
+        if (perp.type === 'player') {
+            switch (dead.type) {
+                case 'npc':
+                    console.log('Killed an NPC :(');
+                    break;
+                case 'monster':
+                    this.player.score++;
+                    break;
+            }
         }
+        let witness = Sampling.sample_from_array(Map.nearest(this.player, 10, 256), 1);
+        this.rippleGossip.createRumor(
+            witness[0][0],
+            dead,
+            perp,
+            action);
     }
 }
 

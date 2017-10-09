@@ -31,6 +31,12 @@ function NPC(x, y, key) {
      * to monsters. This will be overridden in `Monster`.
      */
     this.dislike = ['monster'];
+
+    /**
+     * @todo(anand): Fix this hack
+     * This is a major hack. We are setting all NPCs to IMMOVABLE!!
+     */
+    this.body.immovable = true;
 }
 NPC.prototype = Object.create(Entity.prototype);
 NPC.prototype.constructor = NPC;
