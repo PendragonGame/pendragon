@@ -4,7 +4,7 @@ let loadedData = null;
 
 Load.init = function(data) {
     loadedData = data;
-}
+};
 
 Load.preload = function() {
     game.add.text(80, 150, 'loading...', {

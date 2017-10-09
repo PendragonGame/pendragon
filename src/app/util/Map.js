@@ -1,6 +1,5 @@
 const kdTree = require('../lib/kdtreejs/kdTree');
 const _ = require('lodash');
-const Play = require('../states/play');
 const Entity = require('../entity/Entity');
 
 let distanceFormula2 = function(e1, e2) {
@@ -102,6 +101,10 @@ Map.getByID = function(id) {
 };
 
 Map.printMap = function() {
+    return tree.toJSON();
+};
+
+Map.toJSON = function() {
     return tree.toJSON();
 };
 

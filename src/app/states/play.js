@@ -6,6 +6,9 @@ const NPC = require('../entity/NPC');
 const Factory = require('../factory/Factory');
 const dataStore = require('../util/data');
 const Map = require('../util/Map');
+const Ripple = require('../ripple/engine');
+
+const Sampling = require('discrete-sampling');
 
 const _ = require('lodash');
 
@@ -97,6 +100,7 @@ Play.preload = function() {
         this.emptyHealthBar.height + 2,
         'hud_fullRep');
     this.fullRepBar.fixedToCamera = true;
+    this.barRealWidth = this.fullRepBar.width;
     this.fullRepBar.width /= 2;
 
     /**
@@ -219,9 +223,10 @@ Play.create = function() {
     this.generateMap();
 
     game.world.bringToTop(this.hudGroup);
-    /**
-     * Debug Stuff
-     */
+
+    setTimeout(() => {
+        this.rippleGossip = new Ripple();
+    }, 2000);
 };
 
 Play.update = function() {
@@ -255,21 +260,69 @@ Play.update = function() {
     game.physics.arcade.collide(this.entitiesGroup, this.entitiesGroup,
         entityCollision, null, this);
 
+
     /**
      * NPC Code
+     * 
+     * Threshold distance to attack is 8 tiles.
+     * => 4 tiles on either side
+     * => Distance to player = 128
+     * => 128^2 = 16384
      */
-    // this.navMesh.navMesh.debugClear(); // Clears the overlay
-    for (let i = 0, len = this.npcGroup.children.length; i < len; i++) {
-        (this.npcGroup.children[i]).wander(this.navMesh);
-    }
-    for (let i = 0, len = this.monsterGroup.children.length; i < len; i++) {
-        (this.monsterGroup.children[i]).wander(this.navMesh);
-    }
+    let tL = new Phaser.Point(772, 448);
+    let bR = new Phaser.Point(3426, 2893);
+    let tL2 = new Phaser.Point(3151, 568);
+    let bR2 = new Phaser.Point(4452, 3565);
+
+    this.npcGroup.forEachAlive((e) => {
+        /**
+         * NOTE(anand):
+         * 
+         * At this point, the NPC can either attack the player
+         * or run away if they dont like the player
+         * or do nothing otherwise.
+         * 
+         * What I will do is this.
+         * 
+         * If Reputation is below 0 (it will always be >= -1):
+         * Generate a random number between -1 and 0. 
+         * - If the number lies between -1 and the reputation
+         *   - avoid the player
+         * - Else
+         *   - attck the player
+         * Else (Rep >= 0)
+         * - wander
+         */
+        let attitude = 'neutral';
+        if (e.reputation < 0) {
+            let decision = -Math.random();
+            if (decision > e.reputation) {
+                attitude = 'aggressive';
+            }
+        }
+        e.updateAI(this.navMesh, tL, bR, this.player, attitude);
+    });
+    this.monsterGroup.forEachAlive((e) => {
+        /**
+         * NOTE(anand):
+         * 
+         * For monster, I will attack regardless,
+         * but I will sprint if I realllllly don't
+         * like the player (less than -0.8?)
+         */
+        let attitude = 'aggressive';
+        if (e.reputation < -0.8) {
+            // Really aggro
+            e.slowSprint = e.sprintSpeed;
+            e.sprintSpeed = 2 * e.slowSprint;
+        }
+        e.updateAI(this.navMesh, tL2, bR2, this.player, attitude);
+    });
 
     /**
      * PLAYER CODE
      */
-
+    if (this.player.state === 'dead') return;
     // Displays the hitbox for the Player
     // this.game.debug.body(this.player);
 
@@ -328,6 +381,33 @@ Play.update = function() {
             game.world.bringToTop(entity[0]);
         }
     });
+
+    let totalEntities = 1 +
+        this.monsterGroup.total +
+        this.npcGroup.total;
+    let repNum = 0;
+    let repSum = 0;
+    Map.nearest(this.player, totalEntities, game.camera.width / 2)
+        .forEach((point) => {
+            /**
+             * Get the average reputation of all the entities withing
+             * the screen.
+             */
+            if (point[0].alive) {
+                repSum += point[0].reputation;
+                repNum += 1;
+            }
+        });
+    let avgRep = (isNaN(repSum / repNum)) ? 0 : repSum / repNum;
+    // console.log('Average Reputation: ' + avgRep);
+    this.fullRepBar.width = (this.barRealWidth / 2) * (1 + (avgRep));
+    if (this.fullRepBar.width < this.barRealWidth / 2) {
+        this.fullRepBar.tint = 0x800000;
+    } else if (this.fullRepBar.width > this.barRealWidth / 2) {
+        this.fullRepBar.tint = 0x66ff33;
+    } else {
+        this.fullRepBar.tint = 0x999999;
+    }
 };
 
 
@@ -341,7 +421,6 @@ Play.update = function() {
  */
 function entityCollision(entity1, entity2) {
     // entity2 seems to be the Player, and entity1 is the Enemy
-    entity1.body.immovable = true;
     if (entity1.frame === 272) {
         entity1.kill();
         return;
@@ -366,54 +445,96 @@ function entityCollision(entity1, entity2) {
      * We shouldn't be assuming that entity 2 is always going to be Player
      * also, other entities can attack too
      */
+    /**
+     * The type of person who died
+     */
+    let dead = null;
+    let perp = null;
+    let action = '';
     if (entity2.state == 'attacking') {
         entity2.attack();
         if (entity1.state !== 'dead') {
             entity1.die();
             entity1.body.enable = false;
-            if (this.monsterGroup.children.indexOf(entity1) > -1) {
-                this.player.score++;
+        }
+        dead = entity1;
+        perp = entity2;
+        action = 'kill';
+    }
+    if (entity1.state === 'attacking') {
+        entity1.attack();
+        if (entity2.state !== 'dead') {
+            entity2.die();
+            entity2.body.enable = false;
+        }
+        perp = entity1;
+        dead = entity2;
+        action = 'kill';
+    }
+    /**
+     * @todo(anand): Need to implement Game Over
+     */
+    if (dead && perp && action) {
+        if (perp.type === 'player') {
+            switch (dead.type) {
+                case 'npc':
+                    console.log('Killed an NPC :(');
+                    break;
+                case 'monster':
+                    this.player.score++;
+                    break;
             }
         }
-    } else {
-        if (entity1.state !== 'dead') entity1.idleHere();
+        let nearest = Map.nearest(this.player, 10, 256);
+        let witnesses = Sampling.sample_from_array(nearest, Math.min(1, nearest.length), false);
+        nearest = Map.nearest(this.player, 10, 256);
+        witnesses = Sampling.sample_from_array(nearest, Math.min(1, nearest.length), false);
+        if (witnesses[0][0].state !== 'dead') {
+            let witness = witnesses[0][0];
+            this.rippleGossip.createRumor(
+                witness,
+                dead,
+                perp,
+                action);
+        }      
     }
-
-    if (entity2.state == 'attacking') entity2.attack();
-    else entity2.idleHere();
-
-    // console.log('[Collision] ' + entity1 + ' - ' + entity2);
-    // console.log('[Collision] E1' + JSON.stringify(entity1.trueXY()));
-    // console.log('[Collision] E2' + JSON.stringify(entity2.trueXY()));
 }
 
 Play.populateBoard = function() {
+    let npcBounds = [
+        [new Phaser.Point(1397, 1344), new Phaser.Point(1684, 1472)],
+        [new Phaser.Point(778, 1328), new Phaser.Point(1065, 1553)],
+        [new Phaser.Point(1660, 735), new Phaser.Point(1690, 1065)],
+        [new Phaser.Point(1800, 2200), new Phaser.Point(3000, 2700)],
+    ];
+
+    let monsterBounds = [
+        [new Phaser.Point(3415, 2886), new Phaser.Point(3952, 1501)],
+    ];
+
     /**
      * Generate a factory and a few monsters
      */
     this.monsterGroup = game.add.group();
-    this.monsterFactory = new Factory(Monster, this.monsterGroup);
-    for (let i = 0; i < 10; i++) {
+    this.monsterFactory = new Factory(Monster, this.monsterGroup,
+        monsterBounds, 30);
+    for (let i = 0; i < 30; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
          */
-        let rndx = ((Math.random() * 0.75) + 0.125) * this.map.widthInPixels;
-        let rndy = ((Math.random() * 0.75) + 0.125) * this.map.heightInPixels;
-        this.monsterFactory.next(rndx, rndy, 'enemy');
+        this.monsterFactory.next(null, null, 'enemy');
     }
 
     /**
      * Generate a factory and a few NPCs
      */
     this.npcGroup = game.add.group();
-    this.npcFactory = new Factory(NPC, this.npcGroup);
-    for (let i = 0; i < 10; i++) {
+    this.npcFactory = new Factory(NPC, this.npcGroup, npcBounds, 40);
+    for (let i = 0; i < 40; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
          */
-        let rndx = ((Math.random() * 0.5) + 0.025) * this.map.widthInPixels;
-        let rndy = ((Math.random() * 0.5) + 0.025) * this.map.heightInPixels;
-        this.npcFactory.next(rndx, rndy, 'woman');
+        this.npcFactory.next(null, null, 'woman');
     }
 
     /**
@@ -484,6 +605,7 @@ Play.loadBoard = function(data) {
     ]);
 };
 
+
 Play.generateMap = function() {
     setTimeout(() => {
         let entities = [];
@@ -512,6 +634,20 @@ Play.manualSaveData = function() {
     dataStore.manualSaveEntity(sel.player);
     self.monsterGroup.forEachAlive(dataStore.manualSaveEntity);
     self.npcGroup.forEachAlive(dataStore.manualSaveEntity);
+};
+
+/**
+ * This will return the distance to the player squared.
+ * 
+ * Square root calculation is not trivial.
+ * 
+ * @param {Entity} entity 
+ * @return {number}
+ */
+Play.getPlayerDistance2 = function(entity) {
+    let player = this.player.trueXY();
+    let e = entity.trueXY();
+    return Math.pow(player.x - e.x, 2) + Math.pow(player.y - e.y, 2);
 };
 
 
