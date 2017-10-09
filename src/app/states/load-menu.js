@@ -30,9 +30,9 @@ function MenuButton(x, y, text, key, func) {
     this.text = game.add.text(x,
         y, text);
     this.text.anchor.setTo(.5, .5);
-    this.text.font = 'Fauna One';
+    this.text.font = 'Press Start 2P';
     this.text.fill = '#000000';
-    this.text.fontSize = '35pt';
+    this.text.fontSize = '16pt';
     // the button
     this.button = game.add.button(
         x, y, null, func, this, 2, 1, 0);
@@ -169,7 +169,7 @@ LoadMenu.create = function() {
     // add text over the button
     this.backText = game.add.text(game.camera.width - 80 * 2,
         game.camera.height - 85, 'Back');
-    this.backText.font = 'Fauna One';
+    this.backText.font = 'Press Start 2P';
     this.backText.fill = '#000000';
     this.backText.fontSize = '25pt';
     // hover effect
