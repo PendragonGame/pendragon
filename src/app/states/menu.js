@@ -100,7 +100,7 @@ Menu.update = function() {
     this.r = game.rnd.integerInRange(0, 256);
     this.g = game.rnd.integerInRange(0, 256);
     this.b = game.rnd.integerInRange(0, 256);    
-    this.pendragonText.setShadow(5, 5, 'rgba('+ this.r +','+this.b +','+this.g +',0.5)', 10);
+    this.pendragonText.setShadow(5, 5, 'rgba('+ this.r +','+this.b +','+this.g +',.75)', 1);
 
 };
 
