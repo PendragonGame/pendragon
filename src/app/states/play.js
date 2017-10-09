@@ -6,17 +6,38 @@ const NPC = require('../entity/NPC');
 const Factory = require('../factory/Factory');
 const dataStore = require('../util/data');
 const Map = require('../util/Map');
+const Ripple = require('../ripple/engine');
+
+const Sampling = require('discrete-sampling');
 
 const _ = require('lodash');
+const npcBounds = [
+    [new Phaser.Point(1397, 1344), new Phaser.Point(1684, 1472)],
+    [new Phaser.Point(778, 1328), new Phaser.Point(1065, 1553)],
+    [new Phaser.Point(1660, 735), new Phaser.Point(1690, 1065)],
+    [new Phaser.Point(1800, 2200), new Phaser.Point(3000, 2700)],
+];
+
+const monsterBounds = [
+    [new Phaser.Point(3415, 2886), new Phaser.Point(3952, 1501)],
+];
+
+let loadedData = null;
 
 let Play = {};
 
-Play.init = function() {
-
+Play.init = function(data) {
+    if (data) {
+        loadedData = data;
+    };
 };
 
-Play.create = function() {
-    /**
+Play.setLoadData = function(data) {
+    loadedData = data;
+};
+
+Play.preload = function() {
+     /**
      * Map creation
      */
     this.map = game.add.tilemap('map');
@@ -31,50 +52,10 @@ Play.create = function() {
     this.blockLayer.resizeWorld();
     this.bgLayer.resizeWorld();
     this.game = game;
-
     this.navMesh = new NavMesh(this.map);
 
     // Input for game
     this.keyboard = game.input.keyboard;
-
-    this.populateBoard();
-    this.player.bringToTop();
-    /**
-     * Center camera on player
-     */
-    this.game.camera.follow(this.player);
-
-    this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
-    this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
-
-    /**
-     * Setting datastore callback interval
-     * 
-     * Start autosaving 10 seconds after game starts
-     */
-    setTimeout(this.autosaveData(), 10000);
-
-    /**
-     * Build the datastructure keeping track of Entities
-     * 
-     * Period: 1.5 sec
-     * 
-     * What I did here is call the things immediately and then
-     */
-    this.generateMap();
-
-
-    /**
-     * Day night cycle
-     */
-    this.light = game.add.graphics();
-    this.light.beginFill(0x18007A);
-    this.light.alpha = 0;
-    this.light.drawRect(0, 0, game.camera.width, game.camera.height);
-    this.light.fixedToCamera = true;
-    this.light.endFill();
-    this.dayTime = true;
-
 
     /**
      * HUD elements
@@ -100,7 +81,7 @@ Play.create = function() {
     this.healthLabel = game.add.text(0, 5, 'Health', this.textStyle);
     this.healthLabel.fixedToCamera = true;
     this.repLabel = game.add.text(0, this.healthLabel.height + 10,
-                                'Rep', this.textStyle);
+        'Rep', this.textStyle);
     this.repLabel.fixedToCamera = true;
 
     this.scoreLabel = game.add.text(0, 0, 'Score: 0', this.textStyle);
@@ -114,21 +95,22 @@ Play.create = function() {
     this.dayLabel.fixedToCamera = true;
 
     this.emptyHealthBar = game.add.sprite(this.healthLabel.width + 5, 0,
-                                            'hud_emptyHealth');
+        'hud_emptyHealth');
     this.emptyHealthBar.fixedToCamera = true;
     this.fullHealthBar = game.add.sprite(this.healthLabel.width + 7, 2,
-                                            'hud_fullHealth');
+        'hud_fullHealth');
     this.fullHealthBar.fixedToCamera = true;
     this.fullHealthBar.width /= 2;
 
     this.emptyRepBar = game.add.sprite(this.healthLabel.width + 5,
-                                        this.emptyHealthBar.height,
-                                        'hud_emptyHealth');
+        this.emptyHealthBar.height,
+        'hud_emptyHealth');
     this.emptyRepBar.fixedToCamera = true;
     this.fullRepBar = game.add.sprite(this.healthLabel.width + 7,
-                                        this.emptyHealthBar.height + 2,
-                                        'hud_fullRep');
+        this.emptyHealthBar.height + 2,
+        'hud_fullRep');
     this.fullRepBar.fixedToCamera = true;
+    this.barRealWidth = this.fullRepBar.width;
     this.fullRepBar.width /= 2;
 
     /**
@@ -137,7 +119,8 @@ Play.create = function() {
      */
     // function saveButton() {
     let saveButton = game.add.button(this.wasd.width + 60, window.innerHeight - 27,
-        'hud_save', function() {
+        'hud_save',
+        function() {
             console.log('Save Button Clicked');
             console.log('Manually saving');
             let savedText = game.add.text(10, -20, 'Saved');
@@ -152,37 +135,108 @@ Play.create = function() {
     saveButton.width = 70;
     saveButton.height = 30;
     /**
-    * 
-    *hover over for button
-    */
+     * 
+     *hover over for button
+     */
     saveButton.onInputOver.add(function over() {
         console.log('Hovering over Save Button');
     });
     saveButton.fixedToCamera = true;
-
+    this.saveButton = saveButton;
     /**
-    * menu button
-    * 
-    */
+     * menu button
+     * 
+     */
     // function menuButton() {
     let menuButton = game.add.button(this.wasd.width + 140, window.innerHeight - 27,
-            'hud_menu', function() {
-                console.log('Menu Button Clicked');
-            }, 2, 1, 0);
+        'hud_menu',
+        function() {
+            console.log('Menu Button Clicked');
+        }, 2, 1, 0);
     menuButton.width = 70;
     menuButton.height = 30;
     /**
-    * 
-    *hover over for button
-    */
+     * 
+     *hover over for button
+     */
     menuButton.onInputOver.add(function over() {
         console.log('Hovering over Menu Button');
     });
     menuButton.fixedToCamera = true;
+    this.menuButton = menuButton;
+
+    this.hudGroup = game.add.group();
+    this.hudGroup.addMultiple([
+        this.menuButton,
+        this.saveButton,
+        this.wasd,
+        this.wpn,
+        this.healthLabel,
+        this.repLabel,
+        this.scoreLabel,
+        this.dayLabel,
+        this.emptyHealthBar,
+        this.fullHealthBar,
+        this.emptyRepBar,
+        this.fullRepBar,
+    ]);
+};
+
+Play.create = function() {
+    // this.player.bringToTop();
+    /**
+     * Check if we should load game.
+     */
+    if (loadedData) {
+        this.loadBoard(loadedData);
+    } else {
+        this.populateBoard();
+    }
+    /**
+     * Center camera on player
+     */
+    this.game.camera.follow(this.player);
+
+    this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
+    this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
+
 
     /**
-     * Debug Stuff
+     * Day night cycle
      */
+    this.light = game.add.graphics();
+    this.light.beginFill(0x18007A);
+    this.light.alpha = 0;
+    this.light.drawRect(0, 0, game.camera.width, game.camera.height);
+    this.light.fixedToCamera = true;
+    this.light.endFill();
+    this.dayTime = true;
+
+    /**
+     * Setting datastore callback interval
+     * 
+     * Start autosaving 10 seconds after game starts
+     */
+    setInterval(() => {
+        dataStore.autosaveEntity(this.player);
+        this.monsterGroup.forEachAlive(dataStore.autosaveEntity);
+        this.npcGroup.forEachAlive(dataStore.autosaveEntity);
+    }, 1000);
+
+    /**
+     * Build the datastructure keeping track of Entities
+     * 
+     * Period: 1.5 sec
+     * 
+     * What I did here is call the things immediately and then
+     */
+    this.generateMap();
+
+    game.world.bringToTop(this.hudGroup);
+
+    setTimeout(() => {
+        this.rippleGossip = new Ripple();
+    }, 2000);
 };
 
 Play.update = function() {
@@ -197,10 +251,10 @@ Play.update = function() {
     /**
      * Debug Stuff
      */
-     // game.debug.body(this.player);
+    // game.debug.body(this.player);
 
-     // day / night cycle
-     if (this.dayTime) {
+    // day / night cycle
+    if (this.dayTime) {
         this.light.alpha += .0001;
     } else {
         this.light.alpha -= .0007;
@@ -208,7 +262,7 @@ Play.update = function() {
     if (this.light.alpha <= 0 && this.dayTime === false) {
         this.dayTime = true;
         this.player.daysSurvived++;
-       }
+    }
     if (this.light.alpha >= .5) {
         this.dayTime = false;
     }
@@ -221,21 +275,69 @@ Play.update = function() {
     game.physics.arcade.collide(this.entitiesGroup, this.entitiesGroup,
         entityCollision, null, this);
 
+
     /**
      * NPC Code
+     * 
+     * Threshold distance to attack is 8 tiles.
+     * => 4 tiles on either side
+     * => Distance to player = 128
+     * => 128^2 = 16384
      */
-    // this.navMesh.navMesh.debugClear(); // Clears the overlay
-    for (let i = 0, len = this.npcGroup.children.length; i < len; i++) {
-        (this.npcGroup.children[i]).wander(this.navMesh);
-    }
-    for (let i = 0, len = this.monsterGroup.children.length; i < len; i++) {
-        (this.monsterGroup.children[i]).wander(this.navMesh);
-    }
+    let tL = new Phaser.Point(772, 448);
+    let bR = new Phaser.Point(3426, 2893);
+    let tL2 = new Phaser.Point(3151, 568);
+    let bR2 = new Phaser.Point(4452, 3565);
+
+    this.npcGroup.forEachAlive((e) => {
+        /**
+         * NOTE(anand):
+         * 
+         * At this point, the NPC can either attack the player
+         * or run away if they dont like the player
+         * or do nothing otherwise.
+         * 
+         * What I will do is this.
+         * 
+         * If Reputation is below 0 (it will always be >= -1):
+         * Generate a random number between -1 and 0. 
+         * - If the number lies between -1 and the reputation
+         *   - avoid the player
+         * - Else
+         *   - attck the player
+         * Else (Rep >= 0)
+         * - wander
+         */
+        let attitude = 'neutral';
+        if (e.reputation < 0) {
+            let decision = -Math.random();
+            if (decision > e.reputation) {
+                attitude = 'aggressive';
+            }
+        }
+        e.updateAI(this.navMesh, tL, bR, this.player, attitude);
+    });
+    this.monsterGroup.forEachAlive((e) => {
+        /**
+         * NOTE(anand):
+         * 
+         * For monster, I will attack regardless,
+         * but I will sprint if I realllllly don't
+         * like the player (less than -0.8?)
+         */
+        let attitude = 'aggressive';
+        if (e.reputation < -0.8) {
+            // Really aggro
+            e.slowSprint = e.sprintSpeed;
+            e.sprintSpeed = 2 * e.slowSprint;
+        }
+        e.updateAI(this.navMesh, tL2, bR2, this.player, attitude);
+    });
 
     /**
      * PLAYER CODE
      */
-
+    if (this.player.state === 'dead') return;
     // Displays the hitbox for the Player
     // this.game.debug.body(this.player);
 
@@ -294,6 +396,33 @@ Play.update = function() {
             game.world.bringToTop(entity[0]);
         }
     });
+
+    let totalEntities = 1 +
+        this.monsterGroup.total +
+        this.npcGroup.total;
+    let repNum = 0;
+    let repSum = 0;
+    Map.nearest(this.player, totalEntities, game.camera.width / 2)
+        .forEach((point) => {
+            /**
+             * Get the average reputation of all the entities withing
+             * the screen.
+             */
+            if (point[0].alive) {
+                repSum += point[0].reputation;
+                repNum += 1;
+            }
+        });
+    let avgRep = (isNaN(repSum / repNum)) ? 0 : repSum / repNum;
+    // console.log('Average Reputation: ' + avgRep);
+    this.fullRepBar.width = (this.barRealWidth / 2) * (1 + (avgRep));
+    if (this.fullRepBar.width < this.barRealWidth / 2) {
+        this.fullRepBar.tint = 0x800000;
+    } else if (this.fullRepBar.width > this.barRealWidth / 2) {
+        this.fullRepBar.tint = 0x66ff33;
+    } else {
+        this.fullRepBar.tint = 0x999999;
+    }
 };
 
 
@@ -307,7 +436,6 @@ Play.update = function() {
  */
 function entityCollision(entity1, entity2) {
     // entity2 seems to be the Player, and entity1 is the Enemy
-    entity1.body.immovable = true;
     if (entity1.frame === 272) {
         entity1.kill();
         return;
@@ -332,64 +460,103 @@ function entityCollision(entity1, entity2) {
      * We shouldn't be assuming that entity 2 is always going to be Player
      * also, other entities can attack too
      */
+    /**
+     * The type of person who died
+     */
+    let dead = null;
+    let perp = null;
+    let action = '';
     if (entity2.state == 'attacking') {
         entity2.attack();
         if (entity1.state !== 'dead') {
-          entity1.die();
-          entity1.body.enable = false;
-          if (this.monsterGroup.children.indexOf(entity1) > -1) {
-              this.player.score++;
-          }
+            entity1.die();
+            entity1.body.enable = false;
         }
-    } else {
-        if (entity1.state !== 'dead') entity1.idleHere();
+        dead = entity1;
+        perp = entity2;
+        action = 'kill';
     }
-
-    if (entity2.state == 'attacking') entity2.attack();
-    else entity2.idleHere();
-
-    console.log('[Collision] ' + entity1 + ' - ' + entity2);
-    console.log('[Collision] E1' + JSON.stringify(entity1.trueXY()));
-    console.log('[Collision] E2' + JSON.stringify(entity2.trueXY()));
+    if (entity1.state === 'attacking') {
+        entity1.attack();
+        if (entity2.state !== 'dead') {
+            entity2.die();
+            entity2.body.enable = false;
+        }
+        perp = entity1;
+        dead = entity2;
+        action = 'kill';
+    }
+    /**
+     * @todo(anand): Need to implement Game Over
+     */
+    if (dead && perp && action) {
+        if (perp.type === 'player') {
+            switch (dead.type) {
+                case 'npc':
+                    console.log('Killed an NPC :(');
+                    break;
+                case 'monster':
+                    this.player.score++;
+                    break;
+            }
+        }
+        let nearest = Map.nearest(this.player, 10, 256);
+        let witnesses = Sampling.sample_from_array(nearest, Math.min(1, nearest.length), false);
+        nearest = Map.nearest(this.player, 10, 256);
+        witnesses = Sampling.sample_from_array(nearest, Math.min(1, nearest.length), false);
+        if (!witnesses) return;
+        try {
+            /**
+             * @todo(anand): MAJOR HACK ALERT!!!!
+             */
+            if (witnesses[0][0].state !== 'dead') {
+                let witness = witnesses[0][0];
+                this.rippleGossip.createRumor(
+                    witness,
+                    dead,
+                    perp,
+                    action);
+            }
+        } catch (e) {
+            return;
+        }
+    }
 }
 
 Play.populateBoard = function() {
+
     /**
      * Generate a factory and a few monsters
      */
     this.monsterGroup = game.add.group();
-    this.monsterFactory = new Factory(Monster, this.monsterGroup);
-    for (let i = 0; i < 10; i++) {
+    this.monsterFactory = new Factory(Monster, this.monsterGroup,
+        monsterBounds, 30);
+    for (let i = 0; i < 30; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
          */
-        let rndx = ((Math.random() * 0.75) + 0.125) * this.map.widthInPixels;
-        let rndy = ((Math.random() * 0.75) + 0.125) * this.map.heightInPixels;
-        this.monsterFactory.next(rndx, rndy, 'enemy');
+        this.monsterFactory.next(null, null, 'enemy');
     }
 
     /**
      * Generate a factory and a few NPCs
      */
     this.npcGroup = game.add.group();
-    this.npcFactory = new Factory(NPC, this.npcGroup);
-    for (let i = 0; i < 10; i++) {
+    this.npcFactory = new Factory(NPC, this.npcGroup, npcBounds, 40);
+    for (let i = 0; i < 40; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
          */
-        let rndx = ((Math.random() * 0.5) + 0.025) * this.map.widthInPixels;
-        let rndy = ((Math.random() * 0.5) + 0.025) * this.map.heightInPixels;
-        this.npcFactory.next(rndx, rndy, 'woman');
+        this.npcFactory.next(null, null, 'woman');
     }
 
     /**
      * Create the Player, setting location and naming as 'player'.
      * Giving him Physics and allowing collision with the world boundaries.
      */
-    this.player = new Player(game.world.width/2,
-                            game.world.height/2 + 200,
-                            'player');
-
+    this.player = new Player(game.world.width / 2,
+        game.world.height / 2 + 200,
+        'player');
 
     /**
      * Add all Entities to the same group.
@@ -402,28 +569,85 @@ Play.populateBoard = function() {
     ]);
 };
 
-Play.generateMap = function() {
-    let entities = [];
-    // entities.push(this.player);
-    // I see no point in adding the player
-    this.monsterGroup.forEachAlive(function(monster) {
-        entities.push(monster);
-    });
-    this.npcGroup.forEachAlive(function(npc) {
-        entities.push(npc);
-    });
-    Map.create(entities);
+Play.loadBoard = function(data) {
+    let playerData = data.player;
+    let monstersData = data.monsters;
+    let npcData = data.npc;
 
-    setTimeout(this.generateMap, 1500);
+    /**
+     * Generate a factory and a few monsters
+     */
+    this.monsterGroup = game.add.group();
+    this.monsterFactory = new Factory(Monster, this.monsterGroup,
+        monsterBounds, Object.keys(monstersData).length);
+    let i = 0;
+    for (let id in monstersData) {
+        if (Object.prototype.hasOwnProperty.call(monstersData, id)) {
+            i = i + 1;
+            console.debug('Monster #' + i);
+            let e = monstersData[id];
+            let E = this.monsterFactory.next(e.x, e.y, e.key);
+            E.deserialize(e);
+        }
+    }
+
+    /**
+     * Generate a factory and a few NPCs
+     */
+    i = 0;
+    this.npcGroup = game.add.group();
+    this.npcFactory = new Factory(NPC, this.npcGroup, npcBounds,
+        Object.keys(npcData).length);
+    for (let id in npcData) {
+        if (Object.prototype.hasOwnProperty.call(npcData, id)) {
+            i = i + 1;
+            console.debug('NPC #' + i);
+            let e = npcData[id];
+            let E = this.npcFactory.next(e.x, e.y, e.key);
+            E.deserialize(e);
+        }
+    }
+
+    /**
+     * Create the Player, setting location and naming as 'player'.
+     * Giving him Physics and allowing collision with the world boundaries.
+     */
+    this.player = new Player(playerData.x, playerData.y, playerData.key);
+    this.player.deserialize(playerData);
+
+    /**
+     * Add all Entities to the same group.
+     */
+    this.entitiesGroup = game.add.group();
+    this.entitiesGroup.addMultiple([
+        this.player,
+        this.npcGroup,
+        this.monsterGroup,
+    ]);
+};
+
+
+Play.generateMap = function() {
+    setTimeout(() => {
+        let entities = [];
+        // entities.push(this.player);
+        // I see no point in adding the player
+        this.monsterGroup.forEachAlive(function(monster) {
+            entities.push(monster);
+        });
+        this.npcGroup.forEachAlive(function(npc) {
+            entities.push(npc);
+        });
+        Map.create(entities);
+    }, 1500);
 };
 
 Play.autosaveData = function() {
-    const self = this;
-    dataStore.autosaveEntity(self.player);
-    self.monsterGroup.forEachAlive(dataStore.autosaveEntity);
-    self.npcGroup.forEachAlive(dataStore.autosaveEntity);
-
-    setTimeout(this.autosaveData, 1000);
+    setTimeout(() => {
+        dataStore.autosaveEntity(this.player);
+        this.monsterGroup.forEachAlive(dataStore.autosaveEntity);
+        this.npcGroup.forEachAlive(dataStore.autosaveEntity);
+    }, 1000);
 };
 
 Play.manualSaveData = function() {
@@ -431,6 +655,20 @@ Play.manualSaveData = function() {
     dataStore.manualSaveEntity(sel.player);
     self.monsterGroup.forEachAlive(dataStore.manualSaveEntity);
     self.npcGroup.forEachAlive(dataStore.manualSaveEntity);
+};
+
+/**
+ * This will return the distance to the player squared.
+ * 
+ * Square root calculation is not trivial.
+ * 
+ * @param {Entity} entity 
+ * @return {number}
+ */
+Play.getPlayerDistance2 = function(entity) {
+    let player = this.player.trueXY();
+    let e = entity.trueXY();
+    return Math.pow(player.x - e.x, 2) + Math.pow(player.y - e.y, 2);
 };
 
 
