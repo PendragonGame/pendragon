@@ -34,6 +34,8 @@ let autosave = function() {
         npc: npcData,
     };
     if (entities.player === null) return;
+    // console.debug('Monsters:' + Object.keys(entities.monsters).length);
+    // console.debug('NPC:' + Object.keys(entities.npc).length);
     storage.set('autosave.entities', entities, function(err) {
         if (err) throw err;
     });
@@ -92,6 +94,8 @@ let loadState = function(key) {
         storage.get(key, (err, data) => {
             if (err) reject(err);
             console.log('Loaded key: ' + key);
+            // console.debug('Monsters:' + Object.keys(data.monsters).length);
+            // console.debug('NPC:' + Object.keys(data.npc).length);
             resolve(data);
         });
     });

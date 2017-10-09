@@ -574,9 +574,12 @@ Play.loadBoard = function(data) {
      */
     this.monsterGroup = game.add.group();
     this.monsterFactory = new Factory(Monster, this.monsterGroup,
-        monsterBounds, 30);
+        monsterBounds, Object.keys(monstersData).length);
+    let i = 0;
     for (let id in monstersData) {
         if (Object.prototype.hasOwnProperty.call(monstersData, id)) {
+            i = i + 1;
+            console.debug('Monster #' + i);
             let e = monstersData[id];
             let E = this.monsterFactory.next(e.x, e.y, e.key);
             E.deserialize(e);
@@ -586,12 +589,16 @@ Play.loadBoard = function(data) {
     /**
      * Generate a factory and a few NPCs
      */
+    i = 0;
     this.npcGroup = game.add.group();
-    this.npcFactory = new Factory(NPC, this.npcGroup, npcBounds, 40);
+    this.npcFactory = new Factory(NPC, this.npcGroup, npcBounds,
+        Object.keys(npcData).length);
     for (let id in npcData) {
         if (Object.prototype.hasOwnProperty.call(npcData, id)) {
+            i = i + 1;
+            console.debug('NPC #' + i);
             let e = npcData[id];
-            let E = this.monsterFactory.next(e.x, e.y, e.key);
+            let E = this.npcFactory.next(e.x, e.y, e.key);
             E.deserialize(e);
         }
     }
