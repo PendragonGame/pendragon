@@ -387,16 +387,18 @@ function entityCollision(entity1, entity2) {
     /**
      * @todo(anand): Need to implement Game Over
      */
-    if ((dead.type === 'monster' && perp.type === 'player' && action == 'kill')
-     || (dead.type === 'npc' && perp === 'player' && action == 'kill')) {
-      this.player.score++;
-      let witness = Sampling.sample_from_array(Map.nearest(this.player, 3, 128), 1);
-      this.rippleGossip.createRumor(
-        witness,
-        dead,
-        perp,
-        action
-      );
+    if (dead && perp && action) {
+        if ((dead.type === 'monster' && perp.type === 'player' && action == 'kill')
+        || (dead.type === 'npc' && perp === 'player' && action == 'kill')) {
+         this.player.score++;
+         let witness = Sampling.sample_from_array(Map.nearest(this.player, 3, 128), 1);
+         this.rippleGossip.createRumor(
+           witness,
+           dead,
+           perp,
+           action
+         );
+       }
     }
 }
 
