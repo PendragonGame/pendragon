@@ -1,5 +1,6 @@
 let Menu = {};
 
+
 Menu.preload = function() {
     game.load.tilemap('menu-map', 'assets/tilemaps/menu-map.json',
     null, Phaser.Tilemap.TILED_JSON);
@@ -11,8 +12,9 @@ Menu.create = function() {
     this.map = game.add.tilemap('menu-map');
     this.map.addTilesetImage('outdoors', 'tileset');
     this.bgLayer = this.map.createLayer('bg1');
-    // menu background to white
-    game.stage.backgroundColor = '#ffffff';
+    if (game.menuCameraPos) {
+        game.camera.x = game.menuCameraPos;
+    }
     // add a play button
     this.play = game.add.button(game.world.centerX/2, 100,
          null, function() {
@@ -41,40 +43,42 @@ Menu.create = function() {
     this.play.fixedToCamera = true;
     this.playText.fixedToCamera = true;
 
-    // button for settings
-    this.settings = game.add.button(game.world.centerX/2, 180,
+    // button for load
+    this.load = game.add.button(game.world.centerX/2, 180,
         null, function() {
             // when pressed start loading the game
-           console.log('clicking settings button does nothing');
+           game.state.start('LoadMenu');
            }, this, 2, 1, 0);
    // position the button in the right spot
-   this.settings.width = 220;
-   this.settings.height = 60;
-   this.settings.x -= 220/2;
-    // text for settings
-    this.settingsText = game.add.text(game.camera.width/2 - 65,
+   this.load.width = 140;
+   this.load.height = 60;
+   this.load.x -= 140/2;
+    // text for load
+    this.loadText = game.add.text(game.camera.width/2 - 65,
          180, 'Load');
-    this.settingsText.font = 'Fauna One';
-    this.settingsText.fill = '#000000';
-    this.settingsText.fontSize = '40pt';
+    this.loadText.font = 'Fauna One';
+    this.loadText.fill = '#000000';
+    this.loadText.fontSize = '40pt';
 
-    this.settings.onInputOver.add( function() {
-        this.settingsText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
+    this.load.onInputOver.add( function() {
+        this.loadText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
     }, this);
 
-    this.settings.onInputOut.add( function() {
-        this.settingsText.setShadow(0, 0, 'rgba(0,0,0,0.5)', 0);
-        this.settingsText.fill = '#111111';
+    this.load.onInputOut.add( function() {
+        this.loadText.setShadow(0, 0, 'rgba(0,0,0,0.5)', 0);
+        this.loadText.fill = '#111111';
     }, this);
-    this.settings.fixedToCamera = true;
-    this.settingsText.fixedToCamera = true;
+    this.load.fixedToCamera = true;
+    this.loadText.fixedToCamera = true;
 };
 
 Menu.update = function() {
     if (game.camera.x === 640) {
         game.camera.x = 0;
+        game.menuCameraPos = game.camera.x;
     }
     game.camera.x += 1;
+    game.menuCameraPos = game.camera.x;
 };
 
 module.exports = Menu;
