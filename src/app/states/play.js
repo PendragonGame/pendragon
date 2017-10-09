@@ -143,6 +143,12 @@ Play.create = function() {
         'hud_save', function() {
             console.log('Save Button Clicked');
             console.log('Manually saving');
+            let savedText = game.add.text(10, -20, 'Saved');
+            savedText.font = 'Fauna One';
+            savedText.fill = '#000000';
+            savedText.fontSize = '12pt';
+            savedText.lifespan = 1000;
+            saveButton.addChild(savedText);
             dataStore.manualSaveState();
         }, 2, 1, 0);
     saveButton.width = 70;
