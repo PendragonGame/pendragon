@@ -52,7 +52,7 @@ module.exports.getLoadedState = function(key) {
     return loadedState;
 };
 
-module.exports.resetLoadState = function () {
+module.exports.resetLoadState = function() {
     loadedState = null;
 };
 
