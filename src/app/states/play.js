@@ -187,6 +187,8 @@ Play.create = function() {
 
 Play.update = function() {
     if (this.player.state === 'dead') {
+        game.score = this.player.score;
+        game.dayCount = this.player.daysSurvived;
         game.state.start('Game Over');
     }
     while (this.fullHealthBar.width < 146) this.fullHealthBar.width += 1;
