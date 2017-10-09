@@ -11,7 +11,7 @@ function MenuButton(x, y, text, func) {
     this.text = game.add.text(x,
         y, text);
     this.text.anchor.setTo(.5, .5);
-    this.text.font = 'Fauna One';
+    this.text.font = 'Press Start 2P';
     this.text.fill = '#FFFFFF';
     this.text.fontSize = '35pt';
     // the button
@@ -41,19 +41,19 @@ function MenuButton(x, y, text, func) {
 GameOver.create = function() {
     let gameoverText = game.add.text(game.camera.width/2, 100, 'Game Over');
     gameoverText.anchor.setTo(.5, .5);
-    gameoverText.font = 'Fauna One';
+    gameoverText.font = 'Press Start 2P';
     gameoverText.fill = '#FFFFFF';
     gameoverText.fontSize = '35pt';
 
-    let scoreText = game.add.text(game.camera.width/2, 200, 'Score: '+game.score);
+    let scoreText = game.add.text(game.camera.width/2, 200, 'Score:'+game.score);
     scoreText.anchor.setTo(.5, .5);
-    scoreText.font = 'Fauna One';
+    scoreText.font = 'Press Start 2P';
     scoreText.fill = '#FFFFFF';
     scoreText.fontSize = '25pt';
 
-    let dayText = game.add.text(game.camera.width/2, 260, 'Days Survived: '+game.dayCount);
+    let dayText = game.add.text(game.camera.width/2, 260, 'Days Survived:'+game.dayCount);
     dayText.anchor.setTo(.5, .5);
-    dayText.font = 'Fauna One';
+    dayText.font = 'Press Start 2P';
     dayText.fill = '#FFFFFF';
     dayText.fontSize = '25pt';
 

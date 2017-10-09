@@ -11,12 +11,13 @@ function Ripple() {
     console.log(path.join(__dirname, 'worker.js'));
     this.worker = new Worker(path.join(__dirname, 'worker.js'));
     this.worker.onmessage = this.triggerConversation;
+    this.timer = null;
     const self = this;
     (function updateWorker() {
         self.worker.postMessage({
             tree: Map.toJSON(),
         });
-        setTimeout(updateWorker, 1500);
+        self.timer = setTimeout(updateWorker, 1500);
     })();
 };
 
@@ -79,5 +80,9 @@ Ripple.prototype.createRumor = function(
     witness.learnInfo(rumor);
     return rumor;
 };
+
+Ripple.prototype.kill = function() {
+    clearInterval(this.timer);
+}
 
 module.exports = Ripple;

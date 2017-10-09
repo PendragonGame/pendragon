@@ -8,7 +8,7 @@ Load.init = function(data) {
 
 Load.preload = function() {
     game.add.text(80, 150, 'loading...', {
-        font: '30px Courier',
+        font: '30px Press Start 2P',
         fill: '#ffffff',
     });
 

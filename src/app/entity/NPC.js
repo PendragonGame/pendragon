@@ -143,7 +143,6 @@ NPC.prototype.aggro = function(target, navMesh, sprint = false) {
         return true;
     }
     if (target.state === 'dead') {
-        this.idleHere();
         return true;
     }
     // check your location relative to target

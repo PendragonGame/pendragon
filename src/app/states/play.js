@@ -23,6 +23,7 @@ const monsterBounds = [
 ];
 
 let loadedData = null;
+let timerIDs = [];
 
 let Play = {};
 
@@ -74,7 +75,7 @@ Play.preload = function() {
 
 
     this.textStyle = {
-        font: 'bold 20px Consolas',
+        font: '15px Press Start 2P',
         fill: '#ffff00',
         align: 'center',
     };
@@ -97,21 +98,25 @@ Play.preload = function() {
     this.emptyHealthBar = game.add.sprite(this.healthLabel.width + 5, 0,
         'hud_emptyHealth');
     this.emptyHealthBar.fixedToCamera = true;
+    this.emptyHealthBar.height = 20;
     this.fullHealthBar = game.add.sprite(this.healthLabel.width + 7, 2,
         'hud_fullHealth');
     this.fullHealthBar.fixedToCamera = true;
     this.fullHealthBar.width /= 2;
+    this.fullHealthBar.height = 20;
 
     this.emptyRepBar = game.add.sprite(this.healthLabel.width + 5,
-        this.emptyHealthBar.height,
+        this.emptyHealthBar.height + 5,
         'hud_emptyHealth');
     this.emptyRepBar.fixedToCamera = true;
+    this.emptyRepBar.height = 20;
     this.fullRepBar = game.add.sprite(this.healthLabel.width + 7,
-        this.emptyHealthBar.height + 2,
+        this.emptyHealthBar.height + 7,
         'hud_fullRep');
     this.fullRepBar.fixedToCamera = true;
     this.barRealWidth = this.fullRepBar.width;
     this.fullRepBar.width /= 2;
+    this.fullRepBar.height = 20;
 
     /**
      * save button
@@ -152,6 +157,7 @@ Play.preload = function() {
         'hud_menu',
         function() {
             console.log('Menu Button Clicked');
+            game.state.start('Menu');
         }, 2, 1, 0);
     menuButton.width = 70;
     menuButton.height = 30;
@@ -217,12 +223,12 @@ Play.create = function() {
      * 
      * Start autosaving 10 seconds after game starts
      */
-    setInterval(() => {
+    let i = setInterval(() => {
         dataStore.autosaveEntity(this.player);
         this.monsterGroup.forEachAlive(dataStore.autosaveEntity);
         this.npcGroup.forEachAlive(dataStore.autosaveEntity);
     }, 1000);
-
+    timerIDs.push(i);
     /**
      * Build the datastructure keeping track of Entities
      * 
@@ -243,7 +249,9 @@ Play.update = function() {
     if (this.player.state === 'dead') {
         game.score = this.player.score;
         game.dayCount = this.player.daysSurvived;
-        game.state.start('Game Over');
+        setTimeout(() => {
+            game.state.start('Game Over');
+        }, 2000);
     }
     while (this.fullHealthBar.width < 146) this.fullHealthBar.width += 1;
     this.scoreLabel.text = 'Score: ' + this.player.score;
@@ -669,6 +677,13 @@ Play.getPlayerDistance2 = function(entity) {
     let player = this.player.trueXY();
     let e = entity.trueXY();
     return Math.pow(player.x - e.x, 2) + Math.pow(player.y - e.y, 2);
+};
+
+Play.shutdown = function() {
+    this.rippleGossip.kill();
+    timerIDs.forEach((id) => {
+        clearInterval(id);
+    });
 };
 
 
