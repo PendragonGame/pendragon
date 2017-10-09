@@ -147,7 +147,8 @@ Play.create = function() {
             savedText.font = 'Fauna One';
             savedText.fill = '#000000';
             savedText.fontSize = '12pt';
-            savedText.lifespan = 1000;
+            savedText.lifespan = 770;
+            savedText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
             saveButton.addChild(savedText);
             dataStore.manualSaveState();
         }, 2, 1, 0);
