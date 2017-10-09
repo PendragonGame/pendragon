@@ -11,6 +11,16 @@ const Ripple = require('../ripple/engine');
 const Sampling = require('discrete-sampling');
 
 const _ = require('lodash');
+const npcBounds = [
+    [new Phaser.Point(1397, 1344), new Phaser.Point(1684, 1472)],
+    [new Phaser.Point(778, 1328), new Phaser.Point(1065, 1553)],
+    [new Phaser.Point(1660, 735), new Phaser.Point(1690, 1065)],
+    [new Phaser.Point(1800, 2200), new Phaser.Point(3000, 2700)],
+];
+
+const monsterBounds = [
+    [new Phaser.Point(3415, 2886), new Phaser.Point(3952, 1501)],
+];
 
 let loadedData = null;
 
@@ -509,16 +519,6 @@ function entityCollision(entity1, entity2) {
 }
 
 Play.populateBoard = function() {
-    let npcBounds = [
-        [new Phaser.Point(1397, 1344), new Phaser.Point(1684, 1472)],
-        [new Phaser.Point(778, 1328), new Phaser.Point(1065, 1553)],
-        [new Phaser.Point(1660, 735), new Phaser.Point(1690, 1065)],
-        [new Phaser.Point(1800, 2200), new Phaser.Point(3000, 2700)],
-    ];
-
-    let monsterBounds = [
-        [new Phaser.Point(3415, 2886), new Phaser.Point(3952, 1501)],
-    ];
 
     /**
      * Generate a factory and a few monsters
@@ -573,7 +573,8 @@ Play.loadBoard = function(data) {
      * Generate a factory and a few monsters
      */
     this.monsterGroup = game.add.group();
-    this.monsterFactory = new Factory(Monster, this.monsterGroup);
+    this.monsterFactory = new Factory(Monster, this.monsterGroup,
+        monsterBounds, 30);
     for (let id in monstersData) {
         if (Object.prototype.hasOwnProperty.call(monstersData, id)) {
             let e = monstersData[id];
@@ -586,7 +587,7 @@ Play.loadBoard = function(data) {
      * Generate a factory and a few NPCs
      */
     this.npcGroup = game.add.group();
-    this.npcFactory = new Factory(NPC, this.npcGroup);
+    this.npcFactory = new Factory(NPC, this.npcGroup, npcBounds, 40);
     for (let id in npcData) {
         if (Object.prototype.hasOwnProperty.call(npcData, id)) {
             let e = npcData[id];
