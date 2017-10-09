@@ -1,6 +1,8 @@
 'use strict';
 const {ipcRenderer} = require('electron');
 
+let loadedState = null;
+
 /**
  * Update entity by sending information to backend
  * 
@@ -37,11 +39,16 @@ module.exports.getSaveStates = function() {
 
 module.exports.loadState = function(key) {
     ipcRenderer.send('loadState', true);
-    return new Promise(function(resolve, reject) {
+    loadedState = new Promise(function(resolve, reject) {
         ipcRenderer.on('reply-loadState', (ev, arg) => {
             if (!arg.success) reject('Failed to load key');
             resolve(arg.data);
         });
     });
+    return loadedState;
 };
+
+module.exports.getLoadedState = function(key) {
+    return loadedState;
+}
 

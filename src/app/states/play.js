@@ -16,8 +16,6 @@ Play.init = function() {
 };
 
 Play.create = function() {
-    const self = this;
-
     /**
      * Map creation
      */
@@ -55,7 +53,6 @@ Play.create = function() {
      * Start autosaving 10 seconds after game starts
      */
     setTimeout(this.autosaveData(), 10000);
-    
 
     /**
      * Build the datastructure keeping track of Entities
