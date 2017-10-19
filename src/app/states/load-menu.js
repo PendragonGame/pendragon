@@ -29,8 +29,7 @@ LoadMenu.create = function() {
     this.bgLayer = this.map.createLayer('bg1');
     game.camera.x = game.menuCameraPos;
 
-    // // back button to go to menu screen
-    // // add a back button
+    // back button to go to menu screen
     this.back = new ui.MenuButton(game.camera.width - 100,
          game.camera.height - 80, 'Back', null, ()=>{
             // when pressed start loading the game

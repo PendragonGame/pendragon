@@ -1,12 +1,14 @@
 
 /**
- * 
+ * A basic text button. 
  * @param {*} x 
  * @param {number} y 
  * @param {string} text 
  * @param {*} key object associated with button
  * @param {*} func
  * @param {string} fontSize
+ * @property {Phaser.Text} text modify this to change the text.
+ * @property {Phaser.Button} button modify this to change the button.
  */
 function MenuButton(x, y, text, key, func, fontSize = '16pt') {
     // add text over the button
@@ -41,7 +43,7 @@ function MenuButton(x, y, text, key, func, fontSize = '16pt') {
     };
 }
 /**
- * 
+ * Cyclable list of buttons.
  * @param {*} saves  array of timestamps 
  * @param {*} func   function for buttons
  */
