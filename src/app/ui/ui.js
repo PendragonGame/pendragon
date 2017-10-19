@@ -69,10 +69,9 @@ function ButtonList(saves, func) {
         }
     }
     console.log(this.startI, this.currentI);
-    this.nextPageButton = new MenuButton(
+    this.nextPage = new MenuButton(
         game.camera.width / 2 + 80,
         game.camera.height - 80, '>', null, () => {
-            console.log('next');
             if (saves.length - this.startI < 6) return;
             this.currentPage += 1;
             for (; this.startI <= this.currentI; this.startI++) {
@@ -93,7 +92,7 @@ function ButtonList(saves, func) {
             }
         });
 
-    this.nextPrevPage = new MenuButton(
+    this.prevPage = new MenuButton(
         game.camera.width / 2 - 80,
         game.camera.height - 80, '<', null, () => {
             if (this.currentPage === 0) return;
