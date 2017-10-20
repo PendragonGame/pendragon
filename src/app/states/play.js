@@ -124,7 +124,8 @@ Play.preload = function() {
      * 
      */
     // function saveButton() {
-    let saveButton = game.add.button(this.wasd.width + 60, window.innerHeight - 27,
+    let saveButton = game.add.button(this.wasd.width + 60,
+         window.innerHeight - 27,
         'hud_save',
         function() {
             console.log('Save Button Clicked');
@@ -154,7 +155,8 @@ Play.preload = function() {
      * 
      */
     // function menuButton() {
-    let menuButton = game.add.button(this.wasd.width + 140, window.innerHeight - 27,
+    let menuButton = game.add.button(this.wasd.width + 140,
+         window.innerHeight - 27,
         'hud_menu',
         function() {
             console.log('Menu Button Clicked');
@@ -397,7 +399,8 @@ Play.update = function() {
     let nearest4 = Map.nearest(this.player);
     _.forEach(nearest4, function(entity) {
         // console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
-        if ((self.player.y + self.player.height) > (entity[0].y + entity[0].height)) {
+        if ((self.player.y + self.player.height) >
+         (entity[0].y + entity[0].height)) {
             game.world.bringToTop(self.player);
             // console.log('player on top');
         } else {
@@ -533,7 +536,6 @@ function entityCollision(entity1, entity2) {
 }
 
 Play.populateBoard = function() {
-
     /**
      * Generate a factory and a few monsters
      */
@@ -637,18 +639,18 @@ Play.loadBoard = function(data) {
 
 
 Play.generateMap = function() {
-    setTimeout(() => {
-        let entities = [];
-        // entities.push(this.player);
-        // I see no point in adding the player
-        this.monsterGroup.forEachAlive(function(monster) {
-            entities.push(monster);
-        });
-        this.npcGroup.forEachAlive(function(npc) {
-            entities.push(npc);
-        });
-        Map.create(entities);
-    }, 1500);
+    // setTimeout(() => {
+    let entities = [];
+    // entities.push(this.player);
+    // I see no point in adding the player
+    this.monsterGroup.forEachAlive(function(monster) {
+        entities.push(monster);
+    });
+    this.npcGroup.forEachAlive(function(npc) {
+        entities.push(npc);
+    });
+    Map.create(entities);
+    // }, 1500);
 };
 
 Play.autosaveData = function() {
@@ -681,11 +683,65 @@ Play.getPlayerDistance2 = function(entity) {
 };
 
 Play.shutdown = function() {
-    this.rippleGossip.kill();
+    if (this.rippleGossip) {
+        this.rippleGossip.kill();
+    }
     timerIDs.forEach((id) => {
         clearInterval(id);
     });
 };
 
+Phaser.Tilemap.prototype.setCollisionBetween = function(start, stop,
+    collides, layer, recalculate) {
+       if (collides === undefined) {
+collides = true;
+}
+       if (layer === undefined) {
+layer = this.currentLayer;
+}
+       if (recalculate === undefined) {
+recalculate = true;
+}
+
+       layer = this.getLayer(layer);
+
+       for (let index = start; index <= stop; index++) {
+           if (collides) {
+               this.collideIndexes.push(index);
+           } else {
+               let i = this.collideIndexes.indexOf(index);
+
+               if (i > -1) {
+                   this.collideIndexes.splice(i, 1);
+               }
+           }
+       }
+
+       for (let y = 0; y < this.layers[layer].height; y++) {
+           for (let x = 0; x < this.layers[layer].width; x++) {
+               let tile = this.layers[layer].data[y][x];
+
+               if (tile && tile.index >= start && tile.index <= stop) {
+                   if (collides) {
+                       tile.setCollision(true, true, true, true);
+                   } else {
+                       tile.resetCollision();
+                   }
+
+                   tile.faceTop = collides;
+                   tile.faceBottom = collides;
+                   tile.faceLeft = collides;
+                   tile.faceRight = collides;
+               }
+           }
+       }
+
+       if (recalculate) {
+           //  Now re-calculate interesting faces
+           this.calculateFaces(layer);
+       }
+
+       return layer;
+   };
 
 module.exports = Play;
