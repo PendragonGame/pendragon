@@ -1,3 +1,4 @@
+const ui = require('../ui/ui');
 let Menu = {};
 
 
@@ -22,72 +23,21 @@ Menu.create = function() {
     this.pendragonText.fontSize = '40pt';
     this.pendragonText.fixedToCamera = true;
     // add a play button
-    this.play = game.add.button(game.world.centerX/2, 100,
-         null, function() {
-             // when pressed start loading the game
+    this.play = new ui.MenuButton(
+        game.world.centerX/2,
+        game.camera.height/2-50,
+        'Play', null, function() {
             game.stage.backgroundColor = '#000000';
             game.state.start('Load');
-            }, this, 2, 1, 0);
-    this.play.anchor.setTo(.5, .5);
-    // position the button in the right spot
-    // add text over the button
-    this.playText = game.add.text(game.world.centerX/2, 250, 'Play');
-    this.playText.anchor.setTo(.5, .5);
-    this.playText.font = 'Press Start 2P';
-    this.playText.fill = '#000000';
-    this.playText.fontSize = '40pt';
-    this.play.width = this.playText.width;
-    this.play.height = this.playText.height;
-    this.play.x = this.playText.x;
-    this.play.y = this.playText.y;
-    // hover effect
-    this.play.onInputOver.add( function() {
-        this.playText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
-    }, this);
-    // hover off effect
-    this.play.onInputOut.add( function() {
-        this.playText.setShadow(0, 0, 'rgba(0,0,0,0.5)', 0);
-        this.playText.fill = '#111111';
-    }, this);
-    this.play.fixedToCamera = true;
-    this.playText.fixedToCamera = true;
+        }, '40pt');
 
-    // button for load
-    this.load = game.add.button(game.world.centerX/2, 180,
-        null, function() {
-            // when pressed start loading the game
-           game.state.start('LoadMenu');
-           }, this, 2, 1, 0);
-    this.load.anchor.setTo(.5, .5);
-   // position the button in the right spot
-   this.load.width = 140;
-   this.load.height = 60;
-   this.load.x -= 140/2;
-    // text for load
-    this.loadText = game.add.text(game.camera.width/2,
-         330, 'Load');
-    this.loadText.anchor.setTo(.5, .5);
-    this.loadText.font = 'Press Start 2P';
-    this.loadText.fill = '#000000';
-    this.loadText.fontSize = '40pt';
-    this.load.width = this.loadText.width;
-    this.load.height = this.loadText.height;
-    this.load.x = this.loadText.x;
-    this.load.y = this.loadText.y;
-
-    this.load.onInputOver.add( function() {
-        this.loadText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
-    }, this);
-
-    this.load.onInputOut.add( function() {
-        this.loadText.setShadow(0, 0, 'rgba(0,0,0,0.5)', 0);
-        this.loadText.fill = '#111111';
-    }, this);
-    this.load.fixedToCamera = true;
-    this.loadText.fixedToCamera = true;
-    this.r = 0;
-    // this.b = 0;
-    // this.g = 0;
+    this.load = new ui.MenuButton(
+        game.world.centerX/2,
+        game.camera.height/2+50,
+        'Load', null, function() {
+            game.stage.backgroundColor = '#000000';
+            game.state.start('LoadMenu');
+        }, '40pt');
 };
 
 Menu.update = function() {
@@ -99,9 +49,9 @@ Menu.update = function() {
     game.menuCameraPos = game.camera.x;
     this.r = game.rnd.integerInRange(0, 256);
     this.g = game.rnd.integerInRange(0, 256);
-    this.b = game.rnd.integerInRange(0, 256);    
-    this.pendragonText.setShadow(5, 5, 'rgba('+ this.r +','+this.b +','+this.g +',.75)', 1);
-
+    this.b = game.rnd.integerInRange(0, 256);
+    this.pendragonText.setShadow(5, 5, 'rgba('+ this.r +','
+     +this.b +','+this.g +',.75)', 1);
 };
 
 module.exports = Menu;
