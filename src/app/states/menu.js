@@ -9,14 +9,14 @@ Menu.preload = function() {
 };
 
 Menu.create = function() {
-    game.world.setBounds(0, 0, 1280, 640);
+    // game.world.setBounds(0, 0, 1280, 640);
     this.map = game.add.tilemap('menu-map');
     this.map.addTilesetImage('outdoors', 'tileset');
     this.bgLayer = this.map.createLayer('bg1');
     if (game.menuCameraPos) {
         game.camera.x = game.menuCameraPos;
     }
-    this.pendragonText = game.add.text(game.world.centerX/2, 100, 'Pendragon');
+    this.pendragonText = game.add.text(game.camera.width/2, 100, 'Pendragon');
     this.pendragonText.anchor.setTo(.5, .5);
     this.pendragonText.font = 'Press Start 2P';
     this.pendragonText.fill = '#000000';
@@ -24,16 +24,16 @@ Menu.create = function() {
     this.pendragonText.fixedToCamera = true;
     // add a play button
     this.play = new ui.MenuButton(
-        game.world.centerX/2,
-        game.camera.height/2-50,
+        game.camera.width/2,
+        this.pendragonText.y + 150,
         'Play', null, function() {
             game.stage.backgroundColor = '#000000';
             game.state.start('Load');
         }, '40pt');
 
     this.load = new ui.MenuButton(
-        game.world.centerX/2,
-        game.camera.height/2+50,
+        game.camera.width/2,
+        this.play.button.y + 100,
         'Load', null, function() {
             game.stage.backgroundColor = '#000000';
             game.state.start('LoadMenu');

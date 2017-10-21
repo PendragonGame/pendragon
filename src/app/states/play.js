@@ -563,8 +563,8 @@ Play.populateBoard = function() {
      * Create the Player, setting location and naming as 'player'.
      * Giving him Physics and allowing collision with the world boundaries.
      */
-    this.player = new Player(game.world.width / 2,
-        game.world.height / 2 + 200,
+    this.player = new Player(1971,
+        504,
         'player');
 
     /**

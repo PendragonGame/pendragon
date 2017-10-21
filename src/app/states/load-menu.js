@@ -23,7 +23,7 @@ LoadMenu.preload = function() {
 
 LoadMenu.create = function() {
     // menu background stuff
-    game.world.setBounds(0, 0, 1280, 640);
+    // game.world.setBounds(0, 0, 1280, 800);
     this.map = game.add.tilemap('menu-map');
     this.map.addTilesetImage('outdoors', 'tileset');
     this.bgLayer = this.map.createLayer('bg1');

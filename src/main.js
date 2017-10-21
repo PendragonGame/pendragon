@@ -20,8 +20,8 @@ console.log(x);
  */
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 640,
-        height: 640,
+        width: 1280,
+        height: 800,
         resizable: false,
         webPreferences: {
             nodeIntegrationInWorker: true
