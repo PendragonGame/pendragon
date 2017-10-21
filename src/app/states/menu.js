@@ -9,7 +9,7 @@ Menu.preload = function() {
 };
 
 Menu.create = function() {
-    // game.world.setBounds(0, 0, 1280, 640);
+    game.world.setBounds(0, 0, 2560, 640);
     this.map = game.add.tilemap('menu-map');
     this.map.addTilesetImage('outdoors', 'tileset');
     this.bgLayer = this.map.createLayer('bg1');
@@ -41,7 +41,7 @@ Menu.create = function() {
 };
 
 Menu.update = function() {
-    if (game.camera.x === 640) {
+    if (game.camera.x === 1280) {
         game.camera.x = 0;
         game.menuCameraPos = game.camera.x;
     }
