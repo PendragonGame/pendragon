@@ -1,6 +1,9 @@
 const States = require('./states/states');
+// readjust window to compensate for window outer height
+window.resizeTo(window.innerWidth,
+     window.outerHeight + window.outerHeight - window.innerHeight);
+let game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'game');
 
-let game = new Phaser.Game(1280, 800, Phaser.CANVAS, 'game');
 
 game.state.add('Boot', States.Boot);
 game.state.add('Load', States.Load);
