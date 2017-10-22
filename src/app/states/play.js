@@ -214,7 +214,9 @@ Play.create = function() {
     // controls
     this.controlText = game.add.text(game.camera.width/2, 600, 'Up:    W   Left:   A\nDown:  S   Right:  D\nMelee: M   Sprint: Shift');
     this.controlText.font = 'Press Start 2P';
-    this.controlText.fill = '#000000';
+    this.controlText.fill = '#ff5100';
+    this.controlText.stroke = '#0';
+    this.controlText.strokeThickness = 5;
     this.controlText.fontSize = '3em';
     this.controlText.anchor.setTo(.5, .5);
     this.controlText.align = 'left';
@@ -236,6 +238,7 @@ Play.create = function() {
          300, window.isFullScreen() ? 'Windowed' : 'Fullscreen',
           null, ()=>{
             console.log('fulscreen toggled');
+            game.paused = false;
             window.setResizable(true);
             window.setFullScreenable(true);
             if (window.isFullScreen()) {
@@ -247,6 +250,7 @@ Play.create = function() {
             }
             window.setResizable(false);
             window.setFullScreenable(false);
+            game.paused = true;
          }, '4.5em' ));
     // add a menu button
     this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
@@ -258,6 +262,9 @@ Play.create = function() {
 
     // hide the pause menu
     for (let i = 0; i < this.pauseMenu.length; i++) {
+        this.pauseMenu[i].text.fill = '#00bbff';
+        this.pauseMenu[i].text.stroke = '#0';
+        this.pauseMenu[i].text.strokeThickness = 5;
         this.pauseMenu[i].hide();
     }
 
@@ -313,6 +320,7 @@ Play.update = function() {
     if (this.light.alpha <= 0 && this.dayTime === false) {
         this.dayTime = true;
         this.player.daysSurvived++;
+        this.light.alpha = 0;
     }
     if (this.light.alpha >= .5) {
         this.dayTime = false;

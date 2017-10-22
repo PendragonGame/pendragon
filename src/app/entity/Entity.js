@@ -420,7 +420,7 @@ Entity.prototype.converse = function(text) {
     let chat = game.add.text(32, 0, text);
     chat.anchor.setTo(0.5);
     chat.font = 'Press Start 2P';
-    chat.fill = '#efcb3b';
+    chat.fill = '#ffff00';
     chat.fontSize = '1.5em';
     chat.stroke = 'black';
     chat.strokeThickness = '4';
