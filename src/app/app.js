@@ -4,7 +4,7 @@ let height;
 if (screen.width / screen.height === 16/9) {
     if (window.innerHeight !== 720) {
         window.resizeTo(1280,
-            window.outerHeight + window.outerHeight - window.innerHeight);
+            window.outerHeight + 720 - window.innerHeight);
     }
     height = 720;
 } else {
