@@ -1,7 +1,7 @@
 const {
     app,
     BrowserWindow,
-    ipcMain
+    ipcMain,
 } = require('electron');
 const path = require('path');
 const url = require('url');
@@ -24,8 +24,10 @@ function createWindow() {
         height: 640,
         resizable: false,
         webPreferences: {
-            nodeIntegrationInWorker: true
+            nodeIntegrationInWorker: true,
         },
+        icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
+        // icon: path.join(__dirname, 'assets/icons/mac/logo-mac.icns'),
     });
 
     mainWindow.loadURL(url.format({
