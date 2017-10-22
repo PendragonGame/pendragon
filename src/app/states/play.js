@@ -78,9 +78,6 @@ Play.preload = function() {
      * 
      * @todo(anand): Can this be improved? May be making code slow.
      */
-    this.wasd = game.add.sprite(0, 0, 'hud_wasd');
-    this.wasd.y = game.camera.height - this.wasd.height;
-    this.wasd.fixedToCamera = true;
 
     this.wpn = game.add.sprite(0, 0, 'hud_weapon');
     this.wpn.width /= 2;
@@ -139,7 +136,6 @@ Play.preload = function() {
 
     this.hudGroup = game.add.group();
     this.hudGroup.addMultiple([
-        this.wasd,
         this.wpn,
         this.healthLabel,
         this.repLabel,
@@ -162,12 +158,14 @@ Play.pauseGame = function() {
         for (let i = 0; i < this.pauseMenu.length; i++) {
             this.pauseMenu[i].reveal();
             this.pauseBg.visible = true;
+            this.controlText.visible = true;
         }
     } else {
         // hide the menu
         for (let i = 0; i < this.pauseMenu.length; i++) {
             this.pauseMenu[i].hide();
             this.pauseBg.visible = false;
+            this.controlText.visible = false;
         }
     }
 };
@@ -213,6 +211,15 @@ Play.create = function() {
     this.pauseBg.visible = false;
     this.pauseBg.drawRect(0, 0, game.camera.width, game.camera.height);
     this.pauseBg.fixedToCamera = true;
+    // controls
+    this.controlText = game.add.text(game.camera.width/2, 600, 'Up:    W   Left:   A\nDown:  S   Right:  D\nMelee: M   Sprint: Shift');
+    this.controlText.font = 'Press Start 2P';
+    this.controlText.fill = '#000000';
+    this.controlText.fontSize = '3em';
+    this.controlText.anchor.setTo(.5, .5);
+    this.controlText.align = 'left';
+    this.controlText.fixedToCamera = true;
+    this.controlText.visible = false;
     // add a save button
     this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
          200, '  Save  ', null, ()=>{

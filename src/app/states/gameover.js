@@ -27,15 +27,5 @@ GameOver.create = function() {
              game.state.start('Menu');
             }, '4em');
     menu.text.fill = '#FFFFFF';
-     // hover effect
-     menu.button.onInputOver.add(function() {
-        //  menu.text.setShadow(3, 3, 'rgba(256,256,256,.75)', 5);
-        menu.text.fontSize = '4.2em';
-     }, this);
-     // hover off effect
-     menu.button.onInputOut.add(function() {
-        //  menu.text.setShadow(0, 0, 'rgba(0,0,0,0.5)', 0);
-        menu.text.fontSize = '4em';
-     }, this);
 };
 module.exports = GameOver;

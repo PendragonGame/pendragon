@@ -22,7 +22,7 @@ function Player(x, y, key) {
     this.daysSurvived = 1;
 
     this.type = 'player';
-    this.converse('hello');
+    this.converse('Press Escape for help');
 }
 
 Player.prototype = Object.create(Entity.prototype);

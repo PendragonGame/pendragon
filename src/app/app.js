@@ -10,8 +10,6 @@ if (screen.width / screen.height === 16/9) {
 } else {
     height = 800;
     window.outerHeight = height;
-    console.log(window.outerHeight);
-    console.log(window.innerHeight);
     if (window.innerHeight !== 800) {
         window.resizeTo(1280,
             window.outerHeight + 800 - window.innerHeight);

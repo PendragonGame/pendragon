@@ -28,10 +28,12 @@ function MenuButton(x, y, text, key, func, fontSize = '3em') {
     this.button.anchor.setTo(.5, .5);
     this.button.onInputOver.add(function() {
         this.text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
+        this.text.fontSize = parseFloat(this.text.fontSize)+.5 + 'em';
     }, this);
     // hover off effect
     this.button.onInputOut.add(function() {
         this.text.setShadow(0, 0, 'rgba(0,0,0,0.5)', 0);
+        this.text.fontSize = parseFloat(this.text.fontSize)-.5 + 'em';
         // this.text.fill = '#000000';
     }, this);
     this.button.fixedToCamera = true;
