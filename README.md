@@ -24,10 +24,8 @@ Head over to our [releases](https://github.com/PendragonGame/pendragon/releases)
 ## Instructions for running on Windows:
 
 1. Download the Windows 64-bit Zip on our [releases](https://github.com/PendragonGame/pendragon/releases) page 
-2. Open the 'win-unpacked' folder in the downloaded file
-3. Go to the Pendragon file and extract all the files
-4. Back where you downloaded the file, go to the uncompressed folder that was just extracted
-5. Go into win-unpacked scroll down and run the Pendragon.exe
+2. Extract contents of the zip file
+3. Open uncompressed folder and run pendragon.exe
 
 ## For Contributors:
 
