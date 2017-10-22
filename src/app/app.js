@@ -2,17 +2,17 @@ const States = require('./states/states');
 // readjust window to compensate for window outer height
 let height;
 if (screen.width / screen.height === 16/9) {
-    if (window.innerHeight !== 720) {
-        window.resizeTo(1280,
-            window.outerHeight + 720 - window.innerHeight);
+    if (window.innerHeight !== 576) {
+        window.resizeTo(1024,
+            window.outerHeight + 576 - window.innerHeight);
     }
     height = 720;
 } else {
     height = 800;
-    window.outerHeight = height;
-    if (window.innerHeight !== 800) {
-        window.resizeTo(1280,
-            window.outerHeight + 800 - window.innerHeight);
+    window.outerHeight = 640;
+    if (window.innerHeight !== 640) {
+        window.resizeTo(1024,
+            window.outerHeight + 640 - window.innerHeight);
     }
 }
 let game = new Phaser.Game(1280, height, Phaser.CANVAS, 'game');
