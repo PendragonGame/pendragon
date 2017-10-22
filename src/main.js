@@ -23,6 +23,7 @@ function createWindow() {
         width: 1024,
         height: 640,
         resizable: false,
+        fullscreenable: false,
         webPreferences: {
             nodeIntegrationInWorker: true,
         },

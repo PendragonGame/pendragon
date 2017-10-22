@@ -28,17 +28,17 @@ Settings.create = function() {
          window.isFullScreen() ? 'Windowed' : 'Fullscreen', null,
         ()=>{
             console.log('fulscreen toggled');
+            window.setResizable(true);
+            window.setFullScreenable(true);
             if (window.isFullScreen()) {
-                window.setResizable(true);
                 window.setFullScreen(false);
-                window.setResizable(false);
                 this.settings[0].text.text = 'Fullscreen';
             } else {
-                window.setResizable(true);
                 window.setFullScreen(true);
-                window.setResizable(false);
                 this.settings[0].text.text = 'Windowed';
             }
+            window.setResizable(false);
+            window.setFullScreenable(false);
         }, '4em'
     ));
 };

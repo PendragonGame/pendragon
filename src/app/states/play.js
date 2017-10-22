@@ -236,17 +236,17 @@ Play.create = function() {
          300, window.isFullScreen() ? 'Windowed' : 'Fullscreen',
           null, ()=>{
             console.log('fulscreen toggled');
+            window.setResizable(true);
+            window.setFullScreenable(true);
             if (window.isFullScreen()) {
-                window.setResizable(true);
                 window.setFullScreen(false);
-                window.setResizable(false);
                 this.pauseMenu[1].text.text = 'Fullscreen';
             } else {
-                window.setResizable(true);
                 window.setFullScreen(true);
-                window.setResizable(false);
                 this.pauseMenu[1].text.text = 'Windowed';
             }
+            window.setResizable(false);
+            window.setFullScreenable(false);
          }, '4.5em' ));
     // add a menu button
     this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
