@@ -55,7 +55,7 @@ function ButtonList(saves, func) {
     this.startI = 0;
     this.currentI = 0;
     if (saves) {
-        for (let i = this.currentI + 1; i < saves.length; i++) {
+        for (let i = this.currentI; i < saves.length; i++) {
             this.currentI = i;
             this.saveButtons.push(new MenuButton(game.camera.width / 2,
                 currentH,
