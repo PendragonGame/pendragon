@@ -421,9 +421,9 @@ Entity.prototype.converse = function(text) {
     chat.anchor.setTo(0.5);
     chat.font = 'Press Start 2P';
     chat.fill = '#efcb3b';
-    chat.fontSize = '1.6em';
+    chat.fontSize = '1.5em';
     chat.stroke = 'black';
-    chat.strokeThickness = '3';
+    chat.strokeThickness = '4';
     chat.align = 'center';
     chat.lifespan = 3000; // milliseconds    
     this.addChild(chat);

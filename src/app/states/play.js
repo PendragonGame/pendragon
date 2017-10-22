@@ -8,6 +8,8 @@ const Factory = require('../factory/Factory');
 const dataStore = require('../util/data');
 const Map = require('../util/Map');
 const Ripple = require('../ripple/engine');
+let electron = require('electron');
+let window = electron.remote.getCurrentWindow();
 
 const Sampling = require('discrete-sampling');
 
@@ -59,11 +61,11 @@ Play.preload = function() {
 
     // Input for game
     this.keyboard = game.input.keyboard;
-    this.keyboard.onDownCallback = function() {
-        console.log(game.input.keyboard.event.keyCode);
+    this.keyboard.onDownCallback = ()=> {
         switch (game.input.keyboard.event.keyCode) {
+            // 27 = escape
             case 27:
-                pauseGame();
+                this.pauseGame();
                 break;
 
             default:
@@ -134,63 +136,9 @@ Play.preload = function() {
     this.fullRepBar.width /= 2;
     this.fullRepBar.height = 20;
 
-    /**
-     * save button
-     * 
-     */
-    // function saveButton() {
-    let saveButton = game.add.button(this.wasd.width + 60, game.camera.height - 27,
-        'hud_save',
-        function() {
-            console.log('Save Button Clicked');
-            console.log('Manually saving');
-            let savedText = game.add.text(10, -20, 'Saved');
-            savedText.font = 'Fauna One';
-            savedText.fill = '#000000';
-            savedText.fontSize = '12pt';
-            savedText.lifespan = 770;
-            savedText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
-            saveButton.addChild(savedText);
-            dataStore.manualSaveState();
-        }, 2, 1, 0);
-    saveButton.width = 70;
-    saveButton.height = 30;
-    /**
-     * 
-     *hover over for button
-     */
-    saveButton.onInputOver.add(function over() {
-        console.log('Hovering over Save Button');
-    });
-    saveButton.fixedToCamera = true;
-    this.saveButton = saveButton;
-    /**
-     * menu button
-     * 
-     */
-    // function menuButton() {
-    let menuButton = game.add.button(this.wasd.width + 140, game.camera.height - 27,
-        'hud_menu',
-        function() {
-            console.log('Menu Button Clicked');
-            game.state.start('Menu');
-        }, 2, 1, 0);
-    menuButton.width = 70;
-    menuButton.height = 30;
-    /**
-     * 
-     *hover over for button
-     */
-    menuButton.onInputOver.add(function over() {
-        console.log('Hovering over Menu Button');
-    });
-    menuButton.fixedToCamera = true;
-    this.menuButton = menuButton;
 
     this.hudGroup = game.add.group();
     this.hudGroup.addMultiple([
-        this.menuButton,
-        this.saveButton,
         this.wasd,
         this.wpn,
         this.healthLabel,
@@ -202,6 +150,26 @@ Play.preload = function() {
         this.emptyRepBar,
         this.fullRepBar,
     ]);
+};
+
+/**
+ * pauses the game
+ */
+Play.pauseGame = function() {
+    game.paused ? game.paused = false : game.paused = true;
+    if (game.paused) {
+        // reveal pause menu
+        for (let i = 0; i < this.pauseMenu.length; i++) {
+            this.pauseMenu[i].reveal();
+            this.pauseBg.visible = true;
+        }
+    } else {
+        // hide the menu
+        for (let i = 0; i < this.pauseMenu.length; i++) {
+            this.pauseMenu[i].hide();
+            this.pauseBg.visible = false;
+        }
+    }
 };
 
 Play.create = function() {
@@ -238,19 +206,54 @@ Play.create = function() {
      * Pause menu set up
      */
     this.pauseMenu = [];
+    // pause background
+    this.pauseBg = game.add.graphics();
+    this.pauseBg.beginFill(0x0);
+    this.pauseBg.alpha = .2;
+    this.pauseBg.visible = false;
+    this.pauseBg.drawRect(0, 0, game.camera.width, game.camera.height);
+    this.pauseBg.fixedToCamera = true;
     // add a save button
     this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
-         200, 'Save', null, ()=>{
+         200, '  Save  ', null, ()=>{
             console.log('Manually saving');
+            this.pauseMenu[0].text.text = '  Save ' +
+             String.fromCodePoint(0x1F60A);
+            setTimeout(()=> {
+                this.pauseMenu[0].text.text = '  Save  ';
+            }, 750);
             dataStore.manualSaveState();
          }, '4.5em' ));
     // add a settings button
     this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
-         300, 'Settings', null, ()=>{
-            console.log('Manually saving');
-            dataStore.manualSaveState();
+         300, window.isFullScreen() ? 'Windowed' : 'Fullscreen',
+          null, ()=>{
+            console.log('fulscreen toggled');
+            if (window.isFullScreen()) {
+                window.setResizable(true);
+                window.setFullScreen(false);
+                window.setResizable(false);
+                this.pauseMenu[1].text.text = 'Fullscreen';
+            } else {
+                window.setResizable(true);
+                window.setFullScreen(true);
+                window.setResizable(false);
+                this.pauseMenu[1].text.text = 'Windowed';
+            }
          }, '4.5em' ));
-    
+    // add a menu button
+    this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
+        400, 'Main Menu', null, ()=>{
+           game.input.keyboard.onDownCallback = null;
+           game.state.start('Menu');
+           game.paused = false;
+        }, '4.5em' ));
+
+    // hide the pause menu
+    for (let i = 0; i < this.pauseMenu.length; i++) {
+        this.pauseMenu[i].hide();
+    }
+
     /**
      * Setting datastore callback interval
      * 
@@ -773,12 +776,5 @@ recalculate = true;
 
        return layer;
    };
-
-/**
- * pauses the game
- */
-function pauseGame() {
-    game.paused ? game.paused = false : game.paused = true;
-};
 
 module.exports = Play;
