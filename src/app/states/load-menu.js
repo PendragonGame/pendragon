@@ -1,3 +1,4 @@
+'use strict';
 const dataStore = require('../util/data');
 const moment = require('moment');
 const ui = require('../ui/ui');
@@ -30,11 +31,14 @@ LoadMenu.create = function() {
     game.camera.x = game.menuCameraPos;
 
     // back button to go to menu screen
-    this.back = new ui.MenuButton(game.camera.width - 100,
-         game.camera.height - 80, 'Back', null, ()=>{
+    this.back = new ui.MenuButton(0, 0, 'Back', null, ()=>{
             // when pressed start loading the game
             game.state.start('Menu');
     }, '30pt');
+    this.back.setLocation(game.camera.width - this.back.button.width,
+         game.camera.height - this.back.button.height);
+    console.log(this.back.button.x);
+
 
     let saveStates = [];
     dataStore.getSaveStates()

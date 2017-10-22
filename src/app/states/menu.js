@@ -1,3 +1,4 @@
+'use strict';
 const ui = require('../ui/ui');
 let Menu = {};
 
@@ -20,7 +21,7 @@ Menu.create = function() {
     this.pendragonText.anchor.setTo(.5, .5);
     this.pendragonText.font = 'Press Start 2P';
     this.pendragonText.fill = '#000000';
-    this.pendragonText.fontSize = '40pt';
+    this.pendragonText.fontSize = '42pt';
     this.pendragonText.fixedToCamera = true;
     // add a play button
     this.play = new ui.MenuButton(
@@ -30,7 +31,7 @@ Menu.create = function() {
             game.stage.backgroundColor = '#000000';
             game.state.start('Load');
         }, '40pt');
-
+    // button to go to the loading menu
     this.load = new ui.MenuButton(
         game.camera.width/2,
         this.play.button.y + 100,
@@ -38,6 +39,13 @@ Menu.create = function() {
             game.stage.backgroundColor = '#000000';
             game.state.start('LoadMenu');
         }, '40pt');
+    // button to go to the settings menu
+    this.settings = new ui.MenuButton(
+        game.camera.width/2, this.load.button.y + 100,
+        'Settings', null, ()=> {
+            game.state.start('Settings');
+        }, '40pt'
+    );
 };
 
 Menu.update = function() {
