@@ -27,7 +27,7 @@ function createWindow() {
             nodeIntegrationInWorker: true,
         },
         icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
-        // icon: path.join(__dirname, 'assets/icons/mac/logo-mac.icns'),
+        icon: path.join(__dirname, 'assets/icons/mac/logo-mac.icns'),
     });
 
     mainWindow.loadURL(url.format({
