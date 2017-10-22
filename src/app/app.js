@@ -5,14 +5,14 @@ if (screen.width / screen.height === 16/9) {
     if (window.innerHeight !== 720) {
         window.resizeTo(1280,
             window.outerHeight + window.outerHeight - window.innerHeight);
-            height = 720;
     }
+    height = 720;
 } else {
     if (window.innerHeight !== 800) {
         window.resizeTo(1280,
             window.outerHeight + window.outerHeight - window.innerHeight);
-        height = 800;
     }
+    height = 800;
 }
 console.log(screen.height);
 let game = new Phaser.Game(1280, height, Phaser.CANVAS, 'game');
