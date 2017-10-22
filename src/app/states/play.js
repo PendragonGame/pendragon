@@ -65,13 +65,13 @@ Play.preload = function() {
      * @todo(anand): Can this be improved? May be making code slow.
      */
     this.wasd = game.add.sprite(0, 0, 'hud_wasd');
-    this.wasd.y = window.innerHeight - this.wasd.height;
+    this.wasd.y = game.camera.height - this.wasd.height;
     this.wasd.fixedToCamera = true;
 
     this.wpn = game.add.sprite(0, 0, 'hud_weapon');
     this.wpn.width /= 2;
     this.wpn.height /= 2;
-    this.wpn.x = window.innerWidth - this.wpn.width;
+    this.wpn.x = game.camera.width - this.wpn.width;
     this.wpn.fixedToCamera = true;
 
 
@@ -87,13 +87,13 @@ Play.preload = function() {
     this.repLabel.fixedToCamera = true;
 
     this.scoreLabel = game.add.text(0, 0, 'Score: 0', this.textStyle);
-    this.scoreLabel.x = window.innerWidth - (1.5 * this.scoreLabel.width);
-    this.scoreLabel.y = window.innerHeight - this.scoreLabel.height;
+    this.scoreLabel.x = game.camera.width - (1.5 * this.scoreLabel.width);
+    this.scoreLabel.y = game.camera.height - this.scoreLabel.height;
     this.scoreLabel.fixedToCamera = true;
 
     this.dayLabel = game.add.text(0, 0, 'Score: 0', this.textStyle);
-    this.dayLabel.x = window.innerWidth - (1.5 * this.dayLabel.width);
-    this.dayLabel.y = window.innerHeight - (2 * this.dayLabel.height);
+    this.dayLabel.x = game.camera.width - (1.5 * this.dayLabel.width);
+    this.dayLabel.y = game.camera.height - (2 * this.dayLabel.height);
     this.dayLabel.fixedToCamera = true;
 
     this.emptyHealthBar = game.add.sprite(this.healthLabel.width + 5, 0,
@@ -124,7 +124,7 @@ Play.preload = function() {
      * 
      */
     // function saveButton() {
-    let saveButton = game.add.button(this.wasd.width + 60, window.innerHeight - 27,
+    let saveButton = game.add.button(this.wasd.width + 60, game.camera.height - 27,
         'hud_save',
         function() {
             console.log('Save Button Clicked');
@@ -154,7 +154,7 @@ Play.preload = function() {
      * 
      */
     // function menuButton() {
-    let menuButton = game.add.button(this.wasd.width + 140, window.innerHeight - 27,
+    let menuButton = game.add.button(this.wasd.width + 140, game.camera.height - 27,
         'hud_menu',
         function() {
             console.log('Menu Button Clicked');
@@ -563,8 +563,8 @@ Play.populateBoard = function() {
      * Create the Player, setting location and naming as 'player'.
      * Giving him Physics and allowing collision with the world boundaries.
      */
-    this.player = new Player(game.world.width / 2,
-        game.world.height / 2 + 200,
+    this.player = new Player(1971,
+        504,
         'player');
 
     /**

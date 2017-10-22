@@ -42,6 +42,41 @@ function MenuButton(x, y, text, key, func, fontSize = '16pt') {
         this.text.kill();
     };
 }
+
+/**
+ * set the location of a MenuButton
+ * @param {number} x x location
+ * @param {number} y location
+ */
+MenuButton.prototype.setLocation = function(x, y) {
+    this.button.cameraOffset.x = x;
+    this.text.cameraOffset.x = x;
+    this.button.cameraOffset.y = y;
+    this.text.cameraOffset.y = y;
+};
+
+/**
+ * Hide a button and disable it 
+ * @return {any} returns itself
+ */
+MenuButton.prototype.hide = function() {
+    this.text.visible = false;
+    this.button.inputEnabled = false;
+    return this;
+};
+
+/**
+ * Reveal the button and enable it 
+ * @return {any} returns itself
+ */
+MenuButton.prototype.reveal = function() {
+    this.text.cameraOffset.x = this.text.cameraOffset.x;
+    this.button.cameraOffset.x = this.button.cameraOffset.x;
+    this.button.inputEnabled = true;
+    this.text.visible = true;
+    return this;
+};
+
 /**
  * Cyclable list of buttons.
  * @param {*} saves  array of timestamps 

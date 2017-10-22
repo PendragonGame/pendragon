@@ -1,7 +1,7 @@
 const {
     app,
     BrowserWindow,
-    ipcMain
+    ipcMain,
 } = require('electron');
 const path = require('path');
 const url = require('url');
@@ -20,11 +20,11 @@ console.log(x);
  */
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 640,
-        height: 640,
+        width: 1280,
+        height: 800,
         resizable: false,
         webPreferences: {
-            nodeIntegrationInWorker: true
+            nodeIntegrationInWorker: true,
         },
     });
 
@@ -55,6 +55,7 @@ app.on('ready', () => {
         });
         mainWindow.openDevTools();
     }
+    // mainWindow.setMenu(null);
 });
 
 ipcMain.on('saveEntity', function(ev, arg) {
