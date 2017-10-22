@@ -21,7 +21,7 @@ console.log(x);
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1280,
-        height: 720,
+        height: 800,
         resizable: false,
         webPreferences: {
             nodeIntegrationInWorker: true,
