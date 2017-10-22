@@ -16,7 +16,7 @@ Settings.create = function() {
      this.back = new ui.MenuButton(0, 0, 'Back', null, ()=>{
         // when pressed start loading the game
         game.state.start('Menu');
-}, '30pt');
+}, '4em');
     this.back.setLocation(game.camera.width - this.back.button.width,
         game.camera.height - this.back.button.height);
     console.log(this.back.button.x);
@@ -39,7 +39,7 @@ Settings.create = function() {
                 window.setResizable(false);
                 this.settings[0].text.text = 'Windowed';
             }
-        }, '32pt'
+        }, '4em'
     ));
 };
 

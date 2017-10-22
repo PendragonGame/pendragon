@@ -14,7 +14,7 @@ Menu.create = function() {
     this.pendragonText.anchor.setTo(.5, .5);
     this.pendragonText.font = 'Press Start 2P';
     this.pendragonText.fill = '#000000';
-    this.pendragonText.fontSize = '42pt';
+    this.pendragonText.fontSize = '6em';
     this.pendragonText.fixedToCamera = true;
     // add a play button
     this.play = new ui.MenuButton(
@@ -23,7 +23,7 @@ Menu.create = function() {
         'Play', null, function() {
             game.stage.backgroundColor = '#000000';
             game.state.start('Load');
-        }, '40pt');
+        }, '5em');
     // button to go to the loading menu
     this.load = new ui.MenuButton(
         game.camera.width/2,
@@ -31,13 +31,13 @@ Menu.create = function() {
         'Load', null, function() {
             game.stage.backgroundColor = '#000000';
             game.state.start('LoadMenu');
-        }, '40pt');
+        }, '5em');
     // button to go to the settings menu
     this.settings = new ui.MenuButton(
         game.camera.width/2, this.load.button.y + 100,
         'Settings', null, ()=> {
             game.state.start('Settings');
-        }, '40pt'
+        }, '5em'
     );
 };
 

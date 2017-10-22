@@ -92,6 +92,8 @@ Play.preload = function() {
         fill: '#ffff00',
         align: 'center',
         fontSize: '2em',
+        stroke: 'black',
+        strokeThickness: '5',
     };
     this.healthLabel = game.add.text(0, 5, 'Health', this.textStyle);
     this.healthLabel.fixedToCamera = true;

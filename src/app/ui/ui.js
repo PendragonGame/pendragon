@@ -36,12 +36,12 @@ function MenuButton(x, y, text, key, func, fontSize = '3em') {
     }, this);
     this.button.fixedToCamera = true;
     this.text.fixedToCamera = true;
-}
 
-MenuButton.prototype.kill = function() {
-    this.button.kill();
-    this.text.kill();
-};
+    this.kill = function() {
+        this.button.kill();
+        this.text.kill();
+    };
+}
 
 /**
  * set the location of a MenuButton
@@ -90,7 +90,7 @@ function ButtonList(saves, func) {
     this.startI = 0;
     this.currentI = 0;
     if (saves) {
-        for (let i = this.currentI + 1; i < saves.length; i++) {
+        for (let i = this.currentI; i < saves.length; i++) {
             this.currentI = i;
             this.saveButtons.push(new MenuButton(game.camera.width / 2,
                 currentH,
@@ -98,7 +98,7 @@ function ButtonList(saves, func) {
                 saves[i].key,
                 func));
             currentH += 60;
-            if (currentH > 460) {
+            if (currentH > 640) {
                 break;
             }
         }
@@ -107,7 +107,7 @@ function ButtonList(saves, func) {
     this.nextPage = new MenuButton(
         game.camera.width / 2 + 80,
         game.camera.height - 80, '>', null, () => {
-            if (saves.length - this.startI < 6) return;
+            if (saves.length - this.startI < 9) return;
             this.currentPage += 1;
             for (; this.startI <= this.currentI; this.startI++) {
                 this.saveButtons[this.startI].kill();
@@ -121,10 +121,11 @@ function ButtonList(saves, func) {
                     saves[i].key,
                     func));
                 currentH += 60;
-                if (currentH > 460) {
+                if (currentH > 640) {
                     break;
                 }
             }
+            console.log(this.startI, this.currentI);
         });
 
     this.prevPage = new MenuButton(
@@ -135,7 +136,7 @@ function ButtonList(saves, func) {
             for (let i = this.startI; i <= this.currentI; i++) {
                 this.saveButtons[i].kill();
             }
-            this.startI -= 6;
+            this.startI -= 9;
             this.currentI = this.startI;
             currentH = 160;
             for (let i = this.startI; i < saves.length; i++) {
@@ -146,10 +147,11 @@ function ButtonList(saves, func) {
                     saves[i].key,
                     func));
                 currentH += 60;
-                if (currentH > 460) {
+                if (currentH > 640) {
                     break;
                 }
             }
+            console.log(this.startI, this.currentI);
         });
 }
 
