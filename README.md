@@ -21,6 +21,12 @@ Are you seriously telling me that NPCs have a _hive mind_! Obviously not, so we 
 
 Head over to our [releases](https://github.com/PendragonGame/pendragon/releases) page and download the latest packaged app, extract it (if it is in a zip or tar file) and click on the app to run it (.app file for Mac, .exe for Windows, .AppImage and executable for Linux).
 
+## Instructions for running on Windows:
+
+1. Download the Windows 64-bit Zip on our [releases](https://github.com/PendragonGame/pendragon/releases) page 
+2. Extract contents of the zip file
+3. Open uncompressed folder and run pendragon.exe
+
 ## For Contributors:
 
 1. Clone the repo 
