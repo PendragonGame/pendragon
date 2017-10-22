@@ -2,13 +2,6 @@
 const ui = require('../ui/ui');
 let Menu = {};
 
-
-Menu.preload = function() {
-    game.load.tilemap('menu-map', 'assets/tilemaps/menu-map.json',
-    null, Phaser.Tilemap.TILED_JSON);
-    game.load.image('tileset', 'assets/tilemaps/outdoors.png');
-};
-
 Menu.create = function() {
     game.world.setBounds(0, 0, 2560, 640);
     this.map = game.add.tilemap('menu-map');

@@ -10,7 +10,7 @@
  * @property {Phaser.Text} text modify this to change the text.
  * @property {Phaser.Button} button modify this to change the button.
  */
-function MenuButton(x, y, text, key, func, fontSize = '16pt') {
+function MenuButton(x, y, text, key, func, fontSize = '3em') {
     // add text over the button
     this.key = key;
     this.text = game.add.text(x,
@@ -36,12 +36,12 @@ function MenuButton(x, y, text, key, func, fontSize = '16pt') {
     }, this);
     this.button.fixedToCamera = true;
     this.text.fixedToCamera = true;
-
-    this.kill = function() {
-        this.button.kill();
-        this.text.kill();
-    };
 }
+
+MenuButton.prototype.kill = function() {
+    this.button.kill();
+    this.text.kill();
+};
 
 /**
  * set the location of a MenuButton
@@ -90,7 +90,7 @@ function ButtonList(saves, func) {
     this.startI = 0;
     this.currentI = 0;
     if (saves) {
-        for (let i = this.currentI; i < saves.length; i++) {
+        for (let i = this.currentI + 1; i < saves.length; i++) {
             this.currentI = i;
             this.saveButtons.push(new MenuButton(game.camera.width / 2,
                 currentH,

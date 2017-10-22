@@ -63,7 +63,6 @@ LoadMenu.create = function() {
                 if (am.isBefore(bm)) return 1;
                 return 0;
             });
-            this.buttonList = new ui.ButtonList(saveStates, loadGame);
             let autosaveIndex = saveStates.findIndex(
                 (s) =>s.key === 'autosave');
             if (autosaveIndex > -1) {
@@ -74,6 +73,7 @@ LoadMenu.create = function() {
                     loadGame
                 );
             }
+            this.buttonList = new ui.ButtonList(saveStates, loadGame);
         })
         .catch((reason) => {
             console.error(reason);

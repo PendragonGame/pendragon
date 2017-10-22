@@ -1,4 +1,5 @@
 'use strict';
+const UI = require('../ui/ui');
 const Player = require('../entity/Player');
 const NavMesh = require('../ai/Nav-mesh.js');
 const Monster = require('../entity/Monster');
@@ -58,6 +59,17 @@ Play.preload = function() {
 
     // Input for game
     this.keyboard = game.input.keyboard;
+    this.keyboard.onDownCallback = function() {
+        console.log(game.input.keyboard.event.keyCode);
+        switch (game.input.keyboard.event.keyCode) {
+            case 27:
+                pauseGame();
+                break;
+
+            default:
+                break;
+        }
+    };
 
     /**
      * HUD elements
@@ -76,9 +88,10 @@ Play.preload = function() {
 
 
     this.textStyle = {
-        font: '15px Press Start 2P',
+        font: 'Press Start 2P',
         fill: '#ffff00',
         align: 'center',
+        fontSize: '2em',
     };
     this.healthLabel = game.add.text(0, 5, 'Health', this.textStyle);
     this.healthLabel.fixedToCamera = true;
@@ -219,6 +232,23 @@ Play.create = function() {
     this.light.endFill();
     this.dayTime = true;
 
+    /**
+     * Pause menu set up
+     */
+    this.pauseMenu = [];
+    // add a save button
+    this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
+         200, 'Save', null, ()=>{
+            console.log('Manually saving');
+            dataStore.manualSaveState();
+         }, '4.5em' ));
+    // add a settings button
+    this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
+         300, 'Settings', null, ()=>{
+            console.log('Manually saving');
+            dataStore.manualSaveState();
+         }, '4.5em' ));
+    
     /**
      * Setting datastore callback interval
      * 
@@ -397,7 +427,8 @@ Play.update = function() {
     let nearest4 = Map.nearest(this.player);
     _.forEach(nearest4, function(entity) {
         // console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
-        if ((self.player.y + self.player.height) > (entity[0].y + entity[0].height)) {
+        if ((self.player.y + self.player.height) >
+         (entity[0].y + entity[0].height)) {
             game.world.bringToTop(self.player);
             // console.log('player on top');
         } else {
@@ -533,7 +564,6 @@ function entityCollision(entity1, entity2) {
 }
 
 Play.populateBoard = function() {
-
     /**
      * Generate a factory and a few monsters
      */
@@ -637,18 +667,18 @@ Play.loadBoard = function(data) {
 
 
 Play.generateMap = function() {
-    setTimeout(() => {
-        let entities = [];
-        // entities.push(this.player);
-        // I see no point in adding the player
-        this.monsterGroup.forEachAlive(function(monster) {
-            entities.push(monster);
-        });
-        this.npcGroup.forEachAlive(function(npc) {
-            entities.push(npc);
-        });
-        Map.create(entities);
-    }, 1500);
+    // setTimeout(() => {
+    let entities = [];
+    // entities.push(this.player);
+    // I see no point in adding the player
+    this.monsterGroup.forEachAlive(function(monster) {
+        entities.push(monster);
+    });
+    this.npcGroup.forEachAlive(function(npc) {
+        entities.push(npc);
+    });
+    Map.create(entities);
+    // }, 1500);
 };
 
 Play.autosaveData = function() {
@@ -681,11 +711,72 @@ Play.getPlayerDistance2 = function(entity) {
 };
 
 Play.shutdown = function() {
-    this.rippleGossip.kill();
+    if (this.rippleGossip) {
+        this.rippleGossip.kill();
+    }
     timerIDs.forEach((id) => {
         clearInterval(id);
     });
 };
 
+Phaser.Tilemap.prototype.setCollisionBetween = function(start, stop,
+    collides, layer, recalculate) {
+       if (collides === undefined) {
+collides = true;
+}
+       if (layer === undefined) {
+layer = this.currentLayer;
+}
+       if (recalculate === undefined) {
+recalculate = true;
+}
+
+       layer = this.getLayer(layer);
+
+       for (let index = start; index <= stop; index++) {
+           if (collides) {
+               this.collideIndexes.push(index);
+           } else {
+               let i = this.collideIndexes.indexOf(index);
+
+               if (i > -1) {
+                   this.collideIndexes.splice(i, 1);
+               }
+           }
+       }
+
+       for (let y = 0; y < this.layers[layer].height; y++) {
+           for (let x = 0; x < this.layers[layer].width; x++) {
+               let tile = this.layers[layer].data[y][x];
+
+               if (tile && tile.index >= start && tile.index <= stop) {
+                   if (collides) {
+                       tile.setCollision(true, true, true, true);
+                   } else {
+                       tile.resetCollision();
+                   }
+
+                   tile.faceTop = collides;
+                   tile.faceBottom = collides;
+                   tile.faceLeft = collides;
+                   tile.faceRight = collides;
+               }
+           }
+       }
+
+       if (recalculate) {
+           //  Now re-calculate interesting faces
+           this.calculateFaces(layer);
+       }
+
+       return layer;
+   };
+
+/**
+ * pauses the game
+ */
+function pauseGame() {
+    game.paused ? game.paused = false : game.paused = true;
+};
 
 module.exports = Play;
