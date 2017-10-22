@@ -1,10 +1,21 @@
 const States = require('./states/states');
 // readjust window to compensate for window outer height
-if (window.innerHeight !== 720) {
-    window.resizeTo(1280,
-        window.outerHeight + window.outerHeight - window.innerHeight);
+let height;
+if (screen.width / screen.height === 16/9) {
+    if (window.innerHeight !== 720) {
+        window.resizeTo(1280,
+            window.outerHeight + window.outerHeight - window.innerHeight);
+            height = 720;
+    }
+} else {
+    if (window.innerHeight !== 800) {
+        window.resizeTo(1280,
+            window.outerHeight + window.outerHeight - window.innerHeight);
+        height = 800;
+    }
 }
-let game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'game');
+console.log(screen.height);
+let game = new Phaser.Game(1280, height, Phaser.CANVAS, 'game');
 
 
 game.state.add('Boot', States.Boot);
