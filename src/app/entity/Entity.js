@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @module entity.Entity
+ * @module entity/Entity
  */
 
 const _ = require('lodash');

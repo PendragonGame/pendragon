@@ -1,6 +1,6 @@
 'use strict';
 /**
- * @module entity.Player
+ * @module entity/Player
  */
 let Entity = require('./Entity');
 /**

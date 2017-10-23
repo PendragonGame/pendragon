@@ -1,5 +1,5 @@
 /**
- * @module states.LoadMenu
+ * @module states/LoadMenu
  */
 'use strict';
 const dataStore = require('../util/data');

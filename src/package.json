@@ -25,7 +25,7 @@
     "package-linux": "electron-packager . pendragon --overwrite --platform=linux --arch=x64 --prune=true --out=../release",
     "package-all": "electron-packager . pendragon --overwrite --platform=all --arch=x64 --icon=assets/icons/mac/icon.icns --icon=assets/icons/win/icon.ico --icon=assets/icons/png/1024x1024.png --prune=true --out=../release",
     "dist": "build -wlm --ia32 --x64",
-    "doc": "jsdoc -c conf.json -r ."
+    "doc": "rm -rf ../docs && jsdoc -c conf.json -r ."
   },
   "repository": {
     "type": "git",

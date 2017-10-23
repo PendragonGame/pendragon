@@ -1,6 +1,6 @@
 'use strict';
 /**
- * @module states.Boot
+ * @module states/Boot
  */
 let Boot = {};
 

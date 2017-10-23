@@ -1,6 +1,6 @@
 /**
  * 
- * @module UI
+ * @module ui/UI
  */
 /**
  * A basic text button. 

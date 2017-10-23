@@ -1,6 +1,6 @@
 'use strict';
 /**
- * @module backend.dbStore
+ * @module backend/dbStore
  */
 const storage = require('electron-json-storage');
 const moment = require('moment');

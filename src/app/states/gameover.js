@@ -1,5 +1,5 @@
 /**
- * @module states.GameOver
+ * @module states/GameOver
  */
 
 const ui = require('../ui/ui');

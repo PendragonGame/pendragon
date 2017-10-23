@@ -1,6 +1,6 @@
 'use strict';
 /**
- * @module states.Play
+ * @module states/Play
  */
 const UI = require('../ui/ui');
 const Player = require('../entity/Player');

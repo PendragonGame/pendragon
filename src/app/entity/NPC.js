@@ -1,6 +1,6 @@
 'use strict';
 /**
- * @module entity.NPC
+ * @module entity/NPC
  */
 let Entity = require('./Entity');
 

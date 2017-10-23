@@ -1,5 +1,5 @@
 /**
- * @module states.Load
+ * @module states/Load
  */
 let Load = {};
 

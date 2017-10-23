@@ -1,5 +1,5 @@
 /**
- * @module Win
+ * @module states/Win
  */
 let Win = {};
 

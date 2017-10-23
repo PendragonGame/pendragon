@@ -1,5 +1,5 @@
 /**
- * @module states.Menu
+ * @module states/Menu
  */
 'use strict';
 const ui = require('../ui/ui');
