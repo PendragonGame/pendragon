@@ -65,6 +65,7 @@
     "productName": "Pendragon Prototype",
     "asar": true,
     "directories": {
+      "buildResources": "./build",
       "output": "../dist"
     },
     "mac": {
@@ -72,14 +73,16 @@
       "target": [
         "dmg",
         "zip"
-      ]
+      ],
+      "icon": "icon.icns"
     },
     "win": {
       "target": [
         "portable",
         "zip"
       ],
-      "publisherName": "Pendragon Game"
+      "publisherName": "Pendragon Game",
+      "icon": "icon.ico"
     },
     "linux": {
       "target": [
