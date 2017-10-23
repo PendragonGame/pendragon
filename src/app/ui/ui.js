@@ -1,9 +1,9 @@
 
 /**
- * A basic text button. 
- * @param {*} x 
- * @param {number} y 
- * @param {string} text 
+ * A basic text button.
+ * @param {*} x
+ * @param {number} y
+ * @param {string} text
  * @param {*} key object associated with button
  * @param {*} func
  * @param {string} fontSize
@@ -58,7 +58,7 @@ MenuButton.prototype.setLocation = function(x, y) {
 };
 
 /**
- * Hide a button and disable it 
+ * Hide a button and disable it
  * @return {any} returns itself
  */
 MenuButton.prototype.hide = function() {
@@ -68,7 +68,7 @@ MenuButton.prototype.hide = function() {
 };
 
 /**
- * Reveal the button and enable it 
+ * Reveal the button and enable it
  * @return {any} returns itself
  */
 MenuButton.prototype.reveal = function() {
@@ -81,7 +81,7 @@ MenuButton.prototype.reveal = function() {
 
 /**
  * Cyclable list of buttons.
- * @param {*} saves  array of timestamps 
+ * @param {*} saves  array of timestamps
  * @param {*} func   function for buttons
  */
 function ButtonList(saves, func) {

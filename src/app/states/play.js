@@ -59,6 +59,7 @@ Play.preload = function() {
     this.game = game;
     this.navMesh = new NavMesh(this.map);
 
+
     // Input for game
     this.keyboard = game.input.keyboard;
     this.keyboard.onDownCallback = ()=> {
@@ -75,7 +76,7 @@ Play.preload = function() {
 
     /**
      * HUD elements
-     * 
+     *
      * @todo(anand): Can this be improved? May be making code slow.
      */
 
@@ -188,6 +189,10 @@ Play.create = function() {
     this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
     this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
 
+    this.mainMusic = game.add.audio('main_music');
+    this.mainMusic.loop = true;
+    this.mainMusic.volume = .40;
+    this.mainMusic.play();
 
     /**
      * Day night cycle
@@ -270,7 +275,7 @@ Play.create = function() {
 
     /**
      * Setting datastore callback interval
-     * 
+     *
      * Start autosaving 10 seconds after game starts
      */
     let i = setInterval(() => {
@@ -289,9 +294,9 @@ Play.create = function() {
          */
         /**
          * Build the datastructure keeping track of Entities
-         * 
+         *
          * Period: 1.5 sec
-         * 
+         *
          * What I did here is call the things immediately and then
          */
         this.generateMap();
@@ -306,6 +311,7 @@ Play.create = function() {
 
 Play.update = function() {
     if (this.player.state === 'dead') {
+        this.mainMusic.pause();
         game.score = this.player.score;
         game.dayCount = this.player.daysSurvived;
         setTimeout(() => {
@@ -346,7 +352,7 @@ Play.update = function() {
 
     /**
      * NPC Code
-     * 
+     *
      * Threshold distance to attack is 8 tiles.
      * => 4 tiles on either side
      * => Distance to player = 128
@@ -360,15 +366,15 @@ Play.update = function() {
     this.npcGroup.forEachAlive((e) => {
         /**
          * NOTE(anand):
-         * 
+         *
          * At this point, the NPC can either attack the player
          * or run away if they dont like the player
          * or do nothing otherwise.
-         * 
+         *
          * What I will do is this.
-         * 
+         *
          * If Reputation is below 0 (it will always be >= -1):
-         * Generate a random number between -1 and 0. 
+         * Generate a random number between -1 and 0.
          * - If the number lies between -1 and the reputation
          *   - avoid the player
          * - Else
@@ -388,7 +394,7 @@ Play.update = function() {
     this.monsterGroup.forEachAlive((e) => {
         /**
          * NOTE(anand):
-         * 
+         *
          * For monster, I will attack regardless,
          * but I will sprint if I realllllly don't
          * like the player (less than -0.8?)
@@ -423,10 +429,10 @@ Play.update = function() {
         this.player.attack();
     } else {
         /**
-         * attacking == false 
+         * attacking == false
          * iff we are on the last frame. ie. the whole animation has played.
          */
-        // 
+        //
         let temp = this.player.frame - 161;
         if ((temp % 13 === 0)) {
             if (!(this.keyboard.isDown(Phaser.Keyboard.M))) {
@@ -451,7 +457,7 @@ Play.update = function() {
 
     /**
      * Deciding which character to render on top of the other.
-     * 
+     *
      * @todo(anand): Only do this check for the nearest 4 neighbors.
      */
     let nearest4 = Map.nearest(this.player);
@@ -498,11 +504,11 @@ Play.update = function() {
 
 /**
  * Handle collision between two `Entities`
- * 
+ *
  * This needs to be run in the context of Play state
- * 
- * @param {any} entity1 
- * @param {any} entity2 
+ *
+ * @param {any} entity1
+ * @param {any} entity2
  */
 function entityCollision(entity1, entity2) {
     // entity2 seems to be the Player, and entity1 is the Enemy
@@ -526,7 +532,7 @@ function entityCollision(entity1, entity2) {
 
     /**
      * @todo(anand): I think this needs to be made general to all Entities
-     * 
+     *
      * We shouldn't be assuming that entity 2 is always going to be Player
      * also, other entities can attack too
      */
@@ -570,7 +576,7 @@ function entityCollision(entity1, entity2) {
                     break;
             }
         }
-        
+
         // let nearest = Map.nearest(this.player, 3, 256);
         // nearest.forEach(function(p, i) {
         //     if (p[0].state !== 'dead') {
@@ -585,7 +591,7 @@ function entityCollision(entity1, entity2) {
         let nearest = Map.nearest(this.player, 3, 256);
         let numWitnesses = Math.floor(Math.random() * nearest.length);
         let witnesses = Sampling.sample_from_array(nearest, numWitnesses, false);
-        
+
         if (!witnesses) return;
         witnesses.forEach(function(p, i) {
             if (p[0].state !== 'dead') {
@@ -735,10 +741,10 @@ Play.manualSaveData = function() {
 
 /**
  * This will return the distance to the player squared.
- * 
+ *
  * Square root calculation is not trivial.
- * 
- * @param {Entity} entity 
+ *
+ * @param {Entity} entity
  * @return {number}
  */
 Play.getPlayerDistance2 = function(entity) {
