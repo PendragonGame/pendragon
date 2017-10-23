@@ -40,6 +40,6 @@ The source directory contains the following:
   - `states/`: The Phaser `States`
   - `entity/`: The `Entity` abstraction and its sub-classes.
   - `factory/`: The `Entity` factory abstraction.
-- `main.js`: The backend main script
+- `main.js`: The backend main script.
   - `data-store`: The database manager.
 
