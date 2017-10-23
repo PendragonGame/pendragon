@@ -3,7 +3,7 @@
   "productName": "Pendragon",
   "contributors": [
     {
-      "name": "Sriram Subramaniam"
+      "name": "Sriram Subramanian"
     },
     {
       "name": "Anand Balakrishnan"
@@ -12,10 +12,10 @@
       "name": "Brian Badura"
     },
     {
-      "name": "Anand Balakrishnan"
+      "name": "Jacob Belewich"
     }
   ],
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A RPG with realistic gossip",
   "main": "main.js",
   "scripts": {
@@ -23,8 +23,8 @@
     "start": "electron .",
     "package-osx": "electron-packager . pendragon --overwrite --platform=darwin --arch=x64 --prune=true --out=../release",
     "package-linux": "electron-packager . pendragon --overwrite --platform=linux --arch=x64 --prune=true --out=../release",
-    "package-all": "electron-packager . pendragon --overwrite --platform=all --arch=x64 --prune=true --out=../release",
-    "dist": "build -wlm"
+    "package-all": "electron-packager . pendragon --overwrite --platform=all --arch=x64 --icon=assets/icons/mac/icon.icns --icon=assets/icons/win/icon.ico --icon=assets/icons/png/1024x1024.png --prune=true --out=../release",
+    "dist": "build -wlm --ia32"
   },
   "repository": {
     "type": "git",
@@ -62,9 +62,10 @@
   "electronVersion": "1.7.6",
   "build": {
     "appId": "com.github.pendragon",
-    "productName": "Pendragon Prototype",
+    "productName": "Pendragon",
     "asar": true,
     "directories": {
+      "buildResources": "./build",
       "output": "../dist"
     },
     "mac": {
@@ -72,14 +73,16 @@
       "target": [
         "dmg",
         "zip"
-      ]
+      ],
+      "icon": "build/icon.icns"
     },
     "win": {
       "target": [
         "portable",
         "zip"
       ],
-      "publisherName": "Pendragon Game"
+      "publisherName": "Pendragon Game",
+      "icon": "build/icon.ico"
     },
     "linux": {
       "target": [
