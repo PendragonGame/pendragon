@@ -1,5 +1,4 @@
-Pendragon
-===
+# Pendragon
 
 Simply put, _**Pendragon**_ is just another single-player, RPG game. You will be a lone player who can interact with NPCs, and kill slimes and monsters. You will probably have a sword. If we feel like it. Meh...
 
@@ -12,8 +11,8 @@ Confused? Are you wondering why that is, as we put it, **kickass**?
 Most RPGs work this way.
 
 1. Player completes quest.
-2. Player reputation increases.
-3. **Every NPC in the world knows about it immediately!!!**
+1. Player reputation increases.
+1. **Every NPC in the world knows about it immediately!!!**
 
 Are you seriously telling me that NPCs have a _hive mind_! Obviously not, so we aim to solve that issue. The goal is to have NPCs in the vicinity acknowledge your actions as good or bad and then propagate them to the rest of the world via **gossip**. We like to call this **Ripple Gossip**.
 
@@ -24,22 +23,22 @@ Head over to our [releases](https://github.com/PendragonGame/pendragon/releases)
 ## Instructions for running on Windows:
 
 1. Download the Windows 64-bit Zip on our [releases](https://github.com/PendragonGame/pendragon/releases) page 
-2. Extract contents of the zip file
-3. Open uncompressed folder and run pendragon.exe
+1. Extract contents of the zip file
+1. Open uncompressed folder and run pendragon.exe
 
-## For Contributors:
+## For Contributors
 
 1. Clone the repo 
-2. Change directories into the `src/` folder
-3. `npm install` when in `src/` folder 
-4. `npm start` to boot up the game
+1. Change directories into the `src/` folder
+1. `npm install` when in `src/` folder 
+1. `npm start` to boot up the game
 
 The source directory contains the following:
 
 - `app/`: The frontend of the application running on [PhaserJS Community Edition](https://photonstorm.github.io/phaser-ce/)
+  - `app.js`: Entry point for front end.
   - `states/`: The Phaser `States`
   - `entity/`: The `Entity` abstraction and its sub-classes.
   - `factory/`: The `Entity` factory abstraction.
 - `main.js`: The backend main script
-  - `data-store`: The database manager.
-
+  - `data-store/`: The database manager.

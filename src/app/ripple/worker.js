@@ -1,3 +1,7 @@
+/**
+ * @module RippleGossip
+ */
+
 const kdTree = require('../lib/kdtreejs/kdTree');
 const shuffle = require('knuth-shuffle').knuthShuffle;
 const Sampling = require('discrete-sampling');
