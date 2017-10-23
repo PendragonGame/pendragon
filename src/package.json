@@ -62,7 +62,7 @@
   "electronVersion": "1.7.6",
   "build": {
     "appId": "com.github.pendragon",
-    "productName": "Pendragon Prototype",
+    "productName": "Pendragon",
     "asar": true,
     "directories": {
       "buildResources": "./build",
@@ -74,7 +74,7 @@
         "dmg",
         "zip"
       ],
-      "icon": "icon.icns"
+      "icon": "build/icon.icns"
     },
     "win": {
       "target": [
@@ -82,7 +82,7 @@
         "zip"
       ],
       "publisherName": "Pendragon Game",
-      "icon": "icon.ico"
+      "icon": "build/icon.ico"
     },
     "linux": {
       "target": [
