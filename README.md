@@ -17,8 +17,29 @@ Most RPGs work this way.
 
 Are you seriously telling me that NPCs have a _hive mind_! Obviously not, so we aim to solve that issue. The goal is to have NPCs in the vicinity acknowledge your actions as good or bad and then propagate them to the rest of the world via **gossip**. We like to call this **Ripple Gossip**.
 
-You must be wondering how we are going to do this. Good question. Well, as of the day of writing this post (September 8, 2017), we are still debating the ideas.
+## Want to play?
 
-But come back sometime later, check out our updates, it will be fun.
+Head over to our [releases](https://github.com/PendragonGame/pendragon/releases) page and download the latest packaged app, extract it (if it is in a zip or tar file) and click on the app to run it (.app file for Mac, .exe for Windows, .AppImage and executable for Linux).
 
-Cowabunga!
+## Instructions for running on Windows:
+
+1. Download the Windows 64-bit Zip on our [releases](https://github.com/PendragonGame/pendragon/releases) page 
+2. Extract contents of the zip file
+3. Open uncompressed folder and run pendragon.exe
+
+## For Contributors:
+
+1. Clone the repo 
+2. Change directories into the `src/` folder
+3. `npm install` when in `src/` folder 
+4. `npm start` to boot up the game
+
+The source directory contains the following:
+
+- `app/`: The frontend of the application running on [PhaserJS Community Edition](https://photonstorm.github.io/phaser-ce/)
+  - `states/`: The Phaser `States`
+  - `entity/`: The `Entity` abstraction and its sub-classes.
+  - `factory/`: The `Entity` factory abstraction.
+- `main.js`: The backend main script
+  - `data-store`: The database manager.
+
