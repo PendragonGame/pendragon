@@ -1,3 +1,6 @@
+/**
+ * @module Ripple
+ */
 const path = require('path');
 
 const Sampling = require('discrete-sampling');

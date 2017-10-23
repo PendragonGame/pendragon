@@ -1,5 +1,9 @@
 'use strict';
 
+/**
+ * @module entity.Entity
+ */
+
 const _ = require('lodash');
 const uuid = require('../util/uuid');
 

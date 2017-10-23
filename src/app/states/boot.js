@@ -1,4 +1,7 @@
 'use strict';
+/**
+ * @module states.Boot
+ */
 let Boot = {};
 
 Boot.preload = function() {
@@ -7,7 +10,9 @@ Boot.preload = function() {
     game.load.image('tileset', 'assets/tilemaps/outdoors.png');
 };
 
+
 Boot.create = function() {
+
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
     game.scale.pageAlignHorizontally = true;

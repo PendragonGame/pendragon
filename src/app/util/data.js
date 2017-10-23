@@ -1,4 +1,7 @@
 'use strict';
+/**
+ * @module dataStore
+ */
 const {ipcRenderer} = require('electron');
 
 let loadedState = null;

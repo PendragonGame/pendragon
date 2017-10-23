@@ -1,3 +1,6 @@
+/**
+ * @module Map
+ */
 const kdTree = require('../lib/kdtreejs/kdTree');
 const _ = require('lodash');
 const Entity = require('../entity/Entity');

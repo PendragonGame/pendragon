@@ -1,3 +1,6 @@
+/** 
+ * @module ai.Nav-mesh
+ */
 
 const PhaserNavmesh = require('phaser-navmesh');
 /**

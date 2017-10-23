@@ -1,3 +1,6 @@
+/**
+ * @module states.LoadMenu
+ */
 'use strict';
 const dataStore = require('../util/data');
 const moment = require('moment');

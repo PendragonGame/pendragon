@@ -1,3 +1,6 @@
+/**
+ * @module Win
+ */
 let Win = {};
 
 Win.create = function() {

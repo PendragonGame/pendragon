@@ -1,4 +1,7 @@
 'use strict';
+/**
+ * @module Factory
+ */
 const Map = require('../util/Map');
 
 /**

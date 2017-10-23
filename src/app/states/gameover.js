@@ -1,3 +1,7 @@
+/**
+ * @module states.GameOver
+ */
+
 const ui = require('../ui/ui');
 let GameOver = {};
 

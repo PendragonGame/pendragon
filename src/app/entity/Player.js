@@ -1,5 +1,7 @@
 'use strict';
-
+/**
+ * @module entity.Player
+ */
 let Entity = require('./Entity');
 /**
  * 
