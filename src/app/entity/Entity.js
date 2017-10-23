@@ -68,6 +68,19 @@ function Entity(x, y, key) {
     this.body.offset.x += this.body.width / 2;
     this.body.offset.y += this.body.height;
 
+    // /**
+    //  * New Hitbox fix
+    //  */
+    // this.collideBox = game.add.sprite(0, 0, 'as');
+    // game.physics.enable(this.collideBox, Phaser.Physics.ARCADE);
+    // this.collideBox.anchor.setTo(-0.5);
+    // // this.collideBox.visible = false;
+
+    // // this.collideBox.frame = 12;
+    // // this.collideBox.body.setSize(this.body.height/2, this.body.width/2);
+    // this.collideBox.body.height = this.body.height/2;
+    // this.collideBox.body.width = this.body.width/2;
+    // this.addChild(this.collideBox);
 
     // Set size constants
     h = this.body.height;
@@ -386,12 +399,14 @@ Entity.prototype.trueXY = function() {
  * @param {Object} rumor 
  */
 Entity.prototype.learnInfo = function(rumor) {
+    if (!this.alive) return;
     if (this.information.some((e) => e.id === rumor.id)) {
         /**
          * Do nothing if we already know this information.
          */
         return;
     }
+    console.info('[' + this.id +'] Learning something new....')
     this.information.push(rumor);
 
     switch (rumor.action) {

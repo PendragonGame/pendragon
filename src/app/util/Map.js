@@ -1,10 +1,11 @@
 const kdTree = require('../lib/kdtreejs/kdTree');
 const _ = require('lodash');
 const Entity = require('../entity/Entity');
+const Sampling = require('discrete-sampling');
 
 let distanceFormula2 = function(e1, e2) {
-    return Math.pow(e1.x - e2.x, 2)
-            + Math.pow(e1.y - e2.y, 2);
+    return Math.pow(e1.x - e2.x, 2) +
+        Math.pow(e1.y - e2.y, 2);
 };
 
 let tree = null;
@@ -80,14 +81,29 @@ Map.nearest = function(entity, count, maxDistance) {
     if (count === undefined) {
         count = 1;
     }
-    const self = this;
-    return _.map(tree.nearest(point, count, maxDistance),
-                function(point) {
-                    return [
-                        self.getByID(point[0].id),
-                        Math.sqrt(point[1]),
-                    ];
-                });
+    return tree.nearest(point, count + 1, maxDistance)
+        .map((point) => {
+            return [
+                this.getByID(point[0].id),
+                Math.sqrt(point[1]),
+            ];
+        })
+        .filter((e) => (entity.id === point.id));
+};
+
+/**
+ * Get n discrete samples from array
+ * 
+ * @param {number} [n=] - Number of samples to pick. Default = 1
+ * @return {any[]}
+ */
+Map.discreteSamples = function(n = 1) {
+    return Sampling.sample_from_array(Object.values(list), n, false);
+};
+
+Map.sampleRandom = function(max) {
+    return Sampling.sample_from_array(Object.values(list),
+                Math.floor(Math.random() * max), false);
 };
 
 /**
