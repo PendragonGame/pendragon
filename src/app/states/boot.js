@@ -1,4 +1,7 @@
 'use strict';
+/**
+ * @module states/Boot
+ */
 let Boot = {};
 
 Boot.preload = function() {
@@ -10,7 +13,9 @@ Boot.preload = function() {
     game.load.audio('main_music', 'assets/audio/main_music.mp3');
 };
 
+
 Boot.create = function() {
+
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
     game.scale.pageAlignHorizontally = true;

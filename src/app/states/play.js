@@ -1,4 +1,7 @@
 'use strict';
+/**
+ * @module states/Play
+ */
 const UI = require('../ui/ui');
 const Player = require('../entity/Player');
 const NavMesh = require('../ai/Nav-mesh.js');
