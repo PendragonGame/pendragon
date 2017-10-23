@@ -32,7 +32,7 @@ let gossipLoop = function() {
             let point = List[i];
             let nearest = Tree.nearest(point, kNN + 1, gossipRadius);
             let gossipMongers = _.chain(nearest)
-                            .filter((p) => p[1] !== 0)
+                            .filter((p) => p[1] === 0)
                             .map((e) => e[0])
                             .value();
             let n = Math.min(numTargets, gossipMongers.length);

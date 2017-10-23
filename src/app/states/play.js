@@ -279,20 +279,29 @@ Play.create = function() {
         this.npcGroup.forEachAlive(dataStore.autosaveEntity);
     }, 1000);
     timerIDs.push(i);
-    /**
-     * Build the datastructure keeping track of Entities
-     * 
-     * Period: 1.5 sec
-     * 
-     * What I did here is call the things immediately and then
-     */
-    this.generateMap();
 
     game.world.bringToTop(this.hudGroup);
 
-    setTimeout(() => {
-        this.rippleGossip = new Ripple();
-    }, 2000);
+    this.rippleGossip = new Ripple();
+    i = setInterval(() => {
+         /**
+         * Trigger a few conversations
+         */
+        /**
+         * Build the datastructure keeping track of Entities
+         * 
+         * Period: 1.5 sec
+         * 
+         * What I did here is call the things immediately and then
+         */
+        this.generateMap();
+        let totalEntities =
+            this.monsterGroup.total +
+            this.npcGroup.total;
+        Map.discreteSamples(Math.floor(totalEntities/3)).forEach(function(p, i) {
+            this.rippleGossip.triggerGossip(p);
+        }, this);
+    }, 1000);
 };
 
 Play.update = function() {
@@ -399,6 +408,8 @@ Play.update = function() {
     if (this.player.state === 'dead') return;
     // Displays the hitbox for the Player
     // this.game.debug.body(this.player);
+    // game.debug.body(this.player.collideBox);
+    // game.debug.bodyInfo(this.player.collideBox, 32, 32);
 
     // SHIFT for running
     let sprint = false;
@@ -443,13 +454,12 @@ Play.update = function() {
      * 
      * @todo(anand): Only do this check for the nearest 4 neighbors.
      */
-    const self = this;
     let nearest4 = Map.nearest(this.player);
-    _.forEach(nearest4, function(entity) {
+    nearest4.forEach((entity) => {
         // console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
-        if ((self.player.y + self.player.height) >
+        if ((this.player.y + this.player.height) >
          (entity[0].y + entity[0].height)) {
-            game.world.bringToTop(self.player);
+            game.world.bringToTop(this.player);
             // console.log('player on top');
         } else {
             // console.log('entity on top');
@@ -457,7 +467,7 @@ Play.update = function() {
         }
     });
 
-    let totalEntities = 1 +
+    let totalEntities =
         this.monsterGroup.total +
         this.npcGroup.total;
     let repNum = 0;
@@ -560,26 +570,33 @@ function entityCollision(entity1, entity2) {
                     break;
             }
         }
-        let nearest = Map.nearest(this.player, 10, 256);
-        let witnesses = Sampling.sample_from_array(nearest, Math.min(1, nearest.length), false);
-        nearest = Map.nearest(this.player, 10, 256);
-        witnesses = Sampling.sample_from_array(nearest, Math.min(1, nearest.length), false);
+        
+        // let nearest = Map.nearest(this.player, 3, 256);
+        // nearest.forEach(function(p, i) {
+        //     if (p[0].state !== 'dead') {
+        //         let witness =p[0];
+        //         this.rippleGossip.createRumor(
+        //             witness,
+        //             dead,
+        //             perp,
+        //             action);
+        //     }
+        // }, this);
+        let nearest = Map.nearest(this.player, 3, 256);
+        let numWitnesses = Math.floor(Math.random() * nearest.length);
+        let witnesses = Sampling.sample_from_array(nearest, numWitnesses, false);
+        
         if (!witnesses) return;
-        try {
-            /**
-             * @todo(anand): MAJOR HACK ALERT!!!!
-             */
-            if (witnesses[0][0].state !== 'dead') {
-                let witness = witnesses[0][0];
+        witnesses.forEach(function(p, i) {
+            if (p[0].state !== 'dead') {
+                let witness =p[0];
                 this.rippleGossip.createRumor(
                     witness,
                     dead,
                     perp,
                     action);
             }
-        } catch (e) {
-            return;
-        }
+        }, this);
     }
 }
 
@@ -643,7 +660,7 @@ Play.loadBoard = function(data) {
     for (let id in monstersData) {
         if (Object.prototype.hasOwnProperty.call(monstersData, id)) {
             i = i + 1;
-            console.debug('Monster #' + i);
+            // console.debug('Monster #' + i);
             let e = monstersData[id];
             let E = this.monsterFactory.next(e.x, e.y, e.key);
             E.deserialize(e);
@@ -660,7 +677,7 @@ Play.loadBoard = function(data) {
     for (let id in npcData) {
         if (Object.prototype.hasOwnProperty.call(npcData, id)) {
             i = i + 1;
-            console.debug('NPC #' + i);
+            // console.debug('NPC #' + i);
             let e = npcData[id];
             let E = this.npcFactory.next(e.x, e.y, e.key);
             E.deserialize(e);

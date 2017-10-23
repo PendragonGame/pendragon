@@ -1,27 +1,70 @@
 const path = require('path');
+
+const Sampling = require('discrete-sampling');
+
 const Map = require('../util/Map');
 const uuid = require('../util/uuid');
 const Entity = require('../entity/Entity');
+
+/* ############### Algorithm parameters ############### */
+/**
+ * The radius withing which to find people
+ */
+const gossipRadius = 256; // pixels
+/**
+ * Number of targets to gossip to
+ */
+const numTargets = 1;
+/**
+ * Number of nearest neighbors
+ */
+const kNN = 3;
 
 /**
  * 
  * 
  */
 function Ripple() {
-    console.log(path.join(__dirname, 'worker.js'));
-    this.worker = new Worker(path.join(__dirname, 'worker.js'));
-    this.worker.onmessage = this.triggerConversation;
-    this.timer = null;
-    const self = this;
-    (function updateWorker() {
-        self.worker.postMessage({
-            tree: Map.toJSON(),
-        });
-        self.timer = setTimeout(updateWorker, 1500);
-    })();
+    // console.log(path.join(__dirname, 'worker.js'));
+    // this.worker = new Worker(path.join(__dirname, 'worker.js'));
+    // this.worker.onmessage = this.triggerConversation;
+    // this.timer = null;
+    // const self = this;
+    // (function updateWorker() {
+    //     self.worker.postMessage({
+    //         tree: Map.toJSON(),
+    //     });
+    //     self.timer = setTimeout(updateWorker, 1500);
+    // })();
 };
 
+Ripple.prototype.triggerGossip = function(source) {
+    let nearest = Map.nearest(source, kNN + 1, gossipRadius);
+    let gossipMongers = nearest
+                    // .filter((p) => p[1] === 0)
+                    .map((e) => {
+                        return e[0];
+                    });
+    let n = Math.min(numTargets, gossipMongers.length);
+    gossipMongers = Sampling.sample_from_array(gossipMongers, n, false);
+    let info = source.information[game.rnd.integerInRange(0,
+        source.information.length - 1)];
+    // if (info) {
+    //     console.log('pako');
+    // }
+    for (let i = 0; i < gossipMongers.length && info; i++) {
+        Map.getByID(gossipMongers[i].id).learnInfo(info);
+    }
+};
+
+/**
+ * 
+ * 
+ * @param {any} e 
+ * @deprecated
+ */
 Ripple.prototype.triggerConversation = function(e) {
+
     let source = Map.getByID(e.data.source);
     let targets = e.data.targets;
     let info = source.information[game.rnd.integerInRange(0,
@@ -37,9 +80,10 @@ Ripple.prototype.triggerConversation = function(e) {
 /**
  * Get the average reputation of the k nearest entities.
  * 
- * @param {any} point
+ * @param {Entity} point
+ * @param {number} k
  */
-Ripple.prototype.getNearbyRep = function(point) {
+Ripple.prototype.getNearbyRep = function(point, k) {
 };
 
 /**
