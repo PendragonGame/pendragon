@@ -10,7 +10,7 @@
  * @property {Phaser.Text} text modify this to change the text.
  * @property {Phaser.Button} button modify this to change the button.
  */
-function MenuButton(x, y, text, key, func, fontSize = '16pt') {
+function MenuButton(x, y, text, key, func, fontSize = '3em') {
     // add text over the button
     this.key = key;
     this.text = game.add.text(x,
@@ -28,10 +28,12 @@ function MenuButton(x, y, text, key, func, fontSize = '16pt') {
     this.button.anchor.setTo(.5, .5);
     this.button.onInputOver.add(function() {
         this.text.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
+        this.text.fontSize = parseFloat(this.text.fontSize)+.5 + 'em';
     }, this);
     // hover off effect
     this.button.onInputOut.add(function() {
         this.text.setShadow(0, 0, 'rgba(0,0,0,0.5)', 0);
+        this.text.fontSize = parseFloat(this.text.fontSize)-.5 + 'em';
         // this.text.fill = '#000000';
     }, this);
     this.button.fixedToCamera = true;
@@ -42,6 +44,41 @@ function MenuButton(x, y, text, key, func, fontSize = '16pt') {
         this.text.kill();
     };
 }
+
+/**
+ * set the location of a MenuButton
+ * @param {number} x x location
+ * @param {number} y location
+ */
+MenuButton.prototype.setLocation = function(x, y) {
+    this.button.cameraOffset.x = x;
+    this.text.cameraOffset.x = x;
+    this.button.cameraOffset.y = y;
+    this.text.cameraOffset.y = y;
+};
+
+/**
+ * Hide a button and disable it 
+ * @return {any} returns itself
+ */
+MenuButton.prototype.hide = function() {
+    this.text.visible = false;
+    this.button.inputEnabled = false;
+    return this;
+};
+
+/**
+ * Reveal the button and enable it 
+ * @return {any} returns itself
+ */
+MenuButton.prototype.reveal = function() {
+    this.text.cameraOffset.x = this.text.cameraOffset.x;
+    this.button.cameraOffset.x = this.button.cameraOffset.x;
+    this.button.inputEnabled = true;
+    this.text.visible = true;
+    return this;
+};
+
 /**
  * Cyclable list of buttons.
  * @param {*} saves  array of timestamps 
@@ -63,7 +100,7 @@ function ButtonList(saves, func) {
                 saves[i].key,
                 func));
             currentH += 60;
-            if (currentH > 460) {
+            if (currentH > 640) {
                 break;
             }
         }
@@ -72,7 +109,7 @@ function ButtonList(saves, func) {
     this.nextPage = new MenuButton(
         game.camera.width / 2 + 80,
         game.camera.height - 80, '>', null, () => {
-            if (saves.length - this.startI < 6) return;
+            if (saves.length - this.startI < 9) return;
             this.currentPage += 1;
             for (; this.startI <= this.currentI; this.startI++) {
                 this.saveButtons[this.startI].kill();
@@ -86,10 +123,11 @@ function ButtonList(saves, func) {
                     saves[i].key,
                     func));
                 currentH += 60;
-                if (currentH > 460) {
+                if (currentH > 640) {
                     break;
                 }
             }
+            console.log(this.startI, this.currentI);
         });
 
     this.prevPage = new MenuButton(
@@ -100,7 +138,7 @@ function ButtonList(saves, func) {
             for (let i = this.startI; i <= this.currentI; i++) {
                 this.saveButtons[i].kill();
             }
-            this.startI -= 6;
+            this.startI -= 9;
             this.currentI = this.startI;
             currentH = 160;
             for (let i = this.startI; i < saves.length; i++) {
@@ -111,10 +149,11 @@ function ButtonList(saves, func) {
                     saves[i].key,
                     func));
                 currentH += 60;
-                if (currentH > 460) {
+                if (currentH > 640) {
                     break;
                 }
             }
+            console.log(this.startI, this.currentI);
         });
 }
 

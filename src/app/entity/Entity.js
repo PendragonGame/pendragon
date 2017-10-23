@@ -419,9 +419,11 @@ Entity.prototype.learnInfo = function(rumor) {
 Entity.prototype.converse = function(text) {
     let chat = game.add.text(32, 0, text);
     chat.anchor.setTo(0.5);
-    chat.font = 'Fauna One';
-    chat.fill = '#000000';
-    chat.fontSize = '12pt';
+    chat.font = 'Press Start 2P';
+    chat.fill = '#ffff00';
+    chat.fontSize = '1.5em';
+    chat.stroke = 'black';
+    chat.strokeThickness = '4';
     chat.align = 'center';
     chat.lifespan = 3000; // milliseconds    
     this.addChild(chat);
