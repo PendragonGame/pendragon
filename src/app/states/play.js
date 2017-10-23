@@ -262,7 +262,11 @@ Play.create = function() {
            game.state.start('Menu');
            game.paused = false;
         }, '4.5em' ));
-
+    //add resume button
+    this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
+        500, 'Resume', null, ()=>{
+        this.pauseGame();
+        }, '4.5em' ));
     // hide the pause menu
     for (let i = 0; i < this.pauseMenu.length; i++) {
         this.pauseMenu[i].text.fill = '#00bbff';
