@@ -263,10 +263,6 @@ Play.create = function() {
     this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
         500, 'Resume', null, ()=>{
         this.pauseGame();
-        //game.paused = false;
-       
-     // this.pauseMenu.hide();
-
         }, '4.5em' ));
     // hide the pause menu
     for (let i = 0; i < this.pauseMenu.length; i++) {
