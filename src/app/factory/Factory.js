@@ -10,6 +10,7 @@ const Map = require('../util/Map');
  * @param {*} y 
  * @param {*} bounds
  * @return {boolean}
+ * @function
  */
 function withinBounds(x, y, bounds) {
     for (let i = 0; i < bounds.length; i ++) {
@@ -25,6 +26,7 @@ function withinBounds(x, y, bounds) {
  * 
  * @param {*} bounds 
  * @return {Object}
+ * @function
  */
 function randInBounds(bounds) {
     let b = bounds[game.rnd.integerInRange(0, bounds.length -1 )];
@@ -41,6 +43,7 @@ function randInBounds(bounds) {
  * @param {any} group 
  * @param {Array} bounds
  * @param {number=} limit
+ * @constructor Factory
  */
 function Factory(entity, group, bounds, limit) {
     if (entity === undefined || bounds === undefined) {

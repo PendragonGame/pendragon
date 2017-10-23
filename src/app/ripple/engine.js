@@ -12,20 +12,23 @@ const Entity = require('../entity/Entity');
 /* ############### Algorithm parameters ############### */
 /**
  * The radius withing which to find people
+ * @constant
  */
 const gossipRadius = 256; // pixels
 /**
  * Number of targets to gossip to
+ * @constant
  */
 const numTargets = 1;
 /**
  * Number of nearest neighbors
+ * @constant
  */
 const kNN = 3;
 
 /**
  * 
- * 
+ * @constructor Ripple
  */
 function Ripple() {
     // console.log(path.join(__dirname, 'worker.js'));

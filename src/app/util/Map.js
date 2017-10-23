@@ -14,6 +14,9 @@ let distanceFormula2 = function(e1, e2) {
 let tree = null;
 let list = {};
 
+/**
+ * @namespace Map
+ */
 let Map = {};
 
 

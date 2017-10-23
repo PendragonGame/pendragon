@@ -8,7 +8,8 @@ let Entity = require('./Entity');
  * 
  * @param {any} x 
  * @param {any} y 
- * @param {any} key 
+ * @param {any} key
+ * @constructor Player
  */
 function Player(x, y, key) {
     Entity.call(this, x, y, key);

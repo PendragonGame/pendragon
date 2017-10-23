@@ -24,7 +24,6 @@
         "dictionaries": ["jsdoc","closure"]
     },
     "templates": {
-        "logoFile": "",
         "cleverLinks": false,
         "monospaceLinks": false,
         "dateFormat": "ddd MMM Do YYYY",
@@ -37,7 +36,7 @@
         "collapseSymbols": false,
         "inverseNav": true,
         "protocol": "html://",
-        "methodHeadingReturns": false
+        "methodHeadingReturns": true
     },
     "opts": {
         "template": "./node_modules/ink-docstrap/template",

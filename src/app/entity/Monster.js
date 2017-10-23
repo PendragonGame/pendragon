@@ -11,6 +11,7 @@ let NPC = require('./NPC');
  * @param {any} x 
  * @param {any} y 
  * @param {any} key 
+ * @constructor Monster
  */
 function Monster(x, y, key) {
     NPC.call(this, x, y, key);
