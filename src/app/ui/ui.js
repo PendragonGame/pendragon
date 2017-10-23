@@ -1,27 +1,18 @@
 /**
- * 
+ *
  * @module ui/UI
  */
 /**
- <<<<<<< 8bit_music
  * A basic text button.
- * @param {*} x
+ * @param {number} x
  * @param {number} y
  * @param {string} text
- * @param {*} key object associated with button
- * @param {*} func
- =======
- * A basic text button. 
- * @param {number} x
- * @param {number} y 
- * @param {string} text 
  * @param {string} key - object associated with button
  * @param {function} func - on click callback function
- >>>>>>> develop
  * @param {string} fontSize
  * @property {Phaser.Text} text - modify this to change the text.
  * @property {Phaser.Button} button - modify this to change the button.
- * 
+ *
  * @constructor MenuButton
  */
 function MenuButton(x, y, text, key, func, fontSize = '3em') {
