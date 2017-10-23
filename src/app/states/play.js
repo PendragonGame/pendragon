@@ -1,4 +1,5 @@
 'use strict';
+const UI = require('../ui/ui');
 const Player = require('../entity/Player');
 const NavMesh = require('../ai/Nav-mesh.js');
 const Monster = require('../entity/Monster');
@@ -7,6 +8,8 @@ const Factory = require('../factory/Factory');
 const dataStore = require('../util/data');
 const Map = require('../util/Map');
 const Ripple = require('../ripple/engine');
+let electron = require('electron');
+let window = electron.remote.getCurrentWindow();
 
 const Sampling = require('discrete-sampling');
 
@@ -58,27 +61,38 @@ Play.preload = function() {
 
     // Input for game
     this.keyboard = game.input.keyboard;
+    this.keyboard.onDownCallback = ()=> {
+        switch (game.input.keyboard.event.keyCode) {
+            // 27 = escape
+            case 27:
+                this.pauseGame();
+                break;
+
+            default:
+                break;
+        }
+    };
 
     /**
      * HUD elements
      * 
      * @todo(anand): Can this be improved? May be making code slow.
      */
-    this.wasd = game.add.sprite(0, 0, 'hud_wasd');
-    this.wasd.y = window.innerHeight - this.wasd.height;
-    this.wasd.fixedToCamera = true;
 
     this.wpn = game.add.sprite(0, 0, 'hud_weapon');
     this.wpn.width /= 2;
     this.wpn.height /= 2;
-    this.wpn.x = window.innerWidth - this.wpn.width;
+    this.wpn.x = game.camera.width - this.wpn.width;
     this.wpn.fixedToCamera = true;
 
 
     this.textStyle = {
-        font: '15px Press Start 2P',
+        font: 'Press Start 2P',
         fill: '#ffff00',
         align: 'center',
+        fontSize: '2em',
+        stroke: 'black',
+        strokeThickness: '5',
     };
     this.healthLabel = game.add.text(0, 5, 'Health', this.textStyle);
     this.healthLabel.fixedToCamera = true;
@@ -87,13 +101,13 @@ Play.preload = function() {
     this.repLabel.fixedToCamera = true;
 
     this.scoreLabel = game.add.text(0, 0, 'Score: 0', this.textStyle);
-    this.scoreLabel.x = window.innerWidth - (1.5 * this.scoreLabel.width);
-    this.scoreLabel.y = window.innerHeight - this.scoreLabel.height;
+    this.scoreLabel.x = game.camera.width - (1.5 * this.scoreLabel.width);
+    this.scoreLabel.y = game.camera.height - this.scoreLabel.height;
     this.scoreLabel.fixedToCamera = true;
 
     this.dayLabel = game.add.text(0, 0, 'Score: 0', this.textStyle);
-    this.dayLabel.x = window.innerWidth - (1.5 * this.dayLabel.width);
-    this.dayLabel.y = window.innerHeight - (2 * this.dayLabel.height);
+    this.dayLabel.x = game.camera.width - (1.5 * this.dayLabel.width);
+    this.dayLabel.y = game.camera.height - (2 * this.dayLabel.height);
     this.dayLabel.fixedToCamera = true;
 
     this.emptyHealthBar = game.add.sprite(this.healthLabel.width + 5, 0,
@@ -119,64 +133,9 @@ Play.preload = function() {
     this.fullRepBar.width /= 2;
     this.fullRepBar.height = 20;
 
-    /**
-     * save button
-     * 
-     */
-    // function saveButton() {
-    let saveButton = game.add.button(this.wasd.width + 60, window.innerHeight - 27,
-        'hud_save',
-        function() {
-            console.log('Save Button Clicked');
-            console.log('Manually saving');
-            let savedText = game.add.text(10, -20, 'Saved');
-            savedText.font = 'Fauna One';
-            savedText.fill = '#000000';
-            savedText.fontSize = '12pt';
-            savedText.lifespan = 770;
-            savedText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 5);
-            saveButton.addChild(savedText);
-            dataStore.manualSaveState();
-        }, 2, 1, 0);
-    saveButton.width = 70;
-    saveButton.height = 30;
-    /**
-     * 
-     *hover over for button
-     */
-    saveButton.onInputOver.add(function over() {
-        console.log('Hovering over Save Button');
-    });
-    saveButton.fixedToCamera = true;
-    this.saveButton = saveButton;
-    /**
-     * menu button
-     * 
-     */
-    // function menuButton() {
-    let menuButton = game.add.button(this.wasd.width + 140, window.innerHeight - 27,
-        'hud_menu',
-        function() {
-            console.log('Menu Button Clicked');
-            game.state.start('Menu');
-        }, 2, 1, 0);
-    menuButton.width = 70;
-    menuButton.height = 30;
-    /**
-     * 
-     *hover over for button
-     */
-    menuButton.onInputOver.add(function over() {
-        console.log('Hovering over Menu Button');
-    });
-    menuButton.fixedToCamera = true;
-    this.menuButton = menuButton;
 
     this.hudGroup = game.add.group();
     this.hudGroup.addMultiple([
-        this.menuButton,
-        this.saveButton,
-        this.wasd,
         this.wpn,
         this.healthLabel,
         this.repLabel,
@@ -187,6 +146,28 @@ Play.preload = function() {
         this.emptyRepBar,
         this.fullRepBar,
     ]);
+};
+
+/**
+ * pauses the game
+ */
+Play.pauseGame = function() {
+    game.paused ? game.paused = false : game.paused = true;
+    if (game.paused) {
+        // reveal pause menu
+        for (let i = 0; i < this.pauseMenu.length; i++) {
+            this.pauseMenu[i].reveal();
+            this.pauseBg.visible = true;
+            this.controlText.visible = true;
+        }
+    } else {
+        // hide the menu
+        for (let i = 0; i < this.pauseMenu.length; i++) {
+            this.pauseMenu[i].hide();
+            this.pauseBg.visible = false;
+            this.controlText.visible = false;
+        }
+    }
 };
 
 Play.create = function() {
@@ -218,6 +199,74 @@ Play.create = function() {
     this.light.fixedToCamera = true;
     this.light.endFill();
     this.dayTime = true;
+
+    /**
+     * Pause menu set up
+     */
+    this.pauseMenu = [];
+    // pause background
+    this.pauseBg = game.add.graphics();
+    this.pauseBg.beginFill(0x0);
+    this.pauseBg.alpha = .2;
+    this.pauseBg.visible = false;
+    this.pauseBg.drawRect(0, 0, game.camera.width, game.camera.height);
+    this.pauseBg.fixedToCamera = true;
+    // controls
+    this.controlText = game.add.text(game.camera.width/2, 600, 'Up:    W   Left:   A\nDown:  S   Right:  D\nMelee: M   Sprint: Shift');
+    this.controlText.font = 'Press Start 2P';
+    this.controlText.fill = '#ff5100';
+    this.controlText.stroke = '#0';
+    this.controlText.strokeThickness = 5;
+    this.controlText.fontSize = '3em';
+    this.controlText.anchor.setTo(.5, .5);
+    this.controlText.align = 'left';
+    this.controlText.fixedToCamera = true;
+    this.controlText.visible = false;
+    // add a save button
+    this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
+         200, '  Save  ', null, ()=>{
+            console.log('Manually saving');
+            this.pauseMenu[0].text.text = '  Save ' +
+             String.fromCodePoint(0x1F60A);
+            setTimeout(()=> {
+                this.pauseMenu[0].text.text = '  Save  ';
+            }, 750);
+            dataStore.manualSaveState();
+         }, '4.5em' ));
+    // add a settings button
+    this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
+         300, window.isFullScreen() ? 'Windowed' : 'Fullscreen',
+          null, ()=>{
+            console.log('fulscreen toggled');
+            game.paused = false;
+            window.setResizable(true);
+            window.setFullScreenable(true);
+            if (window.isFullScreen()) {
+                window.setFullScreen(false);
+                this.pauseMenu[1].text.text = 'Fullscreen';
+            } else {
+                window.setFullScreen(true);
+                this.pauseMenu[1].text.text = 'Windowed';
+            }
+            window.setResizable(false);
+            window.setFullScreenable(false);
+            game.paused = true;
+         }, '4.5em' ));
+    // add a menu button
+    this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
+        400, 'Main Menu', null, ()=>{
+           game.input.keyboard.onDownCallback = null;
+           game.state.start('Menu');
+           game.paused = false;
+        }, '4.5em' ));
+
+    // hide the pause menu
+    for (let i = 0; i < this.pauseMenu.length; i++) {
+        this.pauseMenu[i].text.fill = '#00bbff';
+        this.pauseMenu[i].text.stroke = '#0';
+        this.pauseMenu[i].text.strokeThickness = 5;
+        this.pauseMenu[i].hide();
+    }
 
     /**
      * Setting datastore callback interval
@@ -271,6 +320,7 @@ Play.update = function() {
     if (this.light.alpha <= 0 && this.dayTime === false) {
         this.dayTime = true;
         this.player.daysSurvived++;
+        this.light.alpha = 0;
     }
     if (this.light.alpha >= .5) {
         this.dayTime = false;
@@ -397,7 +447,8 @@ Play.update = function() {
     let nearest4 = Map.nearest(this.player);
     _.forEach(nearest4, function(entity) {
         // console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
-        if ((self.player.y + self.player.height) > (entity[0].y + entity[0].height)) {
+        if ((self.player.y + self.player.height) >
+         (entity[0].y + entity[0].height)) {
             game.world.bringToTop(self.player);
             // console.log('player on top');
         } else {
@@ -533,7 +584,6 @@ function entityCollision(entity1, entity2) {
 }
 
 Play.populateBoard = function() {
-
     /**
      * Generate a factory and a few monsters
      */
@@ -563,8 +613,8 @@ Play.populateBoard = function() {
      * Create the Player, setting location and naming as 'player'.
      * Giving him Physics and allowing collision with the world boundaries.
      */
-    this.player = new Player(game.world.width / 2,
-        game.world.height / 2 + 200,
+    this.player = new Player(1971,
+        504,
         'player');
 
     /**
@@ -637,18 +687,18 @@ Play.loadBoard = function(data) {
 
 
 Play.generateMap = function() {
-    setTimeout(() => {
-        let entities = [];
-        // entities.push(this.player);
-        // I see no point in adding the player
-        this.monsterGroup.forEachAlive(function(monster) {
-            entities.push(monster);
-        });
-        this.npcGroup.forEachAlive(function(npc) {
-            entities.push(npc);
-        });
-        Map.create(entities);
-    }, 1500);
+    // setTimeout(() => {
+    let entities = [];
+    // entities.push(this.player);
+    // I see no point in adding the player
+    this.monsterGroup.forEachAlive(function(monster) {
+        entities.push(monster);
+    });
+    this.npcGroup.forEachAlive(function(npc) {
+        entities.push(npc);
+    });
+    Map.create(entities);
+    // }, 1500);
 };
 
 Play.autosaveData = function() {
@@ -681,11 +731,65 @@ Play.getPlayerDistance2 = function(entity) {
 };
 
 Play.shutdown = function() {
-    this.rippleGossip.kill();
+    if (this.rippleGossip) {
+        this.rippleGossip.kill();
+    }
     timerIDs.forEach((id) => {
         clearInterval(id);
     });
 };
 
+Phaser.Tilemap.prototype.setCollisionBetween = function(start, stop,
+    collides, layer, recalculate) {
+       if (collides === undefined) {
+collides = true;
+}
+       if (layer === undefined) {
+layer = this.currentLayer;
+}
+       if (recalculate === undefined) {
+recalculate = true;
+}
+
+       layer = this.getLayer(layer);
+
+       for (let index = start; index <= stop; index++) {
+           if (collides) {
+               this.collideIndexes.push(index);
+           } else {
+               let i = this.collideIndexes.indexOf(index);
+
+               if (i > -1) {
+                   this.collideIndexes.splice(i, 1);
+               }
+           }
+       }
+
+       for (let y = 0; y < this.layers[layer].height; y++) {
+           for (let x = 0; x < this.layers[layer].width; x++) {
+               let tile = this.layers[layer].data[y][x];
+
+               if (tile && tile.index >= start && tile.index <= stop) {
+                   if (collides) {
+                       tile.setCollision(true, true, true, true);
+                   } else {
+                       tile.resetCollision();
+                   }
+
+                   tile.faceTop = collides;
+                   tile.faceBottom = collides;
+                   tile.faceLeft = collides;
+                   tile.faceRight = collides;
+               }
+           }
+       }
+
+       if (recalculate) {
+           //  Now re-calculate interesting faces
+           this.calculateFaces(layer);
+       }
+
+       return layer;
+   };
 
 module.exports = Play;

@@ -20,9 +20,10 @@ console.log(x);
  */
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 640,
+        width: 1024,
         height: 640,
         resizable: false,
+        fullscreenable: false,
         webPreferences: {
             nodeIntegrationInWorker: true,
         },
@@ -57,6 +58,7 @@ app.on('ready', () => {
         });
         mainWindow.openDevTools();
     }
+    // mainWindow.setMenu(null);
 });
 
 ipcMain.on('saveEntity', function(ev, arg) {
