@@ -28,7 +28,8 @@ let Map = {};
  */
 Map.create = function(entities, dimensions) {
     if (entities.length === 0 || !(entities[0] instanceof Entity)) {
-        throw new TypeError('Invalid array');
+        console.error('Invalid argument for entity or empty list of entities');
+        return;
     }
     let dim = dimensions;
     if (dim === undefined) dim = ['x', 'y'];
