@@ -20,7 +20,7 @@ const _ = require('lodash');
 const npcBounds = [
     [new Phaser.Point(1397, 1344), new Phaser.Point(1684, 1472)],
     [new Phaser.Point(778, 1328), new Phaser.Point(1065, 1553)],
-    [new Phaser.Point(1486, 735), new Phaser.Point(1690, 1065)],
+    [new Phaser.Point(1486, 735), new Phaser.Point(1690, 1050)],
     [new Phaser.Point(1800, 2200), new Phaser.Point(3000, 2700)],
 ];
 
@@ -712,7 +712,9 @@ Play.loadBoard = function(data) {
 
 Play.generateMap = function() {
     // setTimeout(() => {
-    let entities = this.monsters.concat(this.npcs);
+    this.entitiesGroup.removeChild(this.player);
+    let entities = this.entitiesGroup.getAll();
+    this.entitiesGroup.add(this.player);
     // entities.push(this.player);
     // I see no point in adding the player
     // this.monsterGroup.forEachAlive(function(monster) {
