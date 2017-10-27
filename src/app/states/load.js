@@ -1,3 +1,6 @@
+/**
+ * @module states/Load
+ */
 let Load = {};
 
 let loadedData = null;

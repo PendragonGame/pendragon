@@ -1,5 +1,7 @@
 'use strict';
-
+/**
+ * @module entity/NPC
+ */
 let Entity = require('./Entity');
 
 
@@ -9,6 +11,7 @@ let Entity = require('./Entity');
  * @param {any} x 
  * @param {any} y 
  * @param {any} key 
+ * @constructor NPC
  */
 function NPC(x, y, key) {
     Entity.call(this, x, y, key);

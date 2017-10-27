@@ -1,3 +1,6 @@
+/** 
+ * @module ai/NavMesh
+ */
 
 const PhaserNavmesh = require('phaser-navmesh');
 /**
@@ -7,7 +10,7 @@ const PhaserNavmesh = require('phaser-navmesh');
 /**
  * Create a navigation mesh
  * @param {tilemap} tilemap 
- *
+ * @constructor NavMesh
  */
 function NavMesh(tilemap) {
     this.navMeshPlugin = game.plugins.add(PhaserNavmesh);
