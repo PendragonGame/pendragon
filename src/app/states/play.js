@@ -20,7 +20,7 @@ const _ = require('lodash');
 const npcBounds = [
     [new Phaser.Point(1397, 1344), new Phaser.Point(1684, 1472)],
     [new Phaser.Point(778, 1328), new Phaser.Point(1065, 1553)],
-    [new Phaser.Point(1660, 735), new Phaser.Point(1690, 1065)],
+    [new Phaser.Point(1486, 735), new Phaser.Point(1690, 1065)],
     [new Phaser.Point(1800, 2200), new Phaser.Point(3000, 2700)],
 ];
 
@@ -319,11 +319,11 @@ Play.update = function() {
      * Debug Stuff
      */
     // game.debug.body(this.player);
-    this.navMesh.navMesh.debugClear(); // Clears the overlay
-        this.navMesh.navMesh.debugDrawMesh({
-        drawCentroid: false, drawBounds: false,
-         drawNeighbors: false, drawPortals: false,
-    });
+    // this.navMesh.navMesh.debugClear(); // Clears the overlay
+    //     this.navMesh.navMesh.debugDrawMesh({
+    //     drawCentroid: false, drawBounds: false,
+    //      drawNeighbors: false, drawPortals: false,
+    // });
 
 
     // day / night cycle
@@ -363,38 +363,40 @@ Play.update = function() {
     let tL2 = new Phaser.Point(3151, 568);
     let bR2 = new Phaser.Point(4452, 3565);
 
-    for (let i = 0; i < this.npcs.length; i++) {
-        if (!this.npcs[i]) continue;
-        /**
-         * NOTE(anand):
-         * 
-         * At this point, the NPC can either attack the player
-         * or run away if they dont like the player
-         * or do nothing otherwise.
-         * 
-         * What I will do is this.
-         * 
-         * If Reputation is below 0 (it will always be >= -1):
-         * Generate a random number between -1 and 0. 
-         * - If the number lies between -1 and the reputation
-         *   - avoid the player
-         * - Else
-         *   - attck the player
-         * Else (Rep >= 0)
-         * - wander
-         */
-        let attitude = 'neutral';
-        if (this.npcs[i].reputation < 0) {
-            let decision = -Math.random();
-            if (decision > this.npcs[i].reputation) {
-                attitude = 'aggressive';
+    this.entitiesGroup.sort('y', Phaser.Group.SORT_ASCENDING);
+
+    this.entitiesGroup.forEach((e)=>{
+        if (!e) return;
+        if (e.state === 'dead') e.sendToBack();
+            if (e.type === 'npc') {
+            /**
+             * NOTE(anand):
+             * 
+             * At this point, the NPC can either attack the player
+             * or run away if they dont like the player
+             * or do nothing otherwise.
+             * 
+             * What I will do is this.
+             * 
+             * If Reputation is below 0 (it will always be >= -1):
+             * Generate a random number between -1 and 0. 
+             * - If the number lies between -1 and the reputation
+             *   - avoid the player
+             * - Else
+             *   - attck the player
+             * Else (Rep >= 0)
+             * - wander
+             */
+            let attitude = 'neutral';
+            if (e.reputation < 0) {
+                let decision = -Math.random();
+                if (decision > e.reputation) {
+                    attitude = 'aggressive';
+                }
             }
-        }
-        this.npcs[i].updateAI(this.navMesh, tL, bR, this.player, attitude);
-    };
-    for (let i = 0; i < this.monsters.length; i++) {
-        if (!this.monsters[i]) continue;
-        /**
+            e.updateAI(this.navMesh, tL, bR, this.player, attitude);
+        } else if (e.type === 'monster') {
+            /**
          * NOTE(anand):
          * 
          * For monster, I will attack regardless,
@@ -402,14 +404,15 @@ Play.update = function() {
          * like the player (less than -0.8?)
          */
         let attitude = 'aggressive';
-        if (this.monsters[i].reputation < -0.8) {
+        if (e.reputation < -0.8) {
             // Really aggro
-            this.monsters[i].slowSprint = this.monsters[i].sprintSpeed;
-            this.monsters[i].sprintSpeed = 2 * this.monsters[i].slowSprint;
+            e.slowSprint = e.sprintSpeed;
+            e.sprintSpeed = 2 * e.slowSprint;
         }
-        this.monsters[i].updateAI(this.navMesh,
+        e.updateAI(this.navMesh,
              tL2, bR2, this.player, attitude);
-    };
+        }
+    });
 
     /**
      * PLAYER CODE
@@ -475,14 +478,6 @@ Play.update = function() {
     //         game.world.bringToTop(entity[0]);
     //     }
     // });
-    // this.player.bringToTop();
-    this.allEntities.sort((a, b)=>{
-       return a.trueXY().y - b.trueXY().y;
-    });
-    for (let i = 0; i < this.allEntities.length; i++) {
-        this.allEntities[i].bringToTop();
-        // console.log(this.allEntities[i]);
-    }
 
     let totalEntities = this.entitiesGroup.total -1;
     let repNum = 0;
@@ -656,8 +651,6 @@ Play.populateBoard = function() {
     this.entitiesGroup.addMultiple(this.monsterGroup.getAll());
     this.entitiesGroup.addMultiple(this.npcGroup.getAll());
     this.entitiesGroup.add(this.player);
-    this.allEntities = this.entitiesGroup.getAll();
-    console.log(this.allEntities.length);
 };
 
 Play.loadBoard = function(data) {
@@ -681,7 +674,7 @@ Play.loadBoard = function(data) {
             E.deserialize(e);
         }
     }
-
+    this.monsters = this.monsterGroup.getAll();
     /**
      * Generate a factory and a few NPCs
      */
@@ -698,6 +691,7 @@ Play.loadBoard = function(data) {
             E.deserialize(e);
         }
     }
+    this.npcs = this.npcGroup.getAll();
 
     /**
      * Create the Player, setting location and naming as 'player'.
@@ -710,11 +704,9 @@ Play.loadBoard = function(data) {
      * Add all Entities to the same group.
      */
     this.entitiesGroup = game.add.group();
-    this.entitiesGroup.addMultiple([
-        this.player,
-        this.npcGroup,
-        this.monsterGroup,
-    ]);
+    this.entitiesGroup.addMultiple(this.monsterGroup.getAll());
+    this.entitiesGroup.addMultiple(this.npcGroup.getAll());
+    this.entitiesGroup.add(this.player);
 };
 
 
