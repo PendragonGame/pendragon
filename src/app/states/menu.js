@@ -44,7 +44,7 @@ Menu.create = function() {
     //This code gives attribution to the musician on the main menu screen for all to see.
     //This is required under the musics license.
     let musicAttributionText = game.add.text(game.camera.width/2, 750,
-      'Music: "The Pirate And The Dancer" by Rolemusic. Music protected under CC BY-NC-SA 3.0 US' +
+      'Music: "He Plays Me The Best Rhythms" by Rolemusic. Music protected under CC BY-NC-SA 3.0 US' +
       '\nLicense: https://tinyurl.com/2qn665. Music: https://tinyurl.com/y74lx4cv' +
       '\nDisclaimer: This music can only be used under the terms as identified in the above license');
       musicAttributionText.anchor.setTo(.5, .5);
