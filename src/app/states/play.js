@@ -81,11 +81,14 @@ Play.preload = function() {
      * 
      * @todo(anand): Can this be improved? May be making code slow.
      */
+	let margin = 5;
 
+	//Weapon display
     this.wpn = game.add.sprite(0, 0, 'hud_weapon');
     this.wpn.width /= 2;
     this.wpn.height /= 2;
-    this.wpn.x = game.camera.width - this.wpn.width;
+    this.wpn.x = game.camera.width - this.wpn.width - margin;
+	this.wpn.y = margin;
     this.wpn.fixedToCamera = true;
 
 
@@ -97,44 +100,51 @@ Play.preload = function() {
         stroke: 'black',
         strokeThickness: '5',
     };
-    this.healthLabel = game.add.text(0, 5, 'Health', this.textStyle);
+	//"Health" text
+    this.healthLabel = game.add.text(margin, margin, 'Health', this.textStyle);
     this.healthLabel.fixedToCamera = true;
-    this.repLabel = game.add.text(0, this.healthLabel.height + 10,
+	//"Rep" text
+    this.repLabel = game.add.text(margin, this.healthLabel.height + margin + margin,
         'Rep', this.textStyle);
     this.repLabel.fixedToCamera = true;
 
+	//"Score" text
     this.scoreLabel = game.add.text(0, 0, 'Score: 0', this.textStyle);
     this.scoreLabel.x = game.camera.width - (1.5 * this.scoreLabel.width);
     this.scoreLabel.y = game.camera.height - this.scoreLabel.height;
     this.scoreLabel.fixedToCamera = true;
-
+	
+	//"Day" text
     this.dayLabel = game.add.text(0, 0, 'Score: 0', this.textStyle);
     this.dayLabel.x = game.camera.width - (1.5 * this.dayLabel.width);
     this.dayLabel.y = game.camera.height - (2 * this.dayLabel.height);
     this.dayLabel.fixedToCamera = true;
 
-    this.emptyHealthBar = game.add.sprite(this.healthLabel.width + 5, 0,
+	//Sprite for empty health bar to represent health capacity
+    this.emptyHealthBar = game.add.sprite(this.healthLabel.width + (2 * margin), margin,
         'hud_emptyHealth');
     this.emptyHealthBar.fixedToCamera = true;
-    this.emptyHealthBar.height = 20;
-    this.fullHealthBar = game.add.sprite(this.healthLabel.width + 7, 2,
+    this.emptyHealthBar.height = 25;
+	//A separate sprite is used within to represent current player health
+    this.fullHealthBar = game.add.sprite(this.healthLabel.width + (2 * margin) + 2, 2 + margin,
         'hud_fullHealth');
     this.fullHealthBar.fixedToCamera = true;
     this.fullHealthBar.width /= 2;
-    this.fullHealthBar.height = 20;
+    this.fullHealthBar.height = this.emptyHealthBar.height - 4;
 
-    this.emptyRepBar = game.add.sprite(this.healthLabel.width + 5,
-        this.emptyHealthBar.height + 5,
+	//Same deal for reputation
+    this.emptyRepBar = game.add.sprite(this.healthLabel.width + (2 * margin),
+        this.emptyHealthBar.height + (3 * margin),
         'hud_emptyHealth');
     this.emptyRepBar.fixedToCamera = true;
-    this.emptyRepBar.height = 20;
-    this.fullRepBar = game.add.sprite(this.healthLabel.width + 7,
-        this.emptyHealthBar.height + 7,
+    this.emptyRepBar.height = 25;
+    this.fullRepBar = game.add.sprite(this.healthLabel.width + (2 * margin) + 2,
+        this.emptyHealthBar.height + (3 * margin) + 2,
         'hud_fullRep');
     this.fullRepBar.fixedToCamera = true;
     this.barRealWidth = this.fullRepBar.width;
     this.fullRepBar.width /= 2;
-    this.fullRepBar.height = 20;
+    this.fullRepBar.height = this.emptyRepBar.height - 4;
 
 
     this.hudGroup = game.add.group();
