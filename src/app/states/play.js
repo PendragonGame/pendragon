@@ -267,7 +267,7 @@ Play.create = function() {
     this.invWindow.visible = false;
 	this.invWindow.beginFill(0x0);
 	this.invWindow.drawRect(game.camera.width / 4 - 5, game.camera.height * 0.125 - 5, game.camera.width / 2 + (2 * 5), game.camera.height * 0.75 + (2 * 5));
-	this.invWindow.beginFill(0x994d00);
+	this.invWindow.beginFill(0x0066ff);
     this.invWindow.drawRect(game.camera.width / 4, game.camera.height * 0.125, game.camera.width / 2, game.camera.height * 0.75);
 	this.invWindow.beginFill(0x0);
 	this.invWindow.drawRect(game.camera.width / 4 + 10, game.camera.height * 0.33, game.camera.width / 2 - 20, game.camera.height / 2);
