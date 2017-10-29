@@ -27,6 +27,12 @@ Load.preload = function() {
     game.load.image('hud_save', 'assets/HUD-elements/HUD_save_word.png');
     game.load.image('hud_load', 'assets/HUD-elements/HUD_load_word.png');
     game.load.image('hud_menu', 'assets/HUD-elements/HUD_menu.png');
+	
+	//Loading Inventory images
+	game.load.image('Apple', 'assets/sprites/Inventory/apple.png');
+	game.load.image('Carrot', 'assets/sprites/Inventory/carrot.png');
+	game.load.image('Mutton', 'assets/sprites/Inventory/mutton.png');
+	game.load.image('Dagger', 'assets/sprites/Inventory/dagger.png');
 
     game.load.spritesheet('enemy', 'assets/sprites/OrcEnemy.png', 64, 64, 273);
     game.load.spritesheet('woman', 'assets/sprites/woman.png', 64, 64, 273);

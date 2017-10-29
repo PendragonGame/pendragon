@@ -192,6 +192,7 @@ Play.pauseGame = function() {
 /**
  * opens/closes the inventory
  */
+let openTab = 'food';
 Play.toggleInventory = function() {
 	//This if statement prevents opening the inventory while the game is paused.
 	if (game.paused == true && this.invBg.visible == false){}
@@ -205,6 +206,19 @@ Play.toggleInventory = function() {
 		for (let j = 0; j < this.inventoryButtons.length; j++){
 			this.inventoryButtons[j].reveal();
 		}
+		for (let k = 0; k < this.inventoryImages.length; k++){
+			switch (openTab){
+				case ('food'):
+					if (k < this.player.food.length) this.inventoryImages[k].visible = true;
+					break;
+				case ('weapons'):
+					if (k < this.player.weapons.length) this.inventoryImages[k].visible = true;
+					break;
+				case ('misc'):
+					if (k < this.player.misc.length) this.inventoryImages[k].visible = true;
+					break;
+			}
+		}
 		this.invBg.visible = true;
     } else {
         // hide the inventory
@@ -213,6 +227,9 @@ Play.toggleInventory = function() {
 		}
 		for (let j = 0; j < this.inventoryButtons.length; j++){
 			this.inventoryButtons[j].hide();
+		}
+		for (let k = 0; k < this.inventoryImages.length; k++){
+			this.inventoryImages[k].visible = false;
 		}
 		this.invBg.visible = false;
     }
@@ -254,6 +271,9 @@ Play.create = function() {
 	*/
 	this.inventory = [];
 	this.inventoryButtons = [];
+	this.inventoryList = [];
+	this.inventoryImages = [];
+	
 	//inventory background
 	this.invBg = game.add.graphics();
     this.invBg.beginFill(0x0);
@@ -267,7 +287,7 @@ Play.create = function() {
     this.invWindow.visible = false;
 	this.invWindow.beginFill(0x0);
 	this.invWindow.drawRect(game.camera.width / 4 - 5, game.camera.height * 0.125 - 5, game.camera.width / 2 + (2 * 5), game.camera.height * 0.75 + (2 * 5));
-	this.invWindow.beginFill(0x0066ff);
+	this.invWindow.beginFill(0xffd633);
     this.invWindow.drawRect(game.camera.width / 4, game.camera.height * 0.125, game.camera.width / 2, game.camera.height * 0.75);
 	this.invWindow.beginFill(0x0);
 	this.invWindow.drawRect(game.camera.width / 4 + 10, game.camera.height * 0.33, game.camera.width / 2 - 20, game.camera.height / 2);
@@ -281,59 +301,107 @@ Play.create = function() {
 	this.invWindow.drawRect(game.camera.width / 4 + 13 + labelWidth + 3, game.camera.height * 0.33 - 47, labelWidth, 47);
 	this.invWindow.drawRect(game.camera.width / 4 + 13 + (2 * (labelWidth + 3)), game.camera.height * 0.33 - 47, labelWidth, 47);
 	
-	let startX = game.camera.width / 4 + 110;
-	let s = 'Food:\n';
-	for (let i = 0; i < this.player.food.length; i++) s += ('- '+this.player.food[i]+'\n');
-	this.invList = game.add.text(game.camera.width / 4 + 40, game.camera.height * 0.33 + 55, s);
-	this.invList.font = 'Press Start 2P';
-	this.invList.fill = '#ffcc00';
-	this.invList.stroke = '#1';
-	this.invList.strokeThickness = 3;
-	this.invList.fontSize = '1.5em';
-	this.invList.anchor.setTo(0, 0);
-	this.invList.align = 'left';
-	this.invList.fixedToCamera = true;
-	this.invList.visible = false;
-	this.inventory.push(this.invList);
+	//Creating text + image areas
+	for (let j = 0; j < 5; j++){
+		this.temp = game.add.text(game.camera.width / 4 + 85, (j * 60) + game.camera.height * 0.33 + 55, 'TEST');
+		
+		this.temp.font = 'Press Start 2P';
+		this.temp.fill = '#ffff00';
+		this.temp.stroke = '#0';
+		this.temp.strokeThickness = 5;
+		this.temp.fontSize = '2em';
+		this.temp.anchor.setTo(0, .5);
+		this.temp.align = 'left';
+		this.temp.fixedToCamera = true;
+		this.temp.visible = false;
+		
+		this.temp1 = game.add.sprite(game.camera.width / 4 + 50, (j * 60) + game.camera.height * 0.33 + 40, 'Apple');
+		this.temp1.fixedToCamera = true;
+		this.temp1.visible = false;
+		this.temp1.width = 21;
+		this.temp1.height = 21;
+		
+		
+		this.inventoryList.push(this.temp);
+		this.inventoryImages.push(this.temp1);
+		this.inventory.push(this.inventoryList[j]);
+		
+		if (j < this.player.food.length) {
+			this.inventoryList[j].text = "- " + this.player.food[j];
+			this.inventoryImages[j].loadTexture(this.player.food[j], 0, false);
+		}
+		else {
+			this.inventoryList[j].text = '';
+		}
+		this.inventoryImages[j].visible = false;
+	}
 	
+	let startX = game.camera.width / 4 + 115;
 	//Food button
 	this.inventoryButtons.push(new UI.MenuButton(startX,
          game.camera.height * 0.33 - 20, '  Food  ', null, ()=>{
+			openTab = 'food';
 			this.invWindow.beginFill(0xe0e0d1);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
 			this.invWindow.beginFill(0x0);
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + labelWidth + 3, game.camera.height * 0.33, labelWidth, 3);
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + (2 * (labelWidth + 3)), game.camera.height * 0.33, labelWidth, 3);
-			let d = 'Food:\n';
-			for (let i = 0; i < this.player.food.length; i++) d += ('- '+this.player.food[i]+'\n');
-			this.invList.text = d;
+			for (let x = 0; x < 5; x++) {
+				if (x >= this.player.food.length) {
+					this.inventoryList[x].text = '';
+					this.inventoryImages[x].visible = false;
+				}
+				else {
+					this.inventoryList[x].text = '- ' + this.player.food[x]; 
+					this.inventoryImages[x].loadTexture(this.player.food[x], 0, false);
+					this.inventoryImages[x].visible = true;
+				}
+			}
          }, '1.5em' ));
 	
 	//Weapon Button
 	this.inventoryButtons.push(new UI.MenuButton(startX + labelWidth + 3,
          game.camera.height * 0.33 - 20, '  Weapons  ', null, ()=>{
+			openTab = 'weapons';
             this.invWindow.beginFill(0x0);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
 			this.invWindow.beginFill(0xe0e0d1);
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + labelWidth + 3, game.camera.height * 0.33, labelWidth, 3);
 			this.invWindow.beginFill(0x0);
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + (2 * (labelWidth + 3)), game.camera.height * 0.33, labelWidth, 3);
-			let d = 'Weapons:\n';
-			for (let i = 0; i < this.player.weapons.length; i++) d += ('- '+this.player.weapons[i]+'\n');
-			this.invList.text = d;
+			for (let x = 0; x < 5; x++) {
+				if (x >= this.player.weapons.length) {
+					this.inventoryList[x].text = '';
+					this.inventoryImages[x].visible = false;
+				}
+				else {
+					this.inventoryList[x].text = '- ' + this.player.weapons[x]; 
+					this.inventoryImages[x].loadTexture(this.player.weapons[x], 0, false);
+					this.inventoryImages[x].visible = true;
+				}
+			}
          }, '1.5em' ));
 	
 	//Misc Button
 	this.inventoryButtons.push(new UI.MenuButton(startX + (2 * labelWidth) + 6,
          game.camera.height * 0.33 - 20, '  Misc  ', null, ()=>{
+			openTab = 'misc';
 			this.invWindow.beginFill(0x0);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + labelWidth + 3, game.camera.height * 0.33, labelWidth, 3);
 			this.invWindow.beginFill(0xe0e0d1);
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + (2 * (labelWidth + 3)), game.camera.height * 0.33, labelWidth, 3);
-			let d = 'Miscellaneous:\n';
-			for (let i = 0; i < this.player.misc.length; i++) d += ('- '+this.player.misc[i]+'\n');
-			this.invList.text = d;
+			for (let x = 0; x < 5; x++) {
+				if (x >= this.player.misc.length) {
+					this.inventoryList[x].text = '';
+					this.inventoryImages[x].visible = false;
+				}
+				else {
+					this.inventoryList[x].text = '- ' + this.player.misc[x]; 
+					this.inventoryImages[x].loadTexture(this.player.misc[x], 0, false);
+					this.inventoryImages[x].visible = true;
+				}
+			}
          }, '1.5em' ));
 	
 	//"Inventory" text
