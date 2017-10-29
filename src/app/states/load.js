@@ -33,6 +33,7 @@ Load.preload = function() {
 	game.load.image('Carrot', 'assets/sprites/Inventory/carrot.png');
 	game.load.image('Mutton', 'assets/sprites/Inventory/mutton.png');
 	game.load.image('Dagger', 'assets/sprites/Inventory/dagger.png');
+	game.load.image('Book', 'assets/sprites/Inventory/book.png');
 
     game.load.spritesheet('enemy', 'assets/sprites/OrcEnemy.png', 64, 64, 273);
     game.load.spritesheet('woman', 'assets/sprites/woman.png', 64, 64, 273);
