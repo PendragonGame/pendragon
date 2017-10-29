@@ -26,7 +26,7 @@ function Player(x, y, key) {
 	
 	this.weapons = ['Dagger'];
 	this.food = ['Apple', 'Carrot', 'Mutton'];
-	this.misc = ['Book', 'Cigar', 'Canteen', 'Cloth Tunic', 'Taco Bell gift card', 'iPhone 6S', 'Small amount of pot'];
+	this.misc = ['Book', 'Cigar', 'Canteen', 'Tunic', 'Pot'];
 
     this.type = 'player';
     this.converse('Press Escape for help');

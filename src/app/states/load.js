@@ -34,6 +34,10 @@ Load.preload = function() {
 	game.load.image('Mutton', 'assets/sprites/Inventory/mutton.png');
 	game.load.image('Dagger', 'assets/sprites/Inventory/dagger.png');
 	game.load.image('Book', 'assets/sprites/Inventory/book.png');
+	game.load.image('Pot', 'assets/sprites/Inventory/pot.png');
+	game.load.image('Cigar', 'assets/sprites/Inventory/cigar.png');
+	game.load.image('Canteen', 'assets/sprites/Inventory/canteen.png');
+	game.load.image('Tunic', 'assets/sprites/Inventory/tunic.png');
 
     game.load.spritesheet('enemy', 'assets/sprites/OrcEnemy.png', 64, 64, 273);
     game.load.spritesheet('woman', 'assets/sprites/woman.png', 64, 64, 273);
