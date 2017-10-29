@@ -291,11 +291,11 @@ Play.create = function() {
     this.invWindow.drawRect(game.camera.width / 4, game.camera.height * 0.125, game.camera.width / 2, game.camera.height * 0.75);
 	this.invWindow.beginFill(0x0);
 	this.invWindow.drawRect(game.camera.width / 4 + 10, game.camera.height * 0.33, game.camera.width / 2 - 20, game.camera.height / 2);
-	this.invWindow.beginFill(0xe0e0d1);
+	this.invWindow.beginFill(0xc3c3c3);
 	this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33 + 3, game.camera.width / 2 - 26, game.camera.height / 2 - 6);
 	this.invWindow.beginFill(0x0);
 	this.invWindow.drawRect(game.camera.width / 4 + 10, game.camera.height * 0.33 - 50, game.camera.width / 2 - 20, 50);
-	this.invWindow.beginFill(0xe0e0d1);
+	this.invWindow.beginFill(0xc3c3c3);
 	let labelWidth = ((game.camera.width / 2 - 26) - 6) * 0.3335;
 	this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33 - 47, labelWidth, 50);
 	this.invWindow.drawRect(game.camera.width / 4 + 13 + labelWidth + 3, game.camera.height * 0.33 - 47, labelWidth, 47);
@@ -341,7 +341,7 @@ Play.create = function() {
 	this.inventoryButtons.push(new UI.MenuButton(startX,
          game.camera.height * 0.33 - 20, '  Food  ', null, ()=>{
 			openTab = 'food';
-			this.invWindow.beginFill(0xe0e0d1);
+			this.invWindow.beginFill(0xc3c3c3);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
 			this.invWindow.beginFill(0x0);
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + labelWidth + 3, game.camera.height * 0.33, labelWidth, 3);
@@ -365,7 +365,7 @@ Play.create = function() {
 			openTab = 'weapons';
             this.invWindow.beginFill(0x0);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
-			this.invWindow.beginFill(0xe0e0d1);
+			this.invWindow.beginFill(0xc3c3c3);
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + labelWidth + 3, game.camera.height * 0.33, labelWidth, 3);
 			this.invWindow.beginFill(0x0);
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + (2 * (labelWidth + 3)), game.camera.height * 0.33, labelWidth, 3);
@@ -389,7 +389,7 @@ Play.create = function() {
 			this.invWindow.beginFill(0x0);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + labelWidth + 3, game.camera.height * 0.33, labelWidth, 3);
-			this.invWindow.beginFill(0xe0e0d1);
+			this.invWindow.beginFill(0xc3c3c3);
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + (2 * (labelWidth + 3)), game.camera.height * 0.33, labelWidth, 3);
 			for (let x = 0; x < 5; x++) {
 				if (x >= this.player.misc.length) {
