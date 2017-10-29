@@ -62,6 +62,11 @@ MenuButton.prototype.setLocation = function(x, y) {
     this.text.cameraOffset.y = y;
 };
 
+MenuButton.prototype.align = function(a) {
+	this.text.align = a;
+	this.button.align = a;
+};
+
 /**
  * Hide a button and disable it 
  * @return {any} returns itself
