@@ -474,6 +474,7 @@ Play.create = function() {
 					this.inventoryList[x].text = '- ' + this.player.food[x]; 
 					this.inventoryImages[x].loadTexture(this.player.food[x], 0, false);
 					this.inventoryImages[x].visible = true;
+					this.inventoryList[x].visible = true;
 				}
 			}
          }, '1.5em' ));
