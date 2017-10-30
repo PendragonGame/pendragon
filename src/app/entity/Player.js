@@ -24,11 +24,9 @@ function Player(x, y, key) {
     this.score = 0;
     this.daysSurvived = 1;
 	
-	this.weapons = ['Dagger'];
+	this.weapons = ['Dagger', 'Handgun'];
 	this.food = ['Apple', 'Pear', 'Mutton', 'Taco', 'Carrot', 'Mutton',
-				 'Apple', 'Carrot', 'Mutton', 'Apple', 'Carrot', 'Mutton',
-				 'Apple', 'Carrot', 'Mutton', 'Apple', 'Carrot', 'Mutton',
-				 'Apple', 'Carrot', 'Mutton', 'Apple', 'Carrot', 'Mutton'];
+				 'Apple', 'Carrot', 'Mutton', 'Apple', 'Taco'];
 	this.misc = ['Pot', 'Book', 'Cigar', 'Iphone'];
 
     this.type = 'player';

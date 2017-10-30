@@ -502,6 +502,7 @@ Play.create = function() {
 					this.inventoryList[x].text = '- ' + this.player.weapons[x]; 
 					this.inventoryImages[x].loadTexture(this.player.weapons[x], 0, false);
 					this.inventoryImages[x].visible = true;
+					this.inventoryList[x].visible = true;
 				}
 			}
          }, '1.5em' ));
@@ -528,6 +529,7 @@ Play.create = function() {
 					this.inventoryList[x].text = '- ' + this.player.misc[x]; 
 					this.inventoryImages[x].loadTexture(this.player.misc[x], 0, false);
 					this.inventoryImages[x].visible = true;
+					this.inventoryList[x].visible = true;
 				}
 			}
          }, '1.5em' ));
