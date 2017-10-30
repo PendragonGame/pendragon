@@ -336,11 +336,130 @@ Play.create = function() {
 		this.inventoryImages[j].visible = false;
 	}
 	
+	let numPages = Math.floor(this.player.food.length / 5) + 1;
+	if (this.player.food.length % 5 == 0) numPages--;
+	let currentPage = 1;
+	this.pageText = game.add.text(game.camera.width / 2, game.camera.height * 0.75 + 20, currentPage+'/'+numPages);
+	this.pageText.font = 'Press Start 2P';
+    this.pageText.fill = '#ffff00';
+    this.pageText.stroke = '#0';
+    this.pageText.strokeThickness = 5;
+    this.pageText.fontSize = '2em';
+    this.pageText.anchor.setTo(.5, .5);
+    this.pageText.align = 'center';
+    this.pageText.fixedToCamera = true;
+    this.pageText.visible = false;
+		 
+	//Prev Page Button
+	this.inventoryButtons.push(new UI.MenuButton(game.camera.width / 2 - 100,
+         game.camera.height * 0.75 + 20, '< Prev', null, ()=>{
+			 //Calculates the current page and updates the label
+			if (currentPage > 1) currentPage--;
+			this.pageText.text = currentPage+'/'+numPages;
+			
+			//Repopulates the current 5 item slots
+			for (let a = 0; a < this.inventoryList.length; a++){
+				let nextIndex = (currentPage - 1) * 5 + a;
+					this.inventoryList[a].visible = true;
+					this.inventoryImages[a].visible = true;
+					switch (openTab){
+						case ('food'):
+							if (nextIndex < this.player.food.length){
+								this.inventoryList[a].visible = true;
+								this.inventoryImages[a].visible = true;
+								this.inventoryImages[a].loadTexture(this.player.food[nextIndex]);
+								this.inventoryList[a].text = '- '+this.player.food[nextIndex];
+							} else {
+								this.inventoryList[a].visible = false;
+								this.inventoryImages[a].visible = false;
+							}
+							break;
+						case ('weapons'):
+							if (nextIndex < this.player.weapons.length){
+								this.inventoryList[a].visible = true;
+								this.inventoryImages[a].visible = true;
+								this.inventoryImages[a].loadTexture(this.player.weapons[nextIndex]);
+								this.inventoryList[a].text = '- '+this.player.weapons[nextIndex];
+							} else {
+								this.inventoryList[a].visible = false;
+								this.inventoryImages[a].visible = false;
+							}
+							break;
+						case ('misc'):
+							if (nextIndex < this.player.misc.length){
+								this.inventoryList[a].visible = true;
+								this.inventoryImages[a].visible = true;
+								this.inventoryImages[a].loadTexture(this.player.misc[nextIndex]);
+								this.inventoryList[a].text = '- '+this.player.misc[nextIndex];
+							} else {
+								this.inventoryList[a].visible = false;
+								this.inventoryImages[a].visible = false;
+							}
+							break;
+					}
+			}
+         }, '1.5em' ));
+		 
+	//Next Page Button
+	this.inventoryButtons.push(new UI.MenuButton(game.camera.width / 2 + 100,
+         game.camera.height * 0.75 + 20, 'Next >', null, ()=>{
+			 //Calculates currentPage and updates label.
+			if (currentPage < numPages) currentPage++;
+			this.pageText.text = currentPage+'/'+numPages;
+			
+			//Repopulates the current 5 item slots
+			for (let a = 0; a < this.inventoryList.length; a++){
+				let nextIndex = (currentPage - 1) * 5 + a;
+					this.inventoryList[a].visible = true;
+					this.inventoryImages[a].visible = true;
+					switch (openTab){
+						case ('food'):
+							if (nextIndex < this.player.food.length){
+								this.inventoryList[a].visible = true;
+								this.inventoryImages[a].visible = true;
+								this.inventoryImages[a].loadTexture(this.player.food[nextIndex]);
+								this.inventoryList[a].text = '- '+this.player.food[nextIndex];
+							} else {
+								this.inventoryList[a].visible = false;
+								this.inventoryImages[a].visible = false;
+							}
+							break;
+						case ('weapons'):
+							if (nextIndex < this.player.weapons.length){
+								this.inventoryList[a].visible = true;
+								this.inventoryImages[a].visible = true;
+								this.inventoryImages[a].loadTexture(this.player.weapons[nextIndex]);
+								this.inventoryList[a].text = '- '+this.player.weapons[nextIndex];
+							} else {
+								this.inventoryList[a].visible = false;
+								this.inventoryImages[a].visible = false;
+							}
+							break;
+						case ('misc'):
+							if (nextIndex < this.player.misc.length){
+								this.inventoryList[a].visible = true;
+								this.inventoryImages[a].visible = true;
+								this.inventoryImages[a].loadTexture(this.player.misc[nextIndex]);
+								this.inventoryList[a].text = '- '+this.player.misc[nextIndex];
+							} else {
+								this.inventoryList[a].visible = false;
+								this.inventoryImages[a].visible = false;
+							}
+							break;
+					}
+			}
+         }, '1.5em' ));
+	
+	
 	let startX = game.camera.width / 4 + 115;
 	//Food button
 	this.inventoryButtons.push(new UI.MenuButton(startX,
          game.camera.height * 0.33 - 20, '  Food  ', null, ()=>{
 			openTab = 'food';
+			currentPage = 1;
+			numPages = Math.floor(this.player.food.length / 5) + 1;
+			if (this.player.food.length % 5 == 0) numPages--;
+			this.pageText.text = currentPage+'/'+numPages;
 			this.invWindow.beginFill(0xc3c3c3);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
 			this.invWindow.beginFill(0x0);
@@ -363,6 +482,10 @@ Play.create = function() {
 	this.inventoryButtons.push(new UI.MenuButton(startX + labelWidth + 3,
          game.camera.height * 0.33 - 20, '  Weapons  ', null, ()=>{
 			openTab = 'weapons';
+			currentPage = 1;
+			numPages = Math.floor(this.player.weapons.length / 5) + 1;
+			if (this.player.weapons.length % 5 == 0) numPages--;
+			this.pageText.text = currentPage+'/'+numPages;
             this.invWindow.beginFill(0x0);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
 			this.invWindow.beginFill(0xc3c3c3);
@@ -386,6 +509,10 @@ Play.create = function() {
 	this.inventoryButtons.push(new UI.MenuButton(startX + (2 * labelWidth) + 6,
          game.camera.height * 0.33 - 20, '  Misc  ', null, ()=>{
 			openTab = 'misc';
+			currentPage = 1;
+			numPages = Math.floor(this.player.misc.length / 5) + 1;
+			if (this.player.misc.length % 5 == 0) numPages--;
+			this.pageText.text = currentPage+'/'+numPages;
 			this.invWindow.beginFill(0x0);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + labelWidth + 3, game.camera.height * 0.33, labelWidth, 3);
@@ -403,7 +530,7 @@ Play.create = function() {
 				}
 			}
          }, '1.5em' ));
-	
+		 
 	//"Inventory" text
 	this.invTitle = game.add.text(game.camera.width/2, game.camera.height * 0.125 + 25, 'Inventory');
 	this.invTitle.font = 'Press Start 2P';
@@ -444,6 +571,7 @@ Play.create = function() {
 	this.inventory.push(this.invTitle);
 	this.inventory.push(this.currencyText);
 	this.inventory.push(this.gemText);
+	this.inventory.push(this.pageText);
 	
 	// hide the inventory
     for (let k = 0; k < this.inventoryButtons.length; k++) {
