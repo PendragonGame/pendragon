@@ -351,7 +351,7 @@ Play.create = function() {
     this.pageText.visible = false;
 		 
 	//Prev Page Button
-	this.inventoryButtons.push(new UI.MenuButton(game.camera.width / 2 - 100,
+	this.inventoryButtons.push(new UI.MenuButton(game.camera.width / 2 - 130,
          game.camera.height * 0.75 + 20, '< Prev', null, ()=>{
 			 //Calculates the current page and updates the label
 			if (currentPage > 1) currentPage--;
@@ -401,7 +401,7 @@ Play.create = function() {
          }, '1.5em' ));
 		 
 	//Next Page Button
-	this.inventoryButtons.push(new UI.MenuButton(game.camera.width / 2 + 100,
+	this.inventoryButtons.push(new UI.MenuButton(game.camera.width / 2 + 130,
          game.camera.height * 0.75 + 20, 'Next >', null, ()=>{
 			 //Calculates currentPage and updates label.
 			if (currentPage < numPages) currentPage++;
