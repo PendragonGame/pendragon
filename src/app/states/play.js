@@ -517,6 +517,7 @@ function entityCollision(entity1, entity2) {
     /**
      * @todo(anand): Handle code to get injured
      */
+
     if (game.physics.arcade.collide(entity1, this.blockLayer) ||
         game.physics.arcade.collide(entity1, this.blockOverlap) ||
         game.physics.arcade.collide(entity2, this.blockLayer) ||
@@ -524,80 +525,36 @@ function entityCollision(entity1, entity2) {
         return;
     }
 
-    /**
-     * @todo(anand): I think this needs to be made general to all Entities
-     * 
-     * We shouldn't be assuming that entity 2 is always going to be Player
-     * also, other entities can attack too
-     */
-    /**
-     * The type of person who died
-     */
+
+    //This block handles when an entity collided with an attacking entitity
     let dead = null;
     let perp = null;
     let action = '';
-    if (entity2.state == 'attacking') {
+    if (entity2.state === 'attacking' && enitity1.state !== 'injured') {
         entity2.attack();
-        if (entity1.state !== 'dead') {
-            entity1.die();
-            entity1.body.enable = false;
-        }
+        this.calculateDamage(entity2, entity1);
+    }
+    if (entity1.state === 'attacking' && enitity2.state !== 'injured') {
+        entity1.attack();
+       this.calculateDamage(entity1, entity2);
+        
+        
+    }
+    
+    if (entity1.state === 'dead') {
         dead = entity1;
         perp = entity2;
         action = 'kill';
+        this.engageGossip(dead, perp, action);
     }
-    if (entity1.state === 'attacking') {
-        entity1.attack();
-        if (entity2.state !== 'dead') {
-            entity2.die();
-            entity2.body.enable = false;
-        }
-        perp = entity1;
+
+     if (entity2.state === 'dead') {
         dead = entity2;
+        perp = entity1;
         action = 'kill';
-    }
-    /**
-     * @todo(anand): Need to implement Game Over
-     */
-    if (dead && perp && action) {
-        if (perp.type === 'player') {
-            switch (dead.type) {
-                case 'npc':
-                    console.log('Killed an NPC :(');
-                    break;
-                case 'monster':
-                    this.player.score++;
-                    break;
-            }
-        }
-        
-        // let nearest = Map.nearest(this.player, 3, 256);
-        // nearest.forEach(function(p, i) {
-        //     if (p[0].state !== 'dead') {
-        //         let witness =p[0];
-        //         this.rippleGossip.createRumor(
-        //             witness,
-        //             dead,
-        //             perp,
-        //             action);
-        //     }
-        // }, this);
-        let nearest = Map.nearest(this.player, 3, 256);
-        let numWitnesses = Math.floor(Math.random() * nearest.length);
-        let witnesses = Sampling.sample_from_array(nearest, numWitnesses, false);
-        
-        if (!witnesses) return;
-        witnesses.forEach(function(p, i) {
-            if (p[0].state !== 'dead') {
-                let witness =p[0];
-                this.rippleGossip.createRumor(
-                    witness,
-                    dead,
-                    perp,
-                    action);
-            }
-        }, this);
-    }
+        this.engageGossip(dead, perp, action);
+    } 
+    
 }
 
 Play.populateBoard = function() {
@@ -755,6 +712,58 @@ Play.shutdown = function() {
         clearInterval(id);
     });
 };
+
+Play.calculateDamage = function(attacker, defender) {
+
+    //defender.injure();        This needs to be implemented in Entity.js so that there is a delay between getting hurt: 
+    defender.HP = defender.HP - (attacker.attackStat/defender.defenseStat);
+    if (defender.HP == 0){
+        defender.die();
+        defender.body.enable = false;
+    }
+}
+
+Play.engageGossip = function(dead, perp, action){
+    if (dead && perp && action) {
+        if (perp.type === 'player') {
+            switch (dead.type) {
+                case 'npc':
+                    console.log('Killed an NPC :(');
+                    break;
+                case 'monster':
+                    this.player.score++;
+                    break;
+            }
+        }
+        
+        // let nearest = Map.nearest(this.player, 3, 256);
+        // nearest.forEach(function(p, i) {
+        //     if (p[0].state !== 'dead') {
+        //         let witness =p[0];
+        //         this.rippleGossip.createRumor(
+        //             witness,
+        //             dead,
+        //             perp,
+        //             action);
+        //     }
+        // }, this);
+        let nearest = Map.nearest(this.player, 3, 256);
+        let numWitnesses = Math.floor(Math.random() * nearest.length);
+        let witnesses = Sampling.sample_from_array(nearest, numWitnesses, false);
+        
+        if (!witnesses) return;
+        witnesses.forEach(function(p, i) {
+            if (p[0].state !== 'dead') {
+                let witness =p[0];
+                this.rippleGossip.createRumor(
+                    witness,
+                    dead,
+                    perp,
+                    action);
+            }
+        }, this);
+    }
+}
 
 Phaser.Tilemap.prototype.setCollisionBetween = function(start, stop,
     collides, layer, recalculate) {
