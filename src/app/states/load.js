@@ -38,6 +38,9 @@ Load.preload = function() {
 	game.load.image('Cigar', 'assets/sprites/Inventory/cigar.png');
 	game.load.image('Canteen', 'assets/sprites/Inventory/canteen.png');
 	game.load.image('Tunic', 'assets/sprites/Inventory/tunic.png');
+	game.load.image('Pear', 'assets/sprites/Inventory/pear.png');
+	game.load.image('Iphone', 'assets/sprites/Inventory/iphone.png');
+	game.load.image('Taco', 'assets/sprites/Inventory/taco.png');
 
     game.load.spritesheet('enemy', 'assets/sprites/OrcEnemy.png', 64, 64, 273);
     game.load.spritesheet('woman', 'assets/sprites/woman.png', 64, 64, 273);
