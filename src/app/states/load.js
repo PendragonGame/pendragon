@@ -42,6 +42,7 @@ Load.preload = function() {
 	game.load.image('Iphone', 'assets/sprites/Inventory/iphone.png');
 	game.load.image('Taco', 'assets/sprites/Inventory/taco.png');
 	game.load.image('Handgun', 'assets/sprites/Inventory/handgun.png');
+	game.load.image('Cocaine', 'assets/sprites/Inventory/cocaine.png');
 
     game.load.spritesheet('enemy', 'assets/sprites/OrcEnemy.png', 64, 64, 273);
     game.load.spritesheet('woman', 'assets/sprites/woman.png', 64, 64, 273);
