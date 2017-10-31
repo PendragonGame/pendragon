@@ -1,4 +1,7 @@
 'use strict';
+/**
+ * @module states/Settings
+ */
 const ui = require('../ui/ui');
 let electron = require('electron');
 let window = electron.remote.getCurrentWindow();

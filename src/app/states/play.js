@@ -1,4 +1,7 @@
 'use strict';
+/**
+ * @module states/Play
+ */
 const UI = require('../ui/ui');
 const Player = require('../entity/Player');
 const NavMesh = require('../ai/Nav-mesh.js');
@@ -17,7 +20,7 @@ const _ = require('lodash');
 const npcBounds = [
     [new Phaser.Point(1397, 1344), new Phaser.Point(1684, 1472)],
     [new Phaser.Point(778, 1328), new Phaser.Point(1065, 1553)],
-    [new Phaser.Point(1660, 735), new Phaser.Point(1690, 1065)],
+    [new Phaser.Point(1486, 735), new Phaser.Point(1690, 1050)],
     [new Phaser.Point(1800, 2200), new Phaser.Point(3000, 2700)],
 ];
 
@@ -274,9 +277,7 @@ Play.create = function() {
      * Start autosaving 10 seconds after game starts
      */
     let i = setInterval(() => {
-        dataStore.autosaveEntity(this.player);
-        this.monsterGroup.forEachAlive(dataStore.autosaveEntity);
-        this.npcGroup.forEachAlive(dataStore.autosaveEntity);
+        this.entitiesGroup.forEachAlive(dataStore.autosaveEntity);
     }, 1000);
     timerIDs.push(i);
 
@@ -296,8 +297,7 @@ Play.create = function() {
          */
         this.generateMap();
         let totalEntities =
-            this.monsterGroup.total +
-            this.npcGroup.total;
+            this.entitiesGroup.total - 1;
         Map.discreteSamples(Math.floor(totalEntities/3)).forEach(function(p, i) {
             this.rippleGossip.triggerGossip(p);
         }, this);
@@ -319,6 +319,12 @@ Play.update = function() {
      * Debug Stuff
      */
     // game.debug.body(this.player);
+    // this.navMesh.navMesh.debugClear(); // Clears the overlay
+    //     this.navMesh.navMesh.debugDrawMesh({
+    //     drawCentroid: false, drawBounds: false,
+    //      drawNeighbors: false, drawPortals: false,
+    // });
+
 
     // day / night cycle
     if (this.dayTime) {
@@ -357,36 +363,40 @@ Play.update = function() {
     let tL2 = new Phaser.Point(3151, 568);
     let bR2 = new Phaser.Point(4452, 3565);
 
-    this.npcGroup.forEachAlive((e) => {
-        /**
-         * NOTE(anand):
-         * 
-         * At this point, the NPC can either attack the player
-         * or run away if they dont like the player
-         * or do nothing otherwise.
-         * 
-         * What I will do is this.
-         * 
-         * If Reputation is below 0 (it will always be >= -1):
-         * Generate a random number between -1 and 0. 
-         * - If the number lies between -1 and the reputation
-         *   - avoid the player
-         * - Else
-         *   - attck the player
-         * Else (Rep >= 0)
-         * - wander
-         */
-        let attitude = 'neutral';
-        if (e.reputation < 0) {
-            let decision = -Math.random();
-            if (decision > e.reputation) {
-                attitude = 'aggressive';
+    this.entitiesGroup.sort('y', Phaser.Group.SORT_ASCENDING);
+
+    this.entitiesGroup.forEach((e)=>{
+        if (!e) return;
+        if (e.state === 'dead') e.sendToBack();
+            if (e.type === 'npc') {
+            /**
+             * NOTE(anand):
+             * 
+             * At this point, the NPC can either attack the player
+             * or run away if they dont like the player
+             * or do nothing otherwise.
+             * 
+             * What I will do is this.
+             * 
+             * If Reputation is below 0 (it will always be >= -1):
+             * Generate a random number between -1 and 0. 
+             * - If the number lies between -1 and the reputation
+             *   - avoid the player
+             * - Else
+             *   - attck the player
+             * Else (Rep >= 0)
+             * - wander
+             */
+            let attitude = 'neutral';
+            if (e.reputation < 0) {
+                let decision = -Math.random();
+                if (decision > e.reputation) {
+                    attitude = 'aggressive';
+                }
             }
-        }
-        e.updateAI(this.navMesh, tL, bR, this.player, attitude);
-    });
-    this.monsterGroup.forEachAlive((e) => {
-        /**
+            e.updateAI(this.navMesh, tL, bR, this.player, attitude);
+        } else if (e.type === 'monster') {
+            /**
          * NOTE(anand):
          * 
          * For monster, I will attack regardless,
@@ -399,7 +409,9 @@ Play.update = function() {
             e.slowSprint = e.sprintSpeed;
             e.sprintSpeed = 2 * e.slowSprint;
         }
-        e.updateAI(this.navMesh, tL2, bR2, this.player, attitude);
+        e.updateAI(this.navMesh,
+             tL2, bR2, this.player, attitude);
+        }
     });
 
     /**
@@ -454,22 +466,20 @@ Play.update = function() {
      * 
      * @todo(anand): Only do this check for the nearest 4 neighbors.
      */
-    let nearest4 = Map.nearest(this.player);
-    nearest4.forEach((entity) => {
-        // console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
-        if ((this.player.y + this.player.height) >
-         (entity[0].y + entity[0].height)) {
-            game.world.bringToTop(this.player);
-            // console.log('player on top');
-        } else {
-            // console.log('entity on top');
-            game.world.bringToTop(entity[0]);
-        }
-    });
+    // let nearest4 = Map.nearest(this.player);
+    // nearest4.forEach((entity) => {
+    //     // console.log(JSON.stringify([entity[0].trueXY(), entity[1]]));
+    //     if ((this.player.y + this.player.height) >
+    //      (entity[0].y + entity[0].height)) {
+    //         game.world.bringToTop(this.player);
+    //         // console.log('player on top');
+    //     } else {
+    //         // console.log('entity on top');
+    //         game.world.bringToTop(entity[0]);
+    //     }
+    // });
 
-    let totalEntities =
-        this.monsterGroup.total +
-        this.npcGroup.total;
+    let totalEntities = this.entitiesGroup.total -1;
     let repNum = 0;
     let repSum = 0;
     Map.nearest(this.player, totalEntities, game.camera.width / 2)
@@ -601,10 +611,12 @@ function entityCollision(entity1, entity2) {
 }
 
 Play.populateBoard = function() {
+    this.entitiesGroup = game.add.group();
+    this.monsterGroup = game.add.group();
+    this.npcGroup = game.add.group();
     /**
      * Generate a factory and a few monsters
      */
-    this.monsterGroup = game.add.group();
     this.monsterFactory = new Factory(Monster, this.monsterGroup,
         monsterBounds, 30);
     for (let i = 0; i < 30; i++) {
@@ -613,11 +625,10 @@ Play.populateBoard = function() {
          */
         this.monsterFactory.next(null, null, 'enemy');
     }
-
+    this.monsters = this.monsterGroup.getAll();
     /**
      * Generate a factory and a few NPCs
      */
-    this.npcGroup = game.add.group();
     this.npcFactory = new Factory(NPC, this.npcGroup, npcBounds, 40);
     for (let i = 0; i < 40; i++) {
         /**
@@ -625,7 +636,7 @@ Play.populateBoard = function() {
          */
         this.npcFactory.next(null, null, 'woman');
     }
-
+    this.npcs = this.npcGroup.getAll();
     /**
      * Create the Player, setting location and naming as 'player'.
      * Giving him Physics and allowing collision with the world boundaries.
@@ -637,12 +648,9 @@ Play.populateBoard = function() {
     /**
      * Add all Entities to the same group.
      */
-    this.entitiesGroup = game.add.group();
-    this.entitiesGroup.addMultiple([
-        this.player,
-        this.npcGroup,
-        this.monsterGroup,
-    ]);
+    this.entitiesGroup.addMultiple(this.monsterGroup.getAll());
+    this.entitiesGroup.addMultiple(this.npcGroup.getAll());
+    this.entitiesGroup.add(this.player);
 };
 
 Play.loadBoard = function(data) {
@@ -666,7 +674,7 @@ Play.loadBoard = function(data) {
             E.deserialize(e);
         }
     }
-
+    this.monsters = this.monsterGroup.getAll();
     /**
      * Generate a factory and a few NPCs
      */
@@ -683,6 +691,7 @@ Play.loadBoard = function(data) {
             E.deserialize(e);
         }
     }
+    this.npcs = this.npcGroup.getAll();
 
     /**
      * Create the Player, setting location and naming as 'player'.
@@ -695,42 +704,38 @@ Play.loadBoard = function(data) {
      * Add all Entities to the same group.
      */
     this.entitiesGroup = game.add.group();
-    this.entitiesGroup.addMultiple([
-        this.player,
-        this.npcGroup,
-        this.monsterGroup,
-    ]);
+    this.entitiesGroup.addMultiple(this.monsterGroup.getAll());
+    this.entitiesGroup.addMultiple(this.npcGroup.getAll());
+    this.entitiesGroup.add(this.player);
 };
 
 
 Play.generateMap = function() {
     // setTimeout(() => {
-    let entities = [];
+    this.entitiesGroup.removeChild(this.player);
+    let entities = this.entitiesGroup.getAll();
+    this.entitiesGroup.add(this.player);
     // entities.push(this.player);
     // I see no point in adding the player
-    this.monsterGroup.forEachAlive(function(monster) {
-        entities.push(monster);
-    });
-    this.npcGroup.forEachAlive(function(npc) {
-        entities.push(npc);
-    });
+    // this.monsterGroup.forEachAlive(function(monster) {
+    //     entities.push(monster);
+    // });
+    // this.npcGroup.forEachAlive(function(npc) {
+    //     entities.push(npc);
+    // });
     Map.create(entities);
     // }, 1500);
 };
 
 Play.autosaveData = function() {
     setTimeout(() => {
-        dataStore.autosaveEntity(this.player);
-        this.monsterGroup.forEachAlive(dataStore.autosaveEntity);
-        this.npcGroup.forEachAlive(dataStore.autosaveEntity);
+        this.entitiesGroup.forEachAlive(dataStore.autosaveEntity);
     }, 1000);
 };
 
 Play.manualSaveData = function() {
     const self = this;
-    dataStore.manualSaveEntity(sel.player);
-    self.monsterGroup.forEachAlive(dataStore.manualSaveEntity);
-    self.npcGroup.forEachAlive(dataStore.manualSaveEntity);
+    self.entitiesGroup.forEachAlive(dataStore.autosaveEntity);
 };
 
 /**
@@ -758,55 +763,55 @@ Play.shutdown = function() {
 
 Phaser.Tilemap.prototype.setCollisionBetween = function(start, stop,
     collides, layer, recalculate) {
-       if (collides === undefined) {
-collides = true;
-}
-       if (layer === undefined) {
-layer = this.currentLayer;
-}
-       if (recalculate === undefined) {
-recalculate = true;
-}
+    if (collides === undefined) {
+        collides = true;
+    }
+    if (layer === undefined) {
+        layer = this.currentLayer;
+    }
+    if (recalculate === undefined) {
+        recalculate = true;
+    }
 
-       layer = this.getLayer(layer);
+    layer = this.getLayer(layer);
 
-       for (let index = start; index <= stop; index++) {
-           if (collides) {
-               this.collideIndexes.push(index);
-           } else {
-               let i = this.collideIndexes.indexOf(index);
+    for (let index = start; index <= stop; index++) {
+        if (collides) {
+            this.collideIndexes.push(index);
+        } else {
+            let i = this.collideIndexes.indexOf(index);
 
-               if (i > -1) {
-                   this.collideIndexes.splice(i, 1);
-               }
-           }
-       }
+            if (i > -1) {
+                this.collideIndexes.splice(i, 1);
+            }
+        }
+    }
 
-       for (let y = 0; y < this.layers[layer].height; y++) {
-           for (let x = 0; x < this.layers[layer].width; x++) {
-               let tile = this.layers[layer].data[y][x];
+    for (let y = 0; y < this.layers[layer].height; y++) {
+        for (let x = 0; x < this.layers[layer].width; x++) {
+            let tile = this.layers[layer].data[y][x];
 
-               if (tile && tile.index >= start && tile.index <= stop) {
-                   if (collides) {
-                       tile.setCollision(true, true, true, true);
-                   } else {
-                       tile.resetCollision();
-                   }
+            if (tile && tile.index >= start && tile.index <= stop) {
+                if (collides) {
+                    tile.setCollision(true, true, true, true);
+                } else {
+                    tile.resetCollision();
+                }
 
-                   tile.faceTop = collides;
-                   tile.faceBottom = collides;
-                   tile.faceLeft = collides;
-                   tile.faceRight = collides;
-               }
-           }
-       }
+                tile.faceTop = collides;
+                tile.faceBottom = collides;
+                tile.faceLeft = collides;
+                tile.faceRight = collides;
+            }
+        }
+    }
 
-       if (recalculate) {
-           //  Now re-calculate interesting faces
-           this.calculateFaces(layer);
-       }
+    if (recalculate) {
+        //  Now re-calculate interesting faces
+        this.calculateFaces(layer);
+    }
 
-       return layer;
-   };
+    return layer;
+};
 
 module.exports = Play;
