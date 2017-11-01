@@ -610,7 +610,7 @@ Play.create = function() {
     this.controlText.visible = false;
     // add a save button
     this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
-         200, '  Save  ', null, ()=>{
+         100, '  Save  ', null, ()=>{
             console.log('Manually saving');
             this.pauseMenu[0].text.text = '  Save ' +
              String.fromCodePoint(0x1F60A);
@@ -621,7 +621,7 @@ Play.create = function() {
          }, '4.5em' ));
     // add a settings button
     this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
-         300, window.isFullScreen() ? 'Windowed' : 'Fullscreen',
+         200, window.isFullScreen() ? 'Windowed' : 'Fullscreen',
           null, ()=>{
             console.log('fulscreen toggled');
             game.paused = false;
@@ -640,14 +640,14 @@ Play.create = function() {
          }, '4.5em' ));
     // add a menu button
     this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
-        400, 'Main Menu', null, ()=>{
+        300, 'Main Menu', null, ()=>{
            game.input.keyboard.onDownCallback = null;
            game.state.start('Menu');
            game.paused = false;
         }, '4.5em' ));
     //add resume button
     this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
-        500, 'Resume', null, ()=>{
+        400, 'Resume', null, ()=>{
         this.pauseGame();
         }, '4.5em' ));
     // hide the pause menu
