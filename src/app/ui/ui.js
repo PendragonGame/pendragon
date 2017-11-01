@@ -24,6 +24,7 @@ function MenuButton(x, y, text, key, func, fontSize = '3em') {
     this.text.font = 'Press Start 2P';
     this.text.fill = '#000000';
     this.text.fontSize = fontSize;
+    this.orignalSize = fontSize;
     // the button
     this.button = game.add.button(
         x, y, null, func, this, 2, 1, 0);
@@ -38,7 +39,7 @@ function MenuButton(x, y, text, key, func, fontSize = '3em') {
     // hover off effect
     this.button.onInputOut.add(function() {
         this.text.setShadow(0, 0, 'rgba(0,0,0,0.5)', 0);
-        this.text.fontSize = parseFloat(this.text.fontSize)-.5 + 'em';
+        this.text.fontSize = this.orignalSize;
         // this.text.fill = '#000000';
     }, this);
     this.button.fixedToCamera = true;
