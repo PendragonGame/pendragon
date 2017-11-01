@@ -24,6 +24,7 @@ function NPC(x, y, key) {
     this.maxHP = 100;
     this.HP = 100;
     this.sprintSpeed = 130;
+	this.currency = 8;
     /**
      * Type of Entity
      */

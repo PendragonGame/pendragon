@@ -23,6 +23,11 @@ function Player(x, y, key) {
     this.HP = 100;
     this.score = 0;
     this.daysSurvived = 1;
+	
+	this.weapons = ['Dagger', 'Handgun'];
+	this.food = ['Apple', 'Pear', 'Mutton', 'Taco', 'Carrot', 'Mutton',
+				 'Apple', 'Carrot', 'Mutton', 'Apple', 'Taco'];
+	this.misc = ['Pot', 'Book', 'Cigar', 'Iphone', 'Cocaine'];
 
     this.type = 'player';
     this.converse('Press Escape for help');
