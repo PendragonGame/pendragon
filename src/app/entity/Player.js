@@ -20,7 +20,7 @@ function Player(x, y, key) {
     this.HP = 100;
     this.score = 0;
     this.daysSurvived = 1;
-    this.defenseStat = 5;
+    this.defenseStat = 20;
 
     this.type = 'player';
     this.converse('Press Escape for help');

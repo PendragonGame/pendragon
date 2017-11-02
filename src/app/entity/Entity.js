@@ -274,7 +274,8 @@ Entity.prototype.attack = function() {
 Entity.prototype.injure = function() {
     self = this;
     this.state = 'injured';
-    //need to implement animation.
+    
+    
 }
 
 Entity.prototype.die = function() {

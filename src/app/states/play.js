@@ -312,7 +312,8 @@ Play.update = function() {
             game.state.start('Game Over');
         }, 2000);
     }
-    while (this.fullHealthBar.width < 146) this.fullHealthBar.width += 1;
+    this.fullHealthBar.width = (146 * (this.player.HP/this.player.maxHP));
+    while (this.fullHealthBar.width < (146* (this.player.HP/this.player.maxHP)))  this.fullHealthBar.width += 1;
     this.scoreLabel.text = 'Score: ' + this.player.score;
     this.dayLabel.text = 'Day ' + this.player.daysSurvived;
     /**
@@ -530,15 +531,20 @@ function entityCollision(entity1, entity2) {
     let dead = null;
     let perp = null;
     let action = '';
-    if (entity2.state === 'attacking' && enitity1.state !== 'injured') {
+
+    if (entity2.state === 'attacking') {
         entity2.attack();
-        this.calculateDamage(entity2, entity1);
+        let f2 = entity2.animations.currentAnim.frame;
+        if (f2 == 158 || f2 == 184 || f2 == 171 || f2 == 197){           //if statement should be replaced eventually with an entity state called 'injured'
+            this.calculateDamage(entity2, entity1);
+        }
     }
-    if (entity1.state === 'attacking' && enitity2.state !== 'injured') {
+    if (entity1.state === 'attacking') {
         entity1.attack();
-       this.calculateDamage(entity1, entity2);
-        
-        
+        let f1 = entity1.animations.currentAnim.frame;
+        if (f1 == 158 || f1 == 184 || f1 == 171 || f1 == 197){           //if statement should be replaced eventually with an entity state called 'injured'
+            this.calculateDamage(entity1, entity2);
+        }
     }
     
     if (entity1.state === 'dead') {
@@ -714,8 +720,6 @@ Play.shutdown = function() {
 };
 
 Play.calculateDamage = function(attacker, defender) {
-
-    //defender.injure();        This needs to be implemented in Entity.js so that there is a delay between getting hurt: 
     defender.HP = defender.HP - (attacker.attackStat/defender.defenseStat);
     if (defender.HP == 0){
         defender.die();
