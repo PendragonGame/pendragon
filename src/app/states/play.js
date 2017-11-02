@@ -254,6 +254,15 @@ Play.create = function() {
     this.map.setCollisionBetween(1, 10000, true, this.blockLayer);
     this.map.setCollisionBetween(1, 10000, true, this.blockOverlap);
 
+    /*Starts music when the player hits the play button.
+    The music will loop indefinitely and I adjusted the volume
+    down a little bit from the original
+    Music stops when the player dies and the gameover screen pops up
+    Mike Fortin*/
+    this.mainMusic = game.add.audio('main_music');
+    this.mainMusic.loop = true;
+    this.mainMusic.volume = .40;
+    this.mainMusic.play();
 
     /**
      * Day night cycle
@@ -697,6 +706,7 @@ Play.update = function() {
         game.dayCount = this.player.daysSurvived;
         setTimeout(() => {
             game.state.start('Game Over');
+            this.mainMusic.pause(); //Pauses the main music at the gameover screen
         }, 2000);
     }
     while (this.fullHealthBar.width < 146) this.fullHealthBar.width += 1;

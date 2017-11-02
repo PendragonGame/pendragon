@@ -1,18 +1,18 @@
 /**
- * 
+ *
  * @module ui/UI
  */
 /**
- * A basic text button. 
+ * A basic text button.
  * @param {number} x
- * @param {number} y 
- * @param {string} text 
+ * @param {number} y
+ * @param {string} text
  * @param {string} key - object associated with button
  * @param {function} func - on click callback function
  * @param {string} fontSize
  * @property {Phaser.Text} text - modify this to change the text.
  * @property {Phaser.Button} button - modify this to change the button.
- * 
+ *
  * @constructor MenuButton
  */
 function MenuButton(x, y, text, key, func, fontSize = '3em') {
@@ -69,7 +69,7 @@ MenuButton.prototype.align = function(a) {
 };
 
 /**
- * Hide a button and disable it 
+ * Hide a button and disable it
  * @return {any} returns itself
  */
 MenuButton.prototype.hide = function() {
@@ -79,7 +79,7 @@ MenuButton.prototype.hide = function() {
 };
 
 /**
- * Reveal the button and enable it 
+ * Reveal the button and enable it
  * @return {any} returns itself
  */
 MenuButton.prototype.reveal = function() {
@@ -92,7 +92,7 @@ MenuButton.prototype.reveal = function() {
 
 /**
  * Cyclable list of buttons.
- * @param {*} saves  array of timestamps 
+ * @param {*} saves  array of timestamps
  * @param {*} func   function for buttons
  * @constructor ButtonList
  */

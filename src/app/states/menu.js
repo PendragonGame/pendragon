@@ -40,8 +40,18 @@ Menu.create = function() {
         game.camera.width/2, this.load.button.y + 100,
         'Settings', null, ()=> {
             game.state.start('Settings');
-        }, '5em'
-    );
+        }, '5em');
+    //This code gives attribution to the musician on the main menu screen for all to see.
+    //This is required under the musics license.
+    let musicAttributionText = game.add.text(game.camera.width/2, 750,
+      'Music: "He Plays Me The Best Rhythms" by Rolemusic. Music protected under CC BY-NC-SA 3.0 US' +
+      '\nLicense: https://tinyurl.com/2qn665. Music: https://tinyurl.com/y74lx4cv' +
+      '\nDisclaimer: This music can only be used under the terms as identified in the above license');
+      musicAttributionText.anchor.setTo(.5, .5);
+      musicAttributionText.font = 'Press Start 2P';
+      musicAttributionText.fill = '#000000';
+      musicAttributionText.fontSize = '.75em';
+      musicAttributionText.fixedToCamera = true;
 };
 
 Menu.update = function() {
