@@ -1,5 +1,9 @@
 'use strict';
 
+/**
+ * @module entity/Entity
+ */
+
 const _ = require('lodash');
 const uuid = require('../util/uuid');
 
@@ -28,7 +32,7 @@ const DIRECTIONS = ['up', 'right', 'down', 'left'];
  * @param {number} x - The x coordinate of `Entity` on the canvas
  * @param {number} y - The y coordinate of `Entity` on the canvas
  * @param {string} key - The key to the loaded spritesheet
- * 
+ * @constructor Entity
  * @see Phaser.Sprite
  */
 function Entity(x, y, key) {

@@ -1,5 +1,7 @@
 'use strict';
-
+/**
+ * @module entity/NPC
+ */
 let Entity = require('./Entity');
 
 
@@ -9,6 +11,7 @@ let Entity = require('./Entity');
  * @param {any} x 
  * @param {any} y 
  * @param {any} key 
+ * @constructor NPC
  */
 function NPC(x, y, key) {
     Entity.call(this, x, y, key);
@@ -21,6 +24,7 @@ function NPC(x, y, key) {
     this.maxHP = 100;
     this.HP = 100;
     this.sprintSpeed = 130;
+	this.currency = 8;
     /**
      * Type of Entity
      */
