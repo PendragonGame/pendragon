@@ -1,12 +1,15 @@
 'use strict';
-
+/**
+ * @module entity/Player
+ */
 let Entity = require('./Entity');
 /**
  * 
  * 
  * @param {any} x 
  * @param {any} y 
- * @param {any} key 
+ * @param {any} key
+ * @constructor Player
  */
 function Player(x, y, key) {
     Entity.call(this, x, y, key);
@@ -21,6 +24,11 @@ function Player(x, y, key) {
     this.score = 0;
     this.daysSurvived = 1;
     this.defenseStat = 20;
+	
+	this.weapons = ['Dagger', 'Handgun'];
+	this.food = ['Apple', 'Pear', 'Mutton', 'Taco', 'Carrot', 'Mutton',
+				 'Apple', 'Carrot', 'Mutton', 'Apple', 'Taco'];
+	this.misc = ['Pot', 'Book', 'Cigar', 'Iphone', 'Cocaine'];
 
     this.type = 'player';
     this.converse('Press Escape for help');
