@@ -114,6 +114,16 @@ Map.sampleRandom = function(max) {
 };
 
 /**
+ * Reset the map
+ *
+ * 
+ */
+Map.reset = function() {
+    tree = null;
+    list = {};
+}
+
+/**
  * Get Entity with ID
  * 
  * @param {string} id - ID of `Entity`

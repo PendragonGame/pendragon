@@ -1155,6 +1155,7 @@ Play.shutdown = function() {
     if (this.rippleGossip) {
         this.rippleGossip.kill();
     }
+    Map.reset();
     timerIDs.forEach((id) => {
         clearInterval(id);
     });
