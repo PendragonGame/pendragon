@@ -435,7 +435,7 @@ Entity.prototype.learnInfo = function(rumor) {
     }
 };
 
-Entity.prototype.converse = function(text) {
+Entity.prototype.converse = function(text){
     let chat = game.add.text(32, 0, text);
     chat.anchor.setTo(0.5);
     chat.font = 'Press Start 2P';

@@ -11,6 +11,7 @@ const Factory = require('../factory/Factory');
 const dataStore = require('../util/data');
 const Map = require('../util/Map');
 const Ripple = require('../ripple/engine');
+const Item = require('../item/Item.js');
 let electron = require('electron');
 let window = electron.remote.getCurrentWindow();
 
@@ -193,51 +194,88 @@ Play.pauseGame = function() {
  * opens/closes the inventory
  */
 let openTab = 'food';
+let numPages = 2;
+let currentPage = 1;
+
 Play.toggleInventory = function() {
 	//This if statement prevents opening the inventory while the game is paused.
 	if (game.paused == true && this.invBg.visible == false){}
 	else{
-    game.paused ? game.paused = false : game.paused = true;
-    if (game.paused) {
-        // reveal inventory
-		for (let i = 0; i < this.inventory.length; i++){
-			this.inventory[i].visible = true;
-		}
-		for (let j = 0; j < this.inventoryButtons.length; j++){
-			this.inventoryButtons[j].reveal();
-		}
-		for (let k = 0; k < this.inventoryImages.length; k++){
-			switch (openTab){
-				case ('food'):
-					if (k < this.player.food.length) this.inventoryImages[k].visible = true;
-					break;
-				case ('weapons'):
-					if (k < this.player.weapons.length) this.inventoryImages[k].visible = true;
-					break;
-				case ('misc'):
-					if (k < this.player.misc.length) this.inventoryImages[k].visible = true;
-					break;
+		game.paused ? game.paused = false : game.paused = true;
+		if (game.paused) {
+			// reveal inventory
+			this.currencyText.text = 'Currency: '+this.player.currency;
+			for (let i = 0; i < this.inventory.length; i++){
+				this.inventory[i].visible = true;
 			}
+			for (let j = 0; j < this.inventoryButtons.length; j++){
+				this.inventoryButtons[j].reveal();
+			}	
+			currentPage = 1;
+			for (let k = 0; k < this.inventoryImages.length; k++){
+				switch (openTab){
+					case ('food'):
+						if (k < this.player.food.length) {
+							this.inventoryList[k].visible = true;
+							this.inventoryList[k].text = '- '+this.player.food[k];
+							this.inventoryImages[k].visible = true;
+							this.inventoryImages[k].loadTexture(this.player.food[k]);
+							numPages = Math.floor(this.player.food.length / 5) + 1;
+							if (this.player.food.length % 5 == 0) numPages--;
+							if (numPages == 0) numPages = 1;
+							this.pageText.text = currentPage+'/'+numPages;
+						} else this.inventoryImages[k].visible = false;
+						break;
+					case ('weapons'):
+						if (k < this.player.weapons.length) {
+							this.inventoryList[k].visible = true;
+							this.inventoryList[k].text = '- '+this.player.weapons[k];
+							this.inventoryImages[k].visible = true;
+							this.inventoryImages[k].loadTexture(this.player.weapons[k]);
+							numPages = Math.floor(this.player.weapons.length / 5) + 1;
+							if (this.player.weapons.length % 5 == 0) numPages--;
+							if (numPages == 0) numPages = 1;
+							this.pageText.text = currentPage+'/'+numPages;
+						} else this.inventoryImages[k].visible = false;
+						break;
+					case ('misc'):
+						if (k < this.player.misc.length) {
+							this.inventoryList[k].visible = true;
+							this.inventoryList[k].text = '- '+this.player.misc[k];
+							this.inventoryImages[k].visible = true;
+							this.inventoryImages[k].loadTexture(this.player.misc[k]);
+							numPages = Math.floor(this.player.misc.length / 5) + 1;
+							if (this.player.misc.length % 5 == 0) numPages--;
+							if (numPages == 0) numPages = 1;
+							this.pageText.text = currentPage+'/'+numPages;
+						} else this.inventoryImages[k].visible = false;
+						break;
+				}
+			}
+			this.invBg.visible = true;
+		} else {
+			// hide the inventory
+			for (let i = 0; i < this.inventory.length; i++){
+				this.inventory[i].visible = false;
+			}
+			for (let j = 0; j < this.inventoryButtons.length; j++){
+				this.inventoryButtons[j].hide();
+			}
+			for (let k = 0; k < this.inventoryImages.length; k++){
+				this.inventoryImages[k].visible = false;
+			}
+			for (let l = 0; l < this.inventoryList.length; l++){
+				this.inventoryList[l].visible = false;
+				this.inventoryList[l].text = '';
+			}
+			this.invBg.visible = false;
 		}
-		this.invBg.visible = true;
-    } else {
-        // hide the inventory
-        for (let i = 0; i < this.inventory.length; i++){
-			this.inventory[i].visible = false;
-		}
-		for (let j = 0; j < this.inventoryButtons.length; j++){
-			this.inventoryButtons[j].hide();
-		}
-		for (let k = 0; k < this.inventoryImages.length; k++){
-			this.inventoryImages[k].visible = false;
-		}
-		this.invBg.visible = false;
-    }
 	}
 };
 
 Play.create = function() {
     // this.player.bringToTop();
+	this.itemGroup = game.add.group();
     /**
      * Check if we should load game.
      */
@@ -274,7 +312,9 @@ Play.create = function() {
 	this.inventoryList = [];
 	this.inventoryImages = [];
 	
-	//inventory background
+	/**
+	* Dim background layer from Inventory Window.
+	*/
 	this.invBg = game.add.graphics();
     this.invBg.beginFill(0x0);
     this.invBg.alpha = .2;
@@ -282,7 +322,10 @@ Play.create = function() {
     this.invBg.drawRect(0, 0, game.camera.width, game.camera.height);
     this.invBg.fixedToCamera = true;
 	
-	//inventory window
+	/**
+	* Main Inventory Window. This is the colored portion along with it's black outline.
+	* This is also the inner square with the button backgrounds.
+	*/
 	this.invWindow = game.add.graphics();
     this.invWindow.visible = false;
 	this.invWindow.beginFill(0x0);
@@ -301,9 +344,11 @@ Play.create = function() {
 	this.invWindow.drawRect(game.camera.width / 4 + 13 + labelWidth + 3, game.camera.height * 0.33 - 47, labelWidth, 47);
 	this.invWindow.drawRect(game.camera.width / 4 + 13 + (2 * (labelWidth + 3)), game.camera.height * 0.33 - 47, labelWidth, 47);
 	
-	//Creating text + image areas
+	/*
+	* Creating the text and image slots (5 of them).
+	*/
 	for (let j = 0; j < 5; j++){
-		this.temp = game.add.text(game.camera.width / 4 + 85, (j * 60) + game.camera.height * 0.33 + 55, 'TEST');
+		this.temp = game.add.text(game.camera.width / 4 + 85, (j * 60) + game.camera.height * 0.33 + 55, '');
 		
 		this.temp.font = 'Press Start 2P';
 		this.temp.fill = '#ffff00';
@@ -311,16 +356,14 @@ Play.create = function() {
 		this.temp.strokeThickness = 5;
 		this.temp.fontSize = '2em';
 		this.temp.anchor.setTo(0, .5);
-		this.temp.align = 'left';
 		this.temp.fixedToCamera = true;
 		this.temp.visible = false;
 		
-		this.temp1 = game.add.sprite(game.camera.width / 4 + 50, (j * 60) + game.camera.height * 0.33 + 40, 'Apple');
+		this.temp1 = game.add.sprite(game.camera.width / 4 + 50, (j * 60) + game.camera.height * 0.33 + 40, '');
 		this.temp1.fixedToCamera = true;
 		this.temp1.visible = false;
-		this.temp1.width = 21;
-		this.temp1.height = 21;
-		
+		this.temp1.width = 30;
+		this.temp1.height = 30;
 		
 		this.inventoryList.push(this.temp);
 		this.inventoryImages.push(this.temp1);
@@ -330,15 +373,12 @@ Play.create = function() {
 			this.inventoryList[j].text = "- " + this.player.food[j];
 			this.inventoryImages[j].loadTexture(this.player.food[j], 0, false);
 		}
-		else {
-			this.inventoryList[j].text = '';
-		}
+		this.inventoryList[j].visible = false;
 		this.inventoryImages[j].visible = false;
 	}
 	
-	let numPages = Math.floor(this.player.food.length / 5) + 1;
 	if (this.player.food.length % 5 == 0) numPages--;
-	let currentPage = 1;
+	if (numPages == 0) numPages = 1;
 	this.pageText = game.add.text(game.camera.width / 2, game.camera.height * 0.75 + 20, currentPage+'/'+numPages);
 	this.pageText.font = 'Press Start 2P';
     this.pageText.fill = '#ffff00';
@@ -346,7 +386,6 @@ Play.create = function() {
     this.pageText.strokeThickness = 5;
     this.pageText.fontSize = '2em';
     this.pageText.anchor.setTo(.5, .5);
-    this.pageText.align = 'center';
     this.pageText.fixedToCamera = true;
     this.pageText.visible = false;
 		 
@@ -360,43 +399,29 @@ Play.create = function() {
 			//Repopulates the current 5 item slots
 			for (let a = 0; a < this.inventoryList.length; a++){
 				let nextIndex = (currentPage - 1) * 5 + a;
+				if ((openTab === 'food') && (nextIndex < this.player.food.length) ||
+					(openTab === 'weapons') && (nextIndex < this.player.weapons.length) ||
+					(openTab === 'misc') && (nextIndex < this.player.misc.length)){
 					this.inventoryList[a].visible = true;
 					this.inventoryImages[a].visible = true;
 					switch (openTab){
 						case ('food'):
-							if (nextIndex < this.player.food.length){
-								this.inventoryList[a].visible = true;
-								this.inventoryImages[a].visible = true;
-								this.inventoryImages[a].loadTexture(this.player.food[nextIndex]);
-								this.inventoryList[a].text = '- '+this.player.food[nextIndex];
-							} else {
-								this.inventoryList[a].visible = false;
-								this.inventoryImages[a].visible = false;
-							}
+							this.inventoryImages[a].loadTexture(this.player.food[nextIndex]);
+							this.inventoryList[a].text = '- '+this.player.food[nextIndex];
 							break;
 						case ('weapons'):
-							if (nextIndex < this.player.weapons.length){
-								this.inventoryList[a].visible = true;
-								this.inventoryImages[a].visible = true;
-								this.inventoryImages[a].loadTexture(this.player.weapons[nextIndex]);
-								this.inventoryList[a].text = '- '+this.player.weapons[nextIndex];
-							} else {
-								this.inventoryList[a].visible = false;
-								this.inventoryImages[a].visible = false;
-							}
+							this.inventoryImages[a].loadTexture(this.player.weapons[nextIndex]);
+							this.inventoryList[a].text = '- '+this.player.weapons[nextIndex];
 							break;
 						case ('misc'):
-							if (nextIndex < this.player.misc.length){
-								this.inventoryList[a].visible = true;
-								this.inventoryImages[a].visible = true;
-								this.inventoryImages[a].loadTexture(this.player.misc[nextIndex]);
-								this.inventoryList[a].text = '- '+this.player.misc[nextIndex];
-							} else {
-								this.inventoryList[a].visible = false;
-								this.inventoryImages[a].visible = false;
-							}
+							this.inventoryImages[a].loadTexture(this.player.misc[nextIndex]);
+							this.inventoryList[a].text = '- '+this.player.misc[nextIndex];
 							break;
 					}
+				} else {
+					this.inventoryList[a].visible = false;
+					this.inventoryImages[a].visible = false;
+				}
 			}
          }, '1.5em' ));
 		 
@@ -410,43 +435,29 @@ Play.create = function() {
 			//Repopulates the current 5 item slots
 			for (let a = 0; a < this.inventoryList.length; a++){
 				let nextIndex = (currentPage - 1) * 5 + a;
+				if ((openTab === 'food') && (nextIndex < this.player.food.length) ||
+					(openTab === 'weapons') && (nextIndex < this.player.weapons.length) ||
+					(openTab === 'misc') && (nextIndex < this.player.misc.length)){
 					this.inventoryList[a].visible = true;
 					this.inventoryImages[a].visible = true;
 					switch (openTab){
 						case ('food'):
-							if (nextIndex < this.player.food.length){
-								this.inventoryList[a].visible = true;
-								this.inventoryImages[a].visible = true;
-								this.inventoryImages[a].loadTexture(this.player.food[nextIndex]);
-								this.inventoryList[a].text = '- '+this.player.food[nextIndex];
-							} else {
-								this.inventoryList[a].visible = false;
-								this.inventoryImages[a].visible = false;
-							}
+							this.inventoryImages[a].loadTexture(this.player.food[nextIndex]);
+							this.inventoryList[a].text = '- '+this.player.food[nextIndex];
 							break;
 						case ('weapons'):
-							if (nextIndex < this.player.weapons.length){
-								this.inventoryList[a].visible = true;
-								this.inventoryImages[a].visible = true;
-								this.inventoryImages[a].loadTexture(this.player.weapons[nextIndex]);
-								this.inventoryList[a].text = '- '+this.player.weapons[nextIndex];
-							} else {
-								this.inventoryList[a].visible = false;
-								this.inventoryImages[a].visible = false;
-							}
+							this.inventoryImages[a].loadTexture(this.player.weapons[nextIndex]);
+							this.inventoryList[a].text = '- '+this.player.weapons[nextIndex];
 							break;
 						case ('misc'):
-							if (nextIndex < this.player.misc.length){
-								this.inventoryList[a].visible = true;
-								this.inventoryImages[a].visible = true;
-								this.inventoryImages[a].loadTexture(this.player.misc[nextIndex]);
-								this.inventoryList[a].text = '- '+this.player.misc[nextIndex];
-							} else {
-								this.inventoryList[a].visible = false;
-								this.inventoryImages[a].visible = false;
-							}
+							this.inventoryImages[a].loadTexture(this.player.misc[nextIndex]);
+							this.inventoryList[a].text = '- '+this.player.misc[nextIndex];
 							break;
 					}
+				} else {
+					this.inventoryList[a].visible = false;
+					this.inventoryImages[a].visible = false;
+				}
 			}
          }, '1.5em' ));
 	
@@ -459,6 +470,7 @@ Play.create = function() {
 			currentPage = 1;
 			numPages = Math.floor(this.player.food.length / 5) + 1;
 			if (this.player.food.length % 5 == 0) numPages--;
+			if (numPages == 0) numPages = 1;
 			this.pageText.text = currentPage+'/'+numPages;
 			this.invWindow.beginFill(0xc3c3c3);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
@@ -467,7 +479,7 @@ Play.create = function() {
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + (2 * (labelWidth + 3)), game.camera.height * 0.33, labelWidth, 3);
 			for (let x = 0; x < 5; x++) {
 				if (x >= this.player.food.length) {
-					this.inventoryList[x].text = '';
+					this.inventoryList[x].visible = false;
 					this.inventoryImages[x].visible = false;
 				}
 				else {
@@ -486,6 +498,7 @@ Play.create = function() {
 			currentPage = 1;
 			numPages = Math.floor(this.player.weapons.length / 5) + 1;
 			if (this.player.weapons.length % 5 == 0) numPages--;
+			if (numPages == 0) numPages = 1;
 			this.pageText.text = currentPage+'/'+numPages;
             this.invWindow.beginFill(0x0);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
@@ -495,7 +508,7 @@ Play.create = function() {
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + (2 * (labelWidth + 3)), game.camera.height * 0.33, labelWidth, 3);
 			for (let x = 0; x < 5; x++) {
 				if (x >= this.player.weapons.length) {
-					this.inventoryList[x].text = '';
+					this.inventoryList[x].visible = false;
 					this.inventoryImages[x].visible = false;
 				}
 				else {
@@ -514,6 +527,7 @@ Play.create = function() {
 			currentPage = 1;
 			numPages = Math.floor(this.player.misc.length / 5) + 1;
 			if (this.player.misc.length % 5 == 0) numPages--;
+			if (numPages == 0) numPages = 1;
 			this.pageText.text = currentPage+'/'+numPages;
 			this.invWindow.beginFill(0x0);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
@@ -522,7 +536,7 @@ Play.create = function() {
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + (2 * (labelWidth + 3)), game.camera.height * 0.33, labelWidth, 3);
 			for (let x = 0; x < 5; x++) {
 				if (x >= this.player.misc.length) {
-					this.inventoryList[x].text = '';
+					this.inventoryList[x].visible = false;
 					this.inventoryImages[x].visible = false;
 				}
 				else {
@@ -545,6 +559,7 @@ Play.create = function() {
     this.invTitle.align = 'left';
     this.invTitle.fixedToCamera = true;
     this.invTitle.visible = false;
+	
 	//"Currency" text
 	this.currencyText = game.add.text(game.camera.width / 4 + 10, game.camera.height * 0.125 + 65, 'Currency: 0');
 	this.currencyText.font = 'Press Start 2P';
@@ -553,7 +568,6 @@ Play.create = function() {
     this.currencyText.strokeThickness = 5;
     this.currencyText.fontSize = '2em';
     this.currencyText.anchor.setTo(0, .5);
-    this.currencyText.align = 'left';
     this.currencyText.fixedToCamera = true;
     this.currencyText.visible = false;
 	//"Gems" text
@@ -564,7 +578,6 @@ Play.create = function() {
     this.gemText.strokeThickness = 5;
     this.gemText.fontSize = '2em';
     this.gemText.anchor.setTo(1, .5);
-    this.gemText.align = 'right';
     this.gemText.fixedToCamera = true;
     this.gemText.visible = false;
 	
@@ -960,7 +973,24 @@ function entityCollision(entity1, entity2) {
         if (perp.type === 'player') {
             switch (dead.type) {
                 case 'npc':
-                    console.log('Killed an NPC :(');
+					let coins = Math.floor(Math.random() * 4) + 2;
+					this.player.currency += coins;
+					
+					let r = Math.floor(Math.random() * 4);
+					let k = '';
+					if (r == 0) k = 'Carrot';
+					if (r == 1) k = 'Apple';
+					if (r == 2) k = 'Pear';
+					if (r == 3) k = 'Mutton';
+					let i = new Item(dead.x + (dead.width / 2), dead.y + (dead.height / 2), k, 'food');
+					
+					this.itemGroup.add(i);
+					setTimeout(() => {
+						i.kill();
+						this.itemGroup.remove(i);
+						this.player.converse(this.itemGroup.length+' items left!');
+						this.player.addToInventory(i.key, i.type);
+					}, 10000);
                     break;
                 case 'monster':
                     this.player.score++;
