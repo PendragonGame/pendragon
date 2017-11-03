@@ -42,6 +42,14 @@ Menu.create = function() {
             game.state.start('Settings');
         }, '5em'
     );
+
+    // button to exit
+this.exit = new ui.MenuButton(
+        game.camera.width/2,
+        this.pendragonText.y + 450,
+        'Exit', null, function() {
+            window.close();
+        }, '5em');
 };
 
 Menu.update = function() {
