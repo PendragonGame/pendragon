@@ -59,6 +59,10 @@ function Entity(x, y, key) {
      */
     this.speed = 65;
     this.sprintSpeed = 170;
+    this.attackStat = 100;          //How much default damage this entity does -@nitgarg99
+    this.defenseStat = 1;
+    this.maxHP = 100;
+    this.HP = 100;
 
     // Set the default animations
     this.setAnimations();
@@ -270,6 +274,13 @@ Entity.prototype.attack = function() {
     });
     this.adjustHitbox('slash');
 };
+
+Entity.prototype.injure = function() {
+    self = this;
+    this.state = 'injured';
+    
+    
+}
 
 Entity.prototype.die = function() {
     // const self = this;
