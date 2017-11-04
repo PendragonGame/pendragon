@@ -610,7 +610,7 @@ Play.create = function() {
 	
 
     // controls
-    this.controlText = game.add.text(game.camera.width/2, 600, 'Up:    W   Left:   A\nDown:  S   Right:  D\nMelee: M   Sprint: Shift\nLoot:  L		 Inventory: I');
+    this.controlText = game.add.text(game.camera.width/2, 600, 'Up:    W   Left:   A\nDown:  S   Right:  D\nMelee: M   Sprint: Shift\nLoot:  L		 Inventory: I\nEat:	  E');
     this.controlText.font = 'Press Start 2P';
     this.controlText.fill = '#ff5100';
     this.controlText.stroke = '#0';
@@ -828,6 +828,18 @@ Play.update = function() {
     if (this.keyboard.isDown(Phaser.Keyboard.SHIFT)) {
         sprint = true;
     }
+	
+	if (this.keyboard.isDown(Phaser.Keyboard.E)) {
+		if (this.player.eatAgain == 1 && 
+			this.player.food.length > 0 && 
+			this.invBg.visible === false &&
+			this.player.HP < 100){
+			this.player.eatAgain = 0;
+			this.player.HP += 10;
+			if (this.player.HP > 100) this.player.HP = 100;
+			this.player.food.splice(0, 1);
+		}
+	} else this.player.eatAgain = 1;
 
     // Attack
     if ((this.keyboard.isDown(Phaser.Keyboard.M)) &&
@@ -906,18 +918,10 @@ Play.update = function() {
 };
 
 function itemCollision(player, item){
-	if (this.keyboard.isDown(Phaser.Keyboard.L)){
-		if (item.type === 'food' && this.player.HP < 100) {
-			this.player.HP += 10;
-			if (this.player.HP > 100) this.player.HP = 100;
-			this.player.converse('+'+item.key+' (Eaten)');
-			item.kill()
-			this.itemGroup.remove(item);
-			return;
-		}
+	if (item.type === 'food' || this.keyboard.isDown(Phaser.Keyboard.L)){
 		item.kill()
 		this.itemGroup.remove(item);
-		this.player.converse('+'+item.key+' (Stored)');
+		this.player.converse('+'+item.key);
 		this.player.addToInventory(item.key, item.type);
 	}
 };
@@ -1006,7 +1010,6 @@ function entityCollision(entity1, entity2) {
 						if (r == 2) k = 'Pear';
 						if (r == 3) k = 'Mutton';
 						let i = new Item(dead.x + (dead.width / 2), dead.y + (dead.height / 2), k, 'food');
-						i.bringToTop
 						this.itemGroup.add(i);
 					}
                     break;
@@ -1019,7 +1022,6 @@ function entityCollision(entity1, entity2) {
 						if (r == 1) k = 'Cigar';
 						if (r == 2) k = 'Book';
 						let i = new Item(dead.x + (dead.width / 2), dead.y + (dead.height / 2), k, 'misc');
-						i.bringToTop
 						this.itemGroup.add(i);
 					}
                     this.player.score++;

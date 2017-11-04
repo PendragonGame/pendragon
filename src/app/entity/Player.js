@@ -30,6 +30,8 @@ function Player(x, y, key) {
 	this.food = [];
 	this.misc = ['Tunic'];
 
+	this.eatAgain = 1;	
+		
     this.type = 'player';
     this.converse('Press Escape for help');
 }
