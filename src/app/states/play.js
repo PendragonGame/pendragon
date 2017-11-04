@@ -965,11 +965,27 @@ function entityCollision(entity1, entity2) {
             this.calculateDamage(entity1, entity2);
         }
     }
+	
+    if (entity1.state === 'dead') {
+        dead = entity1;
+        perp = entity2;
+        action = 'kill';
+        this.engageGossip(dead, perp, action);
+    }
+
+     if (entity2.state === 'dead') {
+        dead = entity2;
+        perp = entity1;
+        action = 'kill';
+        this.engageGossip(dead, perp, action);
+    } 
     /**
      * @todo(anand): Need to implement Game Over
      */
     if (dead && perp && action) {
         if (perp.type === 'player') {
+			
+	 console.log('HELLO');
             switch (dead.type) {
                 case 'npc':
 					let coins = Math.floor(Math.random() * 4) + 2;
@@ -977,7 +993,7 @@ function entityCollision(entity1, entity2) {
 					
 					
 					let r = Math.floor(Math.random() * 4);
-					if (r == 0){
+					if (r == 1){
 						r = Math.floor(Math.random() * 4);
 						let k = '';
 						if (r == 0) k = 'Carrot';
@@ -1022,20 +1038,6 @@ function entityCollision(entity1, entity2) {
             }
         }, this);
     }    
-    
-    if (entity1.state === 'dead') {
-        dead = entity1;
-        perp = entity2;
-        action = 'kill';
-        this.engageGossip(dead, perp, action);
-    }
-
-     if (entity2.state === 'dead') {
-        dead = entity2;
-        perp = entity1;
-        action = 'kill';
-        this.engageGossip(dead, perp, action);
-    } 
     
 }
 
