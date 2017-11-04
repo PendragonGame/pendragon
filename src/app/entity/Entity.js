@@ -325,7 +325,7 @@ Entity.prototype.adjustHitbox = function(state) {
 };
 
 /**
- * Set the direction of the  sprite
+ * Set the direction of the sprite
  * 
  * @param {string|number} direction 
  */
