@@ -23,6 +23,7 @@ function Player(x, y, key) {
     this.HP = 100;
     this.score = 0;
     this.daysSurvived = 1;
+    this.defenseStat = 20;
 	
 	this.weapons = ['Dagger', 'Handgun'];
 	this.food = ['Apple', 'Pear', 'Mutton', 'Taco', 'Carrot', 'Mutton',
