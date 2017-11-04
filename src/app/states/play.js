@@ -611,7 +611,7 @@ Play.create = function() {
 	
 
     // controls
-    this.controlText = game.add.text(game.camera.width/2, 600, 'Up:    W   Left:   A\nDown:  S   Right:  D\nMelee: M   Sprint: Shift\n\nAccess Inventory: I');
+    this.controlText = game.add.text(game.camera.width/2, 600, 'Up:    W   Left:   A\nDown:  S   Right:  D\nMelee: M   Sprint: Shift\nLoot:  L		 Inventory: I');
     this.controlText.font = 'Press Start 2P';
     this.controlText.fill = '#ff5100';
     this.controlText.stroke = '#0';
@@ -907,7 +907,7 @@ Play.update = function() {
 };
 
 function itemCollision(player, item){
-	if (this.keyboard.isDown(Phaser.Keyboard.P)){
+	if (this.keyboard.isDown(Phaser.Keyboard.L)){
 		item.kill();
 		this.itemGroup.remove(item);
 		this.player.converse('+'+item.key);
@@ -982,17 +982,15 @@ function entityCollision(entity1, entity2) {
     /**
      * @todo(anand): Need to implement Game Over
      */
+	 let r;
     if (dead && perp && action) {
         if (perp.type === 'player') {
-			
-	 console.log('HELLO');
             switch (dead.type) {
                 case 'npc':
 					let coins = Math.floor(Math.random() * 4) + 2;
 					this.player.currency += coins;
 					
-					
-					let r = Math.floor(Math.random() * 4);
+					r = Math.floor(Math.random() * 4);
 					if (r == 1){
 						r = Math.floor(Math.random() * 4);
 						let k = '';
@@ -1006,6 +1004,18 @@ function entityCollision(entity1, entity2) {
 					}
                     break;
                 case 'monster':
+					r = Math.floor(Math.random() * 10);
+					if (r == 1){
+						r = Math.floor(Math.random() * 3);
+						let k = '';
+						if (r == 0) k = 'Tusk';
+						if (r == 1) k = 'Cigar';
+						if (r == 2) k = 'Book';
+						let i = new Item(dead.x + (dead.width / 2), dead.y + (dead.height / 2), k, 'misc');
+						i.bringToTop
+						this.itemGroup.add(i);
+					}
+                    break;
                     this.player.score++;
                     break;
             }

@@ -455,7 +455,7 @@ Entity.prototype.converse = function(text){
     chat.stroke = 'black';
     chat.strokeThickness = '4';
     chat.align = 'center';
-    chat.lifespan = 3000; // milliseconds    
+    chat.lifespan = 2000; // milliseconds    
     this.addChild(chat);
 };
 
