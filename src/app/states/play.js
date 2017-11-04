@@ -712,7 +712,8 @@ Play.update = function() {
             game.state.start('Game Over');
         }, 2000);
     }
-    while (this.fullHealthBar.width < 146) this.fullHealthBar.width += 1;
+    this.fullHealthBar.width = (146 * (this.player.HP/this.player.maxHP));
+    while (this.fullHealthBar.width < (146* (this.player.HP/this.player.maxHP)))  this.fullHealthBar.width += 1;
     this.scoreLabel.text = 'Score: ' + this.player.score;
     this.dayLabel.text = 'Day ' + this.player.daysSurvived;
     /**
@@ -936,6 +937,7 @@ function entityCollision(entity1, entity2) {
     /**
      * @todo(anand): Handle code to get injured
      */
+
     if (game.physics.arcade.collide(entity1, this.blockLayer) ||
         game.physics.arcade.collide(entity1, this.blockOverlap) ||
         game.physics.arcade.collide(entity2, this.blockLayer) ||
@@ -943,37 +945,25 @@ function entityCollision(entity1, entity2) {
         return;
     }
 
-    /**
-     * @todo(anand): I think this needs to be made general to all Entities
-     * 
-     * We shouldn't be assuming that entity 2 is always going to be Player
-     * also, other entities can attack too
-     */
-    /**
-     * The type of person who died
-     */
+
+    //This block handles when an entity collided with an attacking entitity
     let dead = null;
     let perp = null;
     let action = '';
-    if (entity2.state == 'attacking') {
+
+    if (entity2.state === 'attacking') {
         entity2.attack();
-        if (entity1.state !== 'dead') {
-            entity1.die();
-            entity1.body.enable = false;
+        let f2 = entity2.animations.currentAnim.frame;
+        if (f2 == 158 || f2 == 184 || f2 == 171 || f2 == 197){           //if statement should be replaced eventually with an entity state called 'injured'
+            this.calculateDamage(entity2, entity1);
         }
-        dead = entity1;
-        perp = entity2;
-        action = 'kill';
     }
     if (entity1.state === 'attacking') {
         entity1.attack();
-        if (entity2.state !== 'dead') {
-            entity2.die();
-            entity2.body.enable = false;
+        let f1 = entity1.animations.currentAnim.frame;
+        if (f1 == 158 || f1 == 184 || f1 == 171 || f1 == 197){           //if statement should be replaced eventually with an entity state called 'injured'
+            this.calculateDamage(entity1, entity2);
         }
-        perp = entity1;
-        dead = entity2;
-        action = 'kill';
     }
     /**
      * @todo(anand): Need to implement Game Over
@@ -1031,7 +1021,22 @@ function entityCollision(entity1, entity2) {
                     action);
             }
         }, this);
+    }    
+    
+    if (entity1.state === 'dead') {
+        dead = entity1;
+        perp = entity2;
+        action = 'kill';
+        this.engageGossip(dead, perp, action);
     }
+
+     if (entity2.state === 'dead') {
+        dead = entity2;
+        perp = entity1;
+        action = 'kill';
+        this.engageGossip(dead, perp, action);
+    } 
+    
 }
 
 Play.populateBoard = function() {
@@ -1184,6 +1189,56 @@ Play.shutdown = function() {
         clearInterval(id);
     });
 };
+
+Play.calculateDamage = function(attacker, defender) {
+    defender.HP = defender.HP - (attacker.attackStat/defender.defenseStat);
+    if (defender.HP == 0){
+        defender.die();
+        defender.body.enable = false;
+    }
+}
+
+Play.engageGossip = function(dead, perp, action){
+    if (dead && perp && action) {
+        if (perp.type === 'player') {
+            switch (dead.type) {
+                case 'npc':
+                    console.log('Killed an NPC :(');
+                    break;
+                case 'monster':
+                    this.player.score++;
+                    break;
+            }
+        }
+        
+        // let nearest = Map.nearest(this.player, 3, 256);
+        // nearest.forEach(function(p, i) {
+        //     if (p[0].state !== 'dead') {
+        //         let witness =p[0];
+        //         this.rippleGossip.createRumor(
+        //             witness,
+        //             dead,
+        //             perp,
+        //             action);
+        //     }
+        // }, this);
+        let nearest = Map.nearest(this.player, 3, 256);
+        let numWitnesses = Math.floor(Math.random() * nearest.length);
+        let witnesses = Sampling.sample_from_array(nearest, numWitnesses, false);
+        
+        if (!witnesses) return;
+        witnesses.forEach(function(p, i) {
+            if (p[0].state !== 'dead') {
+                let witness =p[0];
+                this.rippleGossip.createRumor(
+                    witness,
+                    dead,
+                    perp,
+                    action);
+            }
+        }, this);
+    }
+}
 
 Phaser.Tilemap.prototype.setCollisionBetween = function(start, stop,
     collides, layer, recalculate) {

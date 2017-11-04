@@ -24,6 +24,7 @@ function Player(x, y, key) {
     this.score = 0;
     this.daysSurvived = 1;
 	this.currency = 0;
+    this.defenseStat = 20;
 	
 	this.weapons = ['Dagger'];
 	this.food = [];
