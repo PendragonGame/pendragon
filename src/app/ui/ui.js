@@ -77,7 +77,6 @@ MenuButton.prototype.hide = function() {
     this.text.visible = false;
     this.button.inputEnabled = false;
     this.text.fontSize = this.orignalSize;
-    console.log(this.text.fontSize);
     return this;
 };
 
