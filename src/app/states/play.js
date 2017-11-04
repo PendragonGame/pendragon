@@ -748,7 +748,7 @@ Play.update = function() {
     game.physics.arcade.collide(this.entitiesGroup, this.blockOverlap);
     game.physics.arcade.collide(this.entitiesGroup, this.entitiesGroup,
         entityCollision, null, this);
-
+	game.physics.arcade.overlap(this.player, this.itemGroup, itemCollision, null, this);
 
     /**
      * NPC Code
@@ -905,6 +905,15 @@ Play.update = function() {
     }
 };
 
+function itemCollision(player, item){
+	if (this.keyboard.isDown(Phaser.Keyboard.P)){
+		item.kill();
+		this.itemGroup.remove(item);
+		this.player.converse('+'+item.key);
+		this.player.addToInventory(item.key, item.type);
+	}
+};
+
 
 /**
  * Handle collision between two `Entities`
@@ -976,21 +985,19 @@ function entityCollision(entity1, entity2) {
 					let coins = Math.floor(Math.random() * 4) + 2;
 					this.player.currency += coins;
 					
-					let r = Math.floor(Math.random() * 4);
-					let k = '';
-					if (r == 0) k = 'Carrot';
-					if (r == 1) k = 'Apple';
-					if (r == 2) k = 'Pear';
-					if (r == 3) k = 'Mutton';
-					let i = new Item(dead.x + (dead.width / 2), dead.y + (dead.height / 2), k, 'food');
 					
-					this.itemGroup.add(i);
-					setTimeout(() => {
-						i.kill();
-						this.itemGroup.remove(i);
-						this.player.converse(this.itemGroup.length+' items left!');
-						this.player.addToInventory(i.key, i.type);
-					}, 10000);
+					let r = Math.floor(Math.random() * 4);
+					if (r == 0){
+						r = Math.floor(Math.random() * 4);
+						let k = '';
+						if (r == 0) k = 'Carrot';
+						if (r == 1) k = 'Apple';
+						if (r == 2) k = 'Pear';
+						if (r == 3) k = 'Mutton';
+						let i = new Item(dead.x + (dead.width / 2), dead.y + (dead.height / 2), k, 'food');
+						i.bringToTop
+						this.itemGroup.add(i);
+					}
                     break;
                 case 'monster':
                     this.player.score++;

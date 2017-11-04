@@ -14,6 +14,7 @@ function Item(x, y, key, t) {
 	game.add.existing(this);
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.collideWorldBounds = true;
+	this.body.maxVelocity = 0;
 	
 	this.type = t;
 }
