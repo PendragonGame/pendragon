@@ -1224,7 +1224,7 @@ Play.engageGossip = function(dead, perp, action){
                     console.log('Killed an NPC :(');
                     break;
                 case 'monster':
-                    this.player.score++;
+                    //this.player.score++;
                     break;
             }
         }
