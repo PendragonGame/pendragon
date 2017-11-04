@@ -831,8 +831,7 @@ Play.update = function() {
 	
 	if (this.keyboard.isDown(Phaser.Keyboard.E)) {
 		if (this.player.eatAgain == 1 && 
-			this.player.food.length > 0 && 
-			this.invBg.visible === false &&
+			this.player.food.length > 0 &&
 			this.player.HP < 100){
 			this.player.eatAgain = 0;
 			this.player.HP += 10;
