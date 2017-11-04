@@ -461,7 +461,6 @@ Play.create = function() {
 			}
          }, '1.5em' ));
 	
-	
 	let startX = game.camera.width / 4 + 115;
 	//Food button
 	this.inventoryButtons.push(new UI.MenuButton(startX,
@@ -908,9 +907,17 @@ Play.update = function() {
 
 function itemCollision(player, item){
 	if (this.keyboard.isDown(Phaser.Keyboard.L)){
-		item.kill();
+		if (item.type === 'food' && this.player.HP < 100) {
+			this.player.HP += 10;
+			if (this.player.HP > 100) this.player.HP = 100;
+			this.player.converse('+'+item.key+' (Eaten)');
+			item.kill()
+			this.itemGroup.remove(item);
+			return;
+		}
+		item.kill()
 		this.itemGroup.remove(item);
-		this.player.converse('+'+item.key);
+		this.player.converse('+'+item.key+' (Stored)');
 		this.player.addToInventory(item.key, item.type);
 	}
 };
@@ -990,7 +997,7 @@ function entityCollision(entity1, entity2) {
 					let coins = Math.floor(Math.random() * 4) + 2;
 					this.player.currency += coins;
 					
-					r = Math.floor(Math.random() * 4);
+					r = Math.floor(Math.random() * 2);
 					if (r == 1){
 						r = Math.floor(Math.random() * 4);
 						let k = '';
@@ -1004,7 +1011,7 @@ function entityCollision(entity1, entity2) {
 					}
                     break;
                 case 'monster':
-					r = Math.floor(Math.random() * 10);
+					r = Math.floor(Math.random() * 5);
 					if (r == 1){
 						r = Math.floor(Math.random() * 3);
 						let k = '';
@@ -1015,7 +1022,6 @@ function entityCollision(entity1, entity2) {
 						i.bringToTop
 						this.itemGroup.add(i);
 					}
-                    break;
                     this.player.score++;
                     break;
             }

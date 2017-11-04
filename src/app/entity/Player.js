@@ -27,7 +27,7 @@ function Player(x, y, key) {
     this.defenseStat = 20;
 	
 	this.weapons = ['Dagger'];
-	this.food = [];
+	this.food = ['Apple', 'Pear', 'Carrot', 'Mutton', 'Apple'];
 	this.misc = ['Cigar', 'Tunic'];
 
     this.type = 'player';
