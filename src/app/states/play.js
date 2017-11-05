@@ -102,7 +102,8 @@ Play.preload = function() {
 			this.wpn.loadTexture('hud_'+this.player.weapons[this.player.currentWeapon], 0, false);
 			if (this.player.weapons[this.player.currentWeapon] === 'Bow') this.player.loadTexture('player_shoot');
 			if (this.player.weapons[this.player.currentWeapon] === 'Dagger') this.player.loadTexture('player');
-         }, '1.5em' );
+         }, '2.5em' );
+	this.nxtWpn.fill = '#ffff00';
 		 
 	//Next Weapon
 	this.prvWpn = new UI.MenuButton(game.camera.width - this.wpn.width * 2.5 - margin - 1,
@@ -112,7 +113,7 @@ Play.preload = function() {
 			this.wpn.loadTexture('hud_'+this.player.weapons[this.player.currentWeapon], 0, false);
 			if (this.player.weapons[this.player.currentWeapon] === 'Bow') this.player.loadTexture('player_shoot');
 			if (this.player.weapons[this.player.currentWeapon] === 'Dagger') this.player.loadTexture('player');
-         }, '1.5em' );
+         }, '2.5em' );
 
     this.textStyle = {
         font: 'Press Start 2P',
@@ -1023,7 +1024,6 @@ function bulletCollision(entity, bullet){
 			bullet.kill();
 			entity.die();	
 			entity.body.enable = false;
-			
 		}
 	}
 };
