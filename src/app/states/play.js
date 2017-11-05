@@ -630,7 +630,7 @@ Play.create = function() {
 	
 
     // controls
-    this.controlText = game.add.text(game.camera.width/2, 600, 'Up:    W   Left:   A\nDown:  S   Right:  D\nMelee: M   Sprint: Shift\nLoot:  L		 Inventory: I\nEat:	  E');
+    this.controlText = game.add.text(game.camera.width/2, 600, 'Up:    W   Left:   A\nDown:  S   Right:  D\nMelee: M   Sprint: Shift\nLoot:  L		 Inventory: I\nEat:	  E   Shoot: N');
     this.controlText.font = 'Press Start 2P';
     this.controlText.fill = '#ff5100';
     this.controlText.stroke = '#0';
