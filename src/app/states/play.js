@@ -197,14 +197,14 @@ Play.pauseGame = function() {
         for (let i = 0; i < this.pauseMenu.length; i++) {
             this.pauseMenu[i].reveal();
             this.pauseBg.visible = true;
-            this.controlText.visible = true;
+			this.pauseBg.alpha = 0.2;
         }
     } else {
         // hide the menu
         for (let i = 0; i < this.pauseMenu.length; i++) {
             this.pauseMenu[i].hide();
             this.pauseBg.visible = false;
-            this.controlText.visible = false;
+			this.controlText.visible = false;
         }
     }
 	}
@@ -629,15 +629,31 @@ Play.create = function() {
     this.pauseBg.drawRect(0, 0, game.camera.width, game.camera.height);
     this.pauseBg.fixedToCamera = true;
 	
-
+	
     // controls
-    this.controlText = game.add.text(game.camera.width/2, 600, 'Up:    W   Left:   A\nDown:  S   Right:  D\nMelee: M   Sprint: Shift\nLoot:  L		 Inventory: I\nEat:	  E   Shoot: N');
+	let strControls = 'Controls:\n\n'+
+					  'Movement:\n - W, A, S, D: Move Up, Left, Down, Right respectively.\n'+
+					  ' - Shift:      Sprint\n\n'+
+					  'Attacking:\n'+
+					  ' - M: Melee. Only if a melee weapon is equipped.\n'+
+					  ' - N: Shoot. Only if a shooting weapon is equipped.\n'+
+					  ' - To change your weapon, click either \'<\' or \'>\' in the\n'+
+					  '   top-right of the Heads Up Display.\n\n'+
+					  'Looting:\n'+
+					  ' - L: Loot. Pick up items that NPCs drop.\n'+
+					  '      *Note: For convenience, Food items are looted automatically.\n'+
+					  ' - I: Inventory. Open your Inventory to view looted items.\n\n'+
+					  'Health:\n'+
+					  ' - E: Eat. Removes first food item from Inventory. +10 HP.\n\n'+
+					  'Other:\n'+
+					  ' - Esc: Toggle Pause Menu. Press now to return to the game.';
+    this.controlText = game.add.text(game.camera.width * 0.5, 100, strControls);
     this.controlText.font = 'Press Start 2P';
-    this.controlText.fill = '#ff5100';
+    this.controlText.fill = '#ff9100';
     this.controlText.stroke = '#0';
     this.controlText.strokeThickness = 5;
-    this.controlText.fontSize = '3em';
-    this.controlText.anchor.setTo(.5, .5);
+    this.controlText.fontSize = '1.5em';
+    this.controlText.anchor.setTo(.5, 0);
     this.controlText.align = 'left';
     this.controlText.fixedToCamera = true;
     this.controlText.visible = false;
@@ -673,7 +689,7 @@ Play.create = function() {
          }, '4.5em' ));
     // add a menu button
     this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
-        400, 'Main Menu', null, ()=>{
+        500, 'Main Menu', null, ()=>{
            game.input.keyboard.onDownCallback = null;
            game.state.start('Menu');
            game.paused = false;
@@ -682,6 +698,19 @@ Play.create = function() {
     this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
         100, 'Resume', null, ()=>{
         this.pauseGame();
+        }, '4.5em' ));
+	//add controls button
+    this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
+        400, 'Controls', null, ()=>{
+        this.pauseBg.alpha = 0.8;
+		this.controlText.visible = true;
+		for (let i = 0; i < this.pauseMenu.length; i++) {
+			this.pauseMenu[i].text.fill = '#00bbff';
+			this.pauseMenu[i].text.stroke = '#0';
+			this.pauseMenu[i].text.strokeThickness = 5;
+			this.pauseMenu[i].hide();
+		}
+		
         }, '4.5em' ));
     // hide the pause menu
     for (let i = 0; i < this.pauseMenu.length; i++) {
