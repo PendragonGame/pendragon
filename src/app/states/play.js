@@ -1024,6 +1024,7 @@ function bulletCollision(entity, bullet){
 			bullet.kill();
 			entity.die();	
 			entity.body.enable = false;
+			this.engageGossip(entity, this.player, 'kill');
 		}
 	}
 };
