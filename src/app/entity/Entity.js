@@ -183,6 +183,20 @@ Entity.prototype.setAnimations = function(frames) {
     this.animations.add('slash_right',
                         [195, 196, 197, 198, 199, 200],
                         10, true);
+						
+	this.animations.add('shoot_up',
+					   [208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220],
+					   10, true);
+	this.animations.add('shoot_left',
+					   [221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233],
+					   10, true);
+	this.animations.add('shoot_down',
+					   [234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246],
+					   10, true);
+	this.animations.add('shoot_right',
+					   [247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259],
+					   10, true);
+					   
 };
 
 
@@ -202,7 +216,7 @@ Entity.prototype.setAnimations = function(frames) {
  * @param {Boolean} sprint - Whether to sprint or not
  */
 Entity.prototype.moveInDirection = function(direction, sprint) {
-    if (this.state !== 'attacking') {
+    if (this.state !== 'attacking' && this.state !== 'shooting') {
         this.state = 'walking';
         let speed = this.speed;
         let animSpeed = 10;
@@ -270,6 +284,17 @@ Entity.prototype.attack = function() {
     this.animations.play('slash_' + this.direction, 20, false).onComplete.add(function() {
         // this.animations.frame
         // console.log('attack finished');
+       self.idleHere();
+    });
+    this.adjustHitbox('slash');
+};
+
+Entity.prototype.shoot = function() {
+    self = this;
+    this.state = 'shooting';
+    this.body.velocity.x = 0;
+    this.body.velocity.y = 0;
+    this.animations.play('shoot_' + this.direction, 20, false).onComplete.add(function() {
        self.idleHere();
     });
     this.adjustHitbox('slash');
@@ -446,7 +471,7 @@ Entity.prototype.learnInfo = function(rumor) {
     }
 };
 
-Entity.prototype.converse = function(text) {
+Entity.prototype.converse = function(text){
     let chat = game.add.text(32, 0, text);
     chat.anchor.setTo(0.5);
     chat.font = 'Press Start 2P';
@@ -455,7 +480,7 @@ Entity.prototype.converse = function(text) {
     chat.stroke = 'black';
     chat.strokeThickness = '4';
     chat.align = 'center';
-    chat.lifespan = 3000; // milliseconds    
+    chat.lifespan = 2000; // milliseconds    
     this.addChild(chat);
 };
 

@@ -11,6 +11,7 @@ const Factory = require('../factory/Factory');
 const dataStore = require('../util/data');
 const Map = require('../util/Map');
 const Ripple = require('../ripple/engine');
+const Item = require('../item/Item.js');
 let electron = require('electron');
 let window = electron.remote.getCurrentWindow();
 
@@ -86,13 +87,33 @@ Play.preload = function() {
 	let margin = 5;
 
 	//Weapon display
-    this.wpn = game.add.sprite(0, 0, 'hud_weapon');
+    this.wpn = game.add.sprite(0, 0, 'hud_Dagger');
     this.wpn.width /= 2;
     this.wpn.height /= 2;
-    this.wpn.x = game.camera.width - this.wpn.width - margin;
+    this.wpn.x = game.camera.width - this.wpn.width * 2 - margin;
 	this.wpn.y = margin;
     this.wpn.fixedToCamera = true;
 
+	//Next Weapon
+	this.nxtWpn = new UI.MenuButton(game.camera.width - this.wpn.width / 2 - margin,
+         (this.wpn.y + this.wpn.height / 2 + 5), '>', null, ()=>{
+			this.player.currentWeapon++;
+			if (this.player.currentWeapon == this.player.weapons.length) this.player.currentWeapon = 0;
+			this.wpn.loadTexture('hud_'+this.player.weapons[this.player.currentWeapon], 0, false);
+			if (this.player.weapons[this.player.currentWeapon] === 'Bow') this.player.loadTexture('player_shoot');
+			if (this.player.weapons[this.player.currentWeapon] === 'Dagger') this.player.loadTexture('player');
+         }, '2.5em' );
+	this.nxtWpn.fill = '#ffff00';
+		 
+	//Next Weapon
+	this.prvWpn = new UI.MenuButton(game.camera.width - this.wpn.width * 2.5 - margin - 1,
+         (this.wpn.y + this.wpn.height / 2 + 5), '<', null, ()=>{
+			this.player.currentWeapon--;
+			if (this.player.currentWeapon == -1) this.player.currentWeapon = this.player.weapons.length - 1;
+			this.wpn.loadTexture('hud_'+this.player.weapons[this.player.currentWeapon], 0, false);
+			if (this.player.weapons[this.player.currentWeapon] === 'Bow') this.player.loadTexture('player_shoot');
+			if (this.player.weapons[this.player.currentWeapon] === 'Dagger') this.player.loadTexture('player');
+         }, '2.5em' );
 
     this.textStyle = {
         font: 'Press Start 2P',
@@ -176,14 +197,14 @@ Play.pauseGame = function() {
         for (let i = 0; i < this.pauseMenu.length; i++) {
             this.pauseMenu[i].reveal();
             this.pauseBg.visible = true;
-            this.controlText.visible = true;
+			this.pauseBg.alpha = 0.2;
         }
     } else {
         // hide the menu
         for (let i = 0; i < this.pauseMenu.length; i++) {
             this.pauseMenu[i].hide();
             this.pauseBg.visible = false;
-            this.controlText.visible = false;
+			this.controlText.visible = false;
         }
     }
 	}
@@ -193,51 +214,89 @@ Play.pauseGame = function() {
  * opens/closes the inventory
  */
 let openTab = 'food';
+let numPages = 1;
+let currentPage = 1;
+
 Play.toggleInventory = function() {
 	//This if statement prevents opening the inventory while the game is paused.
 	if (game.paused == true && this.invBg.visible == false){}
 	else{
-    game.paused ? game.paused = false : game.paused = true;
-    if (game.paused) {
-        // reveal inventory
-		for (let i = 0; i < this.inventory.length; i++){
-			this.inventory[i].visible = true;
-		}
-		for (let j = 0; j < this.inventoryButtons.length; j++){
-			this.inventoryButtons[j].reveal();
-		}
-		for (let k = 0; k < this.inventoryImages.length; k++){
-			switch (openTab){
-				case ('food'):
-					if (k < this.player.food.length) this.inventoryImages[k].visible = true;
-					break;
-				case ('weapons'):
-					if (k < this.player.weapons.length) this.inventoryImages[k].visible = true;
-					break;
-				case ('misc'):
-					if (k < this.player.misc.length) this.inventoryImages[k].visible = true;
-					break;
+		game.paused ? game.paused = false : game.paused = true;
+		if (game.paused) {
+			// reveal inventory
+			this.currencyText.text = 'Currency: '+this.player.currency;
+			for (let i = 0; i < this.inventory.length; i++){
+				this.inventory[i].visible = true;
 			}
+			for (let j = 0; j < this.inventoryButtons.length; j++){
+				this.inventoryButtons[j].reveal();
+			}	
+			currentPage = 1;
+			for (let k = 0; k < this.inventoryImages.length; k++){
+				switch (openTab){
+					case ('food'):
+						if (k < this.player.food.length) {
+							this.inventoryList[k].visible = true;
+							this.inventoryList[k].text = '- '+this.player.food[k];
+							this.inventoryImages[k].visible = true;
+							this.inventoryImages[k].loadTexture(this.player.food[k]);
+							numPages = Math.floor(this.player.food.length / 5) + 1;
+							if (this.player.food.length % 5 == 0) numPages--;
+							if (numPages == 0) numPages = 1;
+							this.pageText.text = currentPage+'/'+numPages;
+						} else this.inventoryImages[k].visible = false;
+						break;
+					case ('weapons'):
+						if (k < this.player.weapons.length) {
+							this.inventoryList[k].visible = true;
+							this.inventoryList[k].text = '- '+this.player.weapons[k];
+							this.inventoryImages[k].visible = true;
+							this.inventoryImages[k].loadTexture(this.player.weapons[k]);
+							numPages = Math.floor(this.player.weapons.length / 5) + 1;
+							if (this.player.weapons.length % 5 == 0) numPages--;
+							if (numPages == 0) numPages = 1;
+							this.pageText.text = currentPage+'/'+numPages;
+						} else this.inventoryImages[k].visible = false;
+						break;
+					case ('misc'):
+						if (k < this.player.misc.length) {
+							this.inventoryList[k].visible = true;
+							this.inventoryList[k].text = '- '+this.player.misc[k];
+							this.inventoryImages[k].visible = true;
+							this.inventoryImages[k].loadTexture(this.player.misc[k]);
+							numPages = Math.floor(this.player.misc.length / 5) + 1;
+							if (this.player.misc.length % 5 == 0) numPages--;
+							if (numPages == 0) numPages = 1;
+							this.pageText.text = currentPage+'/'+numPages;
+						} else this.inventoryImages[k].visible = false;
+						break;
+				}
+			}
+			this.invBg.visible = true;
+		} else {
+			// hide the inventory
+			for (let i = 0; i < this.inventory.length; i++){
+				this.inventory[i].visible = false;
+			}
+			for (let j = 0; j < this.inventoryButtons.length; j++){
+				this.inventoryButtons[j].hide();
+			}
+			for (let k = 0; k < this.inventoryImages.length; k++){
+				this.inventoryImages[k].visible = false;
+			}
+			for (let l = 0; l < this.inventoryList.length; l++){
+				this.inventoryList[l].visible = false;
+				this.inventoryList[l].text = '';
+			}
+			this.invBg.visible = false;
 		}
-		this.invBg.visible = true;
-    } else {
-        // hide the inventory
-        for (let i = 0; i < this.inventory.length; i++){
-			this.inventory[i].visible = false;
-		}
-		for (let j = 0; j < this.inventoryButtons.length; j++){
-			this.inventoryButtons[j].hide();
-		}
-		for (let k = 0; k < this.inventoryImages.length; k++){
-			this.inventoryImages[k].visible = false;
-		}
-		this.invBg.visible = false;
-    }
 	}
 };
 
 Play.create = function() {
     // this.player.bringToTop();
+	this.itemGroup = game.add.group();
+	this.bulletGroup = game.add.group();
     /**
      * Check if we should load game.
      */
@@ -274,7 +333,9 @@ Play.create = function() {
 	this.inventoryList = [];
 	this.inventoryImages = [];
 	
-	//inventory background
+	/**
+	* Dim background layer from Inventory Window.
+	*/
 	this.invBg = game.add.graphics();
     this.invBg.beginFill(0x0);
     this.invBg.alpha = .2;
@@ -282,7 +343,10 @@ Play.create = function() {
     this.invBg.drawRect(0, 0, game.camera.width, game.camera.height);
     this.invBg.fixedToCamera = true;
 	
-	//inventory window
+	/**
+	* Main Inventory Window. This is the colored portion along with it's black outline.
+	* This is also the inner square with the button backgrounds.
+	*/
 	this.invWindow = game.add.graphics();
     this.invWindow.visible = false;
 	this.invWindow.beginFill(0x0);
@@ -301,9 +365,11 @@ Play.create = function() {
 	this.invWindow.drawRect(game.camera.width / 4 + 13 + labelWidth + 3, game.camera.height * 0.33 - 47, labelWidth, 47);
 	this.invWindow.drawRect(game.camera.width / 4 + 13 + (2 * (labelWidth + 3)), game.camera.height * 0.33 - 47, labelWidth, 47);
 	
-	//Creating text + image areas
+	/*
+	* Creating the text and image slots (5 of them).
+	*/
 	for (let j = 0; j < 5; j++){
-		this.temp = game.add.text(game.camera.width / 4 + 85, (j * 60) + game.camera.height * 0.33 + 55, 'TEST');
+		this.temp = game.add.text(game.camera.width / 4 + 85, (j * 60) + game.camera.height * 0.33 + 55, '');
 		
 		this.temp.font = 'Press Start 2P';
 		this.temp.fill = '#ffff00';
@@ -311,16 +377,14 @@ Play.create = function() {
 		this.temp.strokeThickness = 5;
 		this.temp.fontSize = '2em';
 		this.temp.anchor.setTo(0, .5);
-		this.temp.align = 'left';
 		this.temp.fixedToCamera = true;
 		this.temp.visible = false;
 		
-		this.temp1 = game.add.sprite(game.camera.width / 4 + 50, (j * 60) + game.camera.height * 0.33 + 40, 'Apple');
+		this.temp1 = game.add.sprite(game.camera.width / 4 + 50, (j * 60) + game.camera.height * 0.33 + 40, '');
 		this.temp1.fixedToCamera = true;
 		this.temp1.visible = false;
-		this.temp1.width = 21;
-		this.temp1.height = 21;
-		
+		this.temp1.width = 30;
+		this.temp1.height = 30;
 		
 		this.inventoryList.push(this.temp);
 		this.inventoryImages.push(this.temp1);
@@ -330,15 +394,12 @@ Play.create = function() {
 			this.inventoryList[j].text = "- " + this.player.food[j];
 			this.inventoryImages[j].loadTexture(this.player.food[j], 0, false);
 		}
-		else {
-			this.inventoryList[j].text = '';
-		}
+		this.inventoryList[j].visible = false;
 		this.inventoryImages[j].visible = false;
 	}
 	
-	let numPages = Math.floor(this.player.food.length / 5) + 1;
 	if (this.player.food.length % 5 == 0) numPages--;
-	let currentPage = 1;
+	if (numPages == 0) numPages = 1;
 	this.pageText = game.add.text(game.camera.width / 2, game.camera.height * 0.75 + 20, currentPage+'/'+numPages);
 	this.pageText.font = 'Press Start 2P';
     this.pageText.fill = '#ffff00';
@@ -346,7 +407,6 @@ Play.create = function() {
     this.pageText.strokeThickness = 5;
     this.pageText.fontSize = '2em';
     this.pageText.anchor.setTo(.5, .5);
-    this.pageText.align = 'center';
     this.pageText.fixedToCamera = true;
     this.pageText.visible = false;
 		 
@@ -360,43 +420,29 @@ Play.create = function() {
 			//Repopulates the current 5 item slots
 			for (let a = 0; a < this.inventoryList.length; a++){
 				let nextIndex = (currentPage - 1) * 5 + a;
+				if ((openTab === 'food') && (nextIndex < this.player.food.length) ||
+					(openTab === 'weapons') && (nextIndex < this.player.weapons.length) ||
+					(openTab === 'misc') && (nextIndex < this.player.misc.length)){
 					this.inventoryList[a].visible = true;
 					this.inventoryImages[a].visible = true;
 					switch (openTab){
 						case ('food'):
-							if (nextIndex < this.player.food.length){
-								this.inventoryList[a].visible = true;
-								this.inventoryImages[a].visible = true;
-								this.inventoryImages[a].loadTexture(this.player.food[nextIndex]);
-								this.inventoryList[a].text = '- '+this.player.food[nextIndex];
-							} else {
-								this.inventoryList[a].visible = false;
-								this.inventoryImages[a].visible = false;
-							}
+							this.inventoryImages[a].loadTexture(this.player.food[nextIndex]);
+							this.inventoryList[a].text = '- '+this.player.food[nextIndex];
 							break;
 						case ('weapons'):
-							if (nextIndex < this.player.weapons.length){
-								this.inventoryList[a].visible = true;
-								this.inventoryImages[a].visible = true;
-								this.inventoryImages[a].loadTexture(this.player.weapons[nextIndex]);
-								this.inventoryList[a].text = '- '+this.player.weapons[nextIndex];
-							} else {
-								this.inventoryList[a].visible = false;
-								this.inventoryImages[a].visible = false;
-							}
+							this.inventoryImages[a].loadTexture(this.player.weapons[nextIndex]);
+							this.inventoryList[a].text = '- '+this.player.weapons[nextIndex];
 							break;
 						case ('misc'):
-							if (nextIndex < this.player.misc.length){
-								this.inventoryList[a].visible = true;
-								this.inventoryImages[a].visible = true;
-								this.inventoryImages[a].loadTexture(this.player.misc[nextIndex]);
-								this.inventoryList[a].text = '- '+this.player.misc[nextIndex];
-							} else {
-								this.inventoryList[a].visible = false;
-								this.inventoryImages[a].visible = false;
-							}
+							this.inventoryImages[a].loadTexture(this.player.misc[nextIndex]);
+							this.inventoryList[a].text = '- '+this.player.misc[nextIndex];
 							break;
 					}
+				} else {
+					this.inventoryList[a].visible = false;
+					this.inventoryImages[a].visible = false;
+				}
 			}
          }, '1.5em' ));
 		 
@@ -410,46 +456,31 @@ Play.create = function() {
 			//Repopulates the current 5 item slots
 			for (let a = 0; a < this.inventoryList.length; a++){
 				let nextIndex = (currentPage - 1) * 5 + a;
+				if ((openTab === 'food') && (nextIndex < this.player.food.length) ||
+					(openTab === 'weapons') && (nextIndex < this.player.weapons.length) ||
+					(openTab === 'misc') && (nextIndex < this.player.misc.length)){
 					this.inventoryList[a].visible = true;
 					this.inventoryImages[a].visible = true;
 					switch (openTab){
 						case ('food'):
-							if (nextIndex < this.player.food.length){
-								this.inventoryList[a].visible = true;
-								this.inventoryImages[a].visible = true;
-								this.inventoryImages[a].loadTexture(this.player.food[nextIndex]);
-								this.inventoryList[a].text = '- '+this.player.food[nextIndex];
-							} else {
-								this.inventoryList[a].visible = false;
-								this.inventoryImages[a].visible = false;
-							}
+							this.inventoryImages[a].loadTexture(this.player.food[nextIndex]);
+							this.inventoryList[a].text = '- '+this.player.food[nextIndex];
 							break;
 						case ('weapons'):
-							if (nextIndex < this.player.weapons.length){
-								this.inventoryList[a].visible = true;
-								this.inventoryImages[a].visible = true;
-								this.inventoryImages[a].loadTexture(this.player.weapons[nextIndex]);
-								this.inventoryList[a].text = '- '+this.player.weapons[nextIndex];
-							} else {
-								this.inventoryList[a].visible = false;
-								this.inventoryImages[a].visible = false;
-							}
+							this.inventoryImages[a].loadTexture(this.player.weapons[nextIndex]);
+							this.inventoryList[a].text = '- '+this.player.weapons[nextIndex];
 							break;
 						case ('misc'):
-							if (nextIndex < this.player.misc.length){
-								this.inventoryList[a].visible = true;
-								this.inventoryImages[a].visible = true;
-								this.inventoryImages[a].loadTexture(this.player.misc[nextIndex]);
-								this.inventoryList[a].text = '- '+this.player.misc[nextIndex];
-							} else {
-								this.inventoryList[a].visible = false;
-								this.inventoryImages[a].visible = false;
-							}
+							this.inventoryImages[a].loadTexture(this.player.misc[nextIndex]);
+							this.inventoryList[a].text = '- '+this.player.misc[nextIndex];
 							break;
 					}
+				} else {
+					this.inventoryList[a].visible = false;
+					this.inventoryImages[a].visible = false;
+				}
 			}
          }, '1.5em' ));
-	
 	
 	let startX = game.camera.width / 4 + 115;
 	//Food button
@@ -459,6 +490,7 @@ Play.create = function() {
 			currentPage = 1;
 			numPages = Math.floor(this.player.food.length / 5) + 1;
 			if (this.player.food.length % 5 == 0) numPages--;
+			if (numPages == 0) numPages = 1;
 			this.pageText.text = currentPage+'/'+numPages;
 			this.invWindow.beginFill(0xc3c3c3);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
@@ -467,7 +499,7 @@ Play.create = function() {
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + (2 * (labelWidth + 3)), game.camera.height * 0.33, labelWidth, 3);
 			for (let x = 0; x < 5; x++) {
 				if (x >= this.player.food.length) {
-					this.inventoryList[x].text = '';
+					this.inventoryList[x].visible = false;
 					this.inventoryImages[x].visible = false;
 				}
 				else {
@@ -486,6 +518,7 @@ Play.create = function() {
 			currentPage = 1;
 			numPages = Math.floor(this.player.weapons.length / 5) + 1;
 			if (this.player.weapons.length % 5 == 0) numPages--;
+			if (numPages == 0) numPages = 1;
 			this.pageText.text = currentPage+'/'+numPages;
             this.invWindow.beginFill(0x0);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
@@ -495,7 +528,7 @@ Play.create = function() {
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + (2 * (labelWidth + 3)), game.camera.height * 0.33, labelWidth, 3);
 			for (let x = 0; x < 5; x++) {
 				if (x >= this.player.weapons.length) {
-					this.inventoryList[x].text = '';
+					this.inventoryList[x].visible = false;
 					this.inventoryImages[x].visible = false;
 				}
 				else {
@@ -514,6 +547,7 @@ Play.create = function() {
 			currentPage = 1;
 			numPages = Math.floor(this.player.misc.length / 5) + 1;
 			if (this.player.misc.length % 5 == 0) numPages--;
+			if (numPages == 0) numPages = 1;
 			this.pageText.text = currentPage+'/'+numPages;
 			this.invWindow.beginFill(0x0);
             this.invWindow.drawRect(game.camera.width / 4 + 13, game.camera.height * 0.33, labelWidth, 3);
@@ -522,7 +556,7 @@ Play.create = function() {
 			this.invWindow.drawRect(game.camera.width / 4 + 13 + (2 * (labelWidth + 3)), game.camera.height * 0.33, labelWidth, 3);
 			for (let x = 0; x < 5; x++) {
 				if (x >= this.player.misc.length) {
-					this.inventoryList[x].text = '';
+					this.inventoryList[x].visible = false;
 					this.inventoryImages[x].visible = false;
 				}
 				else {
@@ -545,6 +579,7 @@ Play.create = function() {
     this.invTitle.align = 'left';
     this.invTitle.fixedToCamera = true;
     this.invTitle.visible = false;
+	
 	//"Currency" text
 	this.currencyText = game.add.text(game.camera.width / 4 + 10, game.camera.height * 0.125 + 65, 'Currency: 0');
 	this.currencyText.font = 'Press Start 2P';
@@ -553,7 +588,6 @@ Play.create = function() {
     this.currencyText.strokeThickness = 5;
     this.currencyText.fontSize = '2em';
     this.currencyText.anchor.setTo(0, .5);
-    this.currencyText.align = 'left';
     this.currencyText.fixedToCamera = true;
     this.currencyText.visible = false;
 	//"Gems" text
@@ -564,7 +598,6 @@ Play.create = function() {
     this.gemText.strokeThickness = 5;
     this.gemText.fontSize = '2em';
     this.gemText.anchor.setTo(1, .5);
-    this.gemText.align = 'right';
     this.gemText.fixedToCamera = true;
     this.gemText.visible = false;
 	
@@ -596,15 +629,31 @@ Play.create = function() {
     this.pauseBg.drawRect(0, 0, game.camera.width, game.camera.height);
     this.pauseBg.fixedToCamera = true;
 	
-
+	
     // controls
-    this.controlText = game.add.text(game.camera.width/2, 600, 'Up:    W   Left:   A\nDown:  S   Right:  D\nMelee: M   Sprint: Shift\n\nAccess Inventory: I');
+	let strControls = 'Controls:\n\n'+
+					  'Movement:\n - W, A, S, D: Move Up, Left, Down, Right respectively.\n'+
+					  ' - Shift:      Sprint\n\n'+
+					  'Attacking:\n'+
+					  ' - M: Melee. Only if a melee weapon is equipped.\n'+
+					  ' - N: Shoot. Only if a shooting weapon is equipped.\n'+
+					  ' - To change your weapon, click either \'<\' or \'>\' in the\n'+
+					  '   top-right of the Heads Up Display.\n\n'+
+					  'Looting:\n'+
+					  ' - L: Loot. Pick up items that NPCs drop.\n'+
+					  '      *Note: For convenience, Food items are looted automatically.\n'+
+					  ' - I: Inventory. Open your Inventory to view looted items.\n\n'+
+					  'Health:\n'+
+					  ' - E: Eat. Removes first food item from Inventory. +10 HP.\n\n'+
+					  'Other:\n'+
+					  ' - Esc: Toggle Pause Menu. Press now to return to the game.';
+    this.controlText = game.add.text(game.camera.width * 0.5, 100, strControls);
     this.controlText.font = 'Press Start 2P';
-    this.controlText.fill = '#ff5100';
+    this.controlText.fill = '#ff9100';
     this.controlText.stroke = '#0';
     this.controlText.strokeThickness = 5;
-    this.controlText.fontSize = '3em';
-    this.controlText.anchor.setTo(.5, .5);
+    this.controlText.fontSize = '1.5em';
+    this.controlText.anchor.setTo(.5, 0);
     this.controlText.align = 'left';
     this.controlText.fixedToCamera = true;
     this.controlText.visible = false;
@@ -640,7 +689,7 @@ Play.create = function() {
          }, '4.5em' ));
     // add a menu button
     this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
-        400, 'Main Menu', null, ()=>{
+        500, 'Main Menu', null, ()=>{
            game.input.keyboard.onDownCallback = null;
            game.state.start('Menu');
            game.paused = false;
@@ -649,6 +698,19 @@ Play.create = function() {
     this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
         100, 'Resume', null, ()=>{
         this.pauseGame();
+        }, '4.5em' ));
+	//add controls button
+    this.pauseMenu.push(new UI.MenuButton(game.camera.width/2,
+        400, 'Controls', null, ()=>{
+        this.pauseBg.alpha = 0.8;
+		this.controlText.visible = true;
+		for (let i = 0; i < this.pauseMenu.length; i++) {
+			this.pauseMenu[i].text.fill = '#00bbff';
+			this.pauseMenu[i].text.stroke = '#0';
+			this.pauseMenu[i].text.strokeThickness = 5;
+			this.pauseMenu[i].hide();
+		}
+		
         }, '4.5em' ));
     // hide the pause menu
     for (let i = 0; i < this.pauseMenu.length; i++) {
@@ -736,7 +798,8 @@ Play.update = function() {
     game.physics.arcade.collide(this.entitiesGroup, this.blockOverlap);
     game.physics.arcade.collide(this.entitiesGroup, this.entitiesGroup,
         entityCollision, null, this);
-
+	game.physics.arcade.overlap(this.player, this.itemGroup, itemCollision, null, this);
+	game.physics.arcade.overlap(this.entitiesGroup, this.bulletGroup, bulletCollision, null, this);
 
     /**
      * NPC Code
@@ -816,10 +879,69 @@ Play.update = function() {
     if (this.keyboard.isDown(Phaser.Keyboard.SHIFT)) {
         sprint = true;
     }
+	
+	if (this.keyboard.isDown(Phaser.Keyboard.E)) {
+		if (this.player.eatAgain == 1 && 
+			this.player.food.length > 0 &&
+			this.player.HP < 100){
+			this.player.eatAgain = 0;
+			this.player.HP += 10;
+			if (this.player.HP > 100) this.player.HP = 100;
+			this.player.food.splice(0, 1);
+		}
+	} else this.player.eatAgain = 1;
+	
+	//Shoot
+	if ((this.keyboard.isDown(Phaser.Keyboard.N)) && (this.player.weapons[this.player.currentWeapon] === 'Bow')){
+		console.log(this.player.state);
+		if (this.player.state !== 'shooting'){
+			this.player.shoot();
+			setTimeout(() => {
+			let tempBullet = null;
+			switch (this.player.direction) {
+				case ('up'):
+					tempBullet = game.add.sprite(this.player.body.x, this.player.body.y, 'Arrow_Up');
+					game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
+					tempBullet.body.velocity.y = -500;
+					break;
+				case ('down'):
+					tempBullet = game.add.sprite(this.player.body.x, this.player.body.y, 'Arrow_Down');
+					game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
+					tempBullet.body.velocity.y = 500;
+					break;
+				case ('left'):
+					tempBullet = game.add.sprite(this.player.body.x, this.player.body.y, 'Arrow_Left');
+					game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
+					tempBullet.body.velocity.x = -500;
+					break;
+				case ('right'):
+					tempBullet = game.add.sprite(this.player.body.x, this.player.body.y, 'Arrow_Right');
+					game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
+					tempBullet.body.velocity.x = 500;
+					break;
+			}
+			tempBullet.visible = true;
+			game.world.add(tempBullet);
+			this.bulletGroup.add(tempBullet);
+			
+			setTimeout(() => {
+				tempBullet.kill();
+				this.bulletGroup.remove(tempBullet);
+			}, 10000);
+			}, 500);
+		}
+	} else {
+        let temp = this.player.frame - 207;
+        if ((temp % 13 === 0)) {
+            this.player.state = 'idling';
+            
+        }
+    }
 
     // Attack
     if ((this.keyboard.isDown(Phaser.Keyboard.M)) &&
-        (this.player.state !== 'attacking')) {
+        (this.player.state !== 'attacking') &&
+		(this.player.weapons[this.player.currentWeapon] === 'Dagger')) {
         this.player.attack();
     } else {
         /**
@@ -828,7 +950,7 @@ Play.update = function() {
          */
         // 
         let temp = this.player.frame - 161;
-        if ((temp % 13 === 0)) {
+        if ((temp % 13 === 0) && (this.player.state === 'attacking')) {
             if (!(this.keyboard.isDown(Phaser.Keyboard.M))) {
                 this.player.state = 'idling';
             }
@@ -845,7 +967,7 @@ Play.update = function() {
         this.player.moveInDirection('left', sprint);
     } else if (this.keyboard.isDown(Phaser.Keyboard.D)) {
         this.player.moveInDirection('right', sprint);
-    } else if (this.player.state !== 'attacking') {
+    } else if ((this.player.state !== 'attacking') && (this.player.state !== 'shooting')) {
         this.player.idleHere();
     }
 
@@ -891,6 +1013,58 @@ Play.update = function() {
     } else {
         this.fullRepBar.tint = 0x999999;
     }
+};
+let r = 0;
+function bulletCollision(entity, bullet){
+	if (entity !== this.player) { 
+		if (entity.state !== 'dead') {
+			switch (entity.type) {
+                case 'npc':
+					let coins = Math.floor(Math.random() * 4) + 2;
+					this.player.currency += coins;
+					
+					r = Math.floor(Math.random() * 2);
+					if (r == 1){
+						r = Math.floor(Math.random() * 4);
+						let k = '';
+						if (r == 0) k = 'Carrot';
+						if (r == 1) k = 'Apple';
+						if (r == 2) k = 'Pear';
+						if (r == 3) k = 'Mutton';
+						let i = new Item(entity.x + (entity.width / 2), entity.y + (entity.height / 2), k, 'food');
+						this.itemGroup.add(i);
+					}
+                    break;
+                case 'monster':
+					r = Math.floor(Math.random() * 5);
+					if (r == 1){
+						r = Math.floor(Math.random() * 3);
+						let k = '';
+						if (r == 0) k = 'Tusk';
+						if (r == 1) k = 'Cigar';
+						if (r == 2) k = 'Book';
+						let i = new Item(entity.x + (entity.width / 2), entity.y + (entity.height / 2), k, 'misc');
+						this.itemGroup.add(i);
+					}
+                    this.player.score++;
+                    break;
+            }
+			
+			bullet.kill();
+			entity.die();	
+			entity.body.enable = false;
+			this.engageGossip(entity, this.player, 'kill');
+		}
+	}
+};
+
+function itemCollision(player, item){
+	if (item.type === 'food' || this.keyboard.isDown(Phaser.Keyboard.L)){
+		item.kill()
+		this.itemGroup.remove(item);
+		this.player.converse('+'+item.key);
+		this.player.addToInventory(item.key, item.type);
+	}
 };
 
 
@@ -943,7 +1117,7 @@ function entityCollision(entity1, entity2) {
             this.calculateDamage(entity1, entity2);
         }
     }
-    
+	
     if (entity1.state === 'dead') {
         dead = entity1;
         perp = entity2;
@@ -957,6 +1131,72 @@ function entityCollision(entity1, entity2) {
         action = 'kill';
         this.engageGossip(dead, perp, action);
     } 
+    /**
+     * @todo(anand): Need to implement Game Over
+     */
+	 let r;
+    if (dead && perp && action) {
+        if (perp.type === 'player') {
+            switch (dead.type) {
+                case 'npc':
+					let coins = Math.floor(Math.random() * 4) + 2;
+					this.player.currency += coins;
+					
+					r = Math.floor(Math.random() * 2);
+					if (r == 1){
+						r = Math.floor(Math.random() * 4);
+						let k = '';
+						if (r == 0) k = 'Carrot';
+						if (r == 1) k = 'Apple';
+						if (r == 2) k = 'Pear';
+						if (r == 3) k = 'Mutton';
+						let i = new Item(dead.x + (dead.width / 2), dead.y + (dead.height / 2), k, 'food');
+						this.itemGroup.add(i);
+					}
+                    break;
+                case 'monster':
+					r = Math.floor(Math.random() * 5);
+					if (r == 1){
+						r = Math.floor(Math.random() * 3);
+						let k = '';
+						if (r == 0) k = 'Tusk';
+						if (r == 1) k = 'Cigar';
+						if (r == 2) k = 'Book';
+						let i = new Item(dead.x + (dead.width / 2), dead.y + (dead.height / 2), k, 'misc');
+						this.itemGroup.add(i);
+					}
+                    this.player.score++;
+                    break;
+            }
+        }
+        
+        // let nearest = Map.nearest(this.player, 3, 256);
+        // nearest.forEach(function(p, i) {
+        //     if (p[0].state !== 'dead') {
+        //         let witness =p[0];
+        //         this.rippleGossip.createRumor(
+        //             witness,
+        //             dead,
+        //             perp,
+        //             action);
+        //     }
+        // }, this);
+        let nearest = Map.nearest(this.player, 3, 256);
+        let numWitnesses = Math.floor(Math.random() * nearest.length);
+        let witnesses = Sampling.sample_from_array(nearest, numWitnesses, false);
+        
+        if (!witnesses) return;
+        witnesses.forEach(function(p, i) {
+            if (p[0].state !== 'dead') {
+                let witness =p[0];
+                this.rippleGossip.createRumor(
+                    witness,
+                    dead,
+                    perp,
+                    action);
+            }
+        }, this);
+    }    
     
 }
 
@@ -1127,7 +1367,7 @@ Play.engageGossip = function(dead, perp, action){
                     console.log('Killed an NPC :(');
                     break;
                 case 'monster':
-                    this.player.score++;
+                    //this.player.score++;
                     break;
             }
         }

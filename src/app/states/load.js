@@ -20,7 +20,8 @@ Load.preload = function() {
     game.load.image('tileset', 'assets/tilemaps/outdoors.png');
 
     game.load.image('hud_wasd', 'assets/HUD-elements/HUD_wasd.png');
-    game.load.image('hud_weapon', 'assets/HUD-elements/HUD_weapon.png');
+    game.load.image('hud_Dagger', 'assets/HUD-elements/HUD_weapon.png');
+	game.load.image('hud_Bow', 'assets/HUD-elements/HUD_bow.png');
     game.load.image('hud_emptyHealth', 'assets/HUD-elements/HUD_emptyHealth.png');
     game.load.image('hud_fullHealth', 'assets/HUD-elements/HUD_fullHealth.png');
     game.load.image('hud_fullRep', 'assets/HUD-elements/HUD_fullRep.png');
@@ -39,14 +40,19 @@ Load.preload = function() {
 	game.load.image('Canteen', 'assets/sprites/Inventory/canteen.png');
 	game.load.image('Tunic', 'assets/sprites/Inventory/tunic.png');
 	game.load.image('Pear', 'assets/sprites/Inventory/pear.png');
-	game.load.image('Iphone', 'assets/sprites/Inventory/iphone.png');
 	game.load.image('Taco', 'assets/sprites/Inventory/taco.png');
-	game.load.image('Handgun', 'assets/sprites/Inventory/handgun.png');
-	game.load.image('Cocaine', 'assets/sprites/Inventory/cocaine.png');
+	game.load.image('Tusk', 'assets/sprites/Inventory/tusk.png');
+	game.load.image('Bow', 'assets/sprites/Inventory/bow.png');
+	game.load.image('Arrow_Right', 'assets/sprites/Inventory/arrow_right.png');
+	game.load.image('Arrow_Left', 'assets/sprites/Inventory/arrow_left.png');
+	game.load.image('Arrow_Up', 'assets/sprites/Inventory/arrow_up.png');
+	game.load.image('Arrow_Down', 'assets/sprites/Inventory/arrow_down.png');
+	
 
     game.load.spritesheet('enemy', 'assets/sprites/OrcEnemy.png', 64, 64, 273);
     game.load.spritesheet('woman', 'assets/sprites/woman.png', 64, 64, 273);
     game.load.spritesheet('player', 'assets/sprites/armor.png', 64, 64, 273);
+	game.load.spritesheet('player_shoot', 'assets/sprites/armor_bow.png', 64, 64, 273);
 };
 
 Load.create = function() {
