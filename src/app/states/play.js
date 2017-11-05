@@ -87,13 +87,32 @@ Play.preload = function() {
 	let margin = 5;
 
 	//Weapon display
-    this.wpn = game.add.sprite(0, 0, 'hud_weapon');
+    this.wpn = game.add.sprite(0, 0, 'hud_Dagger');
     this.wpn.width /= 2;
     this.wpn.height /= 2;
-    this.wpn.x = game.camera.width - this.wpn.width - margin;
+    this.wpn.x = game.camera.width - this.wpn.width * 2 - margin;
 	this.wpn.y = margin;
     this.wpn.fixedToCamera = true;
 
+	//Next Weapon
+	this.nxtWpn = new UI.MenuButton(game.camera.width - this.wpn.width / 2 - margin,
+         (this.wpn.y + this.wpn.height / 2 + 5), '>', null, ()=>{
+			this.player.currentWeapon++;
+			if (this.player.currentWeapon == this.player.weapons.length) this.player.currentWeapon = 0;
+			this.wpn.loadTexture('hud_'+this.player.weapons[this.player.currentWeapon], 0, false);
+			if (this.player.weapons[this.player.currentWeapon] === 'Bow') this.player.loadTexture('player_shoot');
+			if (this.player.weapons[this.player.currentWeapon] === 'Dagger') this.player.loadTexture('player');
+         }, '1.5em' );
+		 
+	//Next Weapon
+	this.prvWpn = new UI.MenuButton(game.camera.width - this.wpn.width * 2.5 - margin - 1,
+         (this.wpn.y + this.wpn.height / 2 + 5), '<', null, ()=>{
+			this.player.currentWeapon--;
+			if (this.player.currentWeapon == -1) this.player.currentWeapon = this.player.weapons.length - 1;
+			this.wpn.loadTexture('hud_'+this.player.weapons[this.player.currentWeapon], 0, false);
+			if (this.player.weapons[this.player.currentWeapon] === 'Bow') this.player.loadTexture('player_shoot');
+			if (this.player.weapons[this.player.currentWeapon] === 'Dagger') this.player.loadTexture('player');
+         }, '1.5em' );
 
     this.textStyle = {
         font: 'Press Start 2P',
@@ -194,7 +213,7 @@ Play.pauseGame = function() {
  * opens/closes the inventory
  */
 let openTab = 'food';
-let numPages = 2;
+let numPages = 1;
 let currentPage = 1;
 
 Play.toggleInventory = function() {
@@ -276,6 +295,7 @@ Play.toggleInventory = function() {
 Play.create = function() {
     // this.player.bringToTop();
 	this.itemGroup = game.add.group();
+	this.bulletGroup = game.add.group();
     /**
      * Check if we should load game.
      */
@@ -749,6 +769,7 @@ Play.update = function() {
     game.physics.arcade.collide(this.entitiesGroup, this.entitiesGroup,
         entityCollision, null, this);
 	game.physics.arcade.overlap(this.player, this.itemGroup, itemCollision, null, this);
+	game.physics.arcade.overlap(this.entitiesGroup, this.bulletGroup, bulletCollision, null, this);
 
     /**
      * NPC Code
@@ -839,10 +860,58 @@ Play.update = function() {
 			this.player.food.splice(0, 1);
 		}
 	} else this.player.eatAgain = 1;
+	
+	//Shoot
+	if ((this.keyboard.isDown(Phaser.Keyboard.N)) && (this.player.weapons[this.player.currentWeapon] === 'Bow')){
+		console.log(this.player.state);
+		if (this.player.state !== 'shooting'){
+			this.player.shoot();
+			setTimeout(() => {
+			let tempBullet = null;
+			switch (this.player.direction) {
+				case ('up'):
+					tempBullet = game.add.sprite(this.player.body.x, this.player.body.y, 'Arrow_Up');
+					game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
+					tempBullet.body.velocity.y = -500;
+					break;
+				case ('down'):
+					tempBullet = game.add.sprite(this.player.body.x, this.player.body.y, 'Arrow_Down');
+					game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
+					tempBullet.body.velocity.y = 500;
+					break;
+				case ('left'):
+					tempBullet = game.add.sprite(this.player.body.x, this.player.body.y, 'Arrow_Left');
+					game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
+					tempBullet.body.velocity.x = -500;
+					break;
+				case ('right'):
+					tempBullet = game.add.sprite(this.player.body.x, this.player.body.y, 'Arrow_Right');
+					game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
+					tempBullet.body.velocity.x = 500;
+					break;
+			}
+			tempBullet.visible = true;
+			game.world.add(tempBullet);
+			this.bulletGroup.add(tempBullet);
+			
+			setTimeout(() => {
+				tempBullet.kill();
+				this.bulletGroup.remove(tempBullet);
+			}, 10000);
+			}, 500);
+		}
+	} else {
+        let temp = this.player.frame - 207;
+        if ((temp % 13 === 0)) {
+            this.player.state = 'idling';
+            
+        }
+    }
 
     // Attack
     if ((this.keyboard.isDown(Phaser.Keyboard.M)) &&
-        (this.player.state !== 'attacking')) {
+        (this.player.state !== 'attacking') &&
+		(this.player.weapons[this.player.currentWeapon] === 'Dagger')) {
         this.player.attack();
     } else {
         /**
@@ -851,7 +920,7 @@ Play.update = function() {
          */
         // 
         let temp = this.player.frame - 161;
-        if ((temp % 13 === 0)) {
+        if ((temp % 13 === 0) && (this.player.state === 'attacking')) {
             if (!(this.keyboard.isDown(Phaser.Keyboard.M))) {
                 this.player.state = 'idling';
             }
@@ -868,7 +937,7 @@ Play.update = function() {
         this.player.moveInDirection('left', sprint);
     } else if (this.keyboard.isDown(Phaser.Keyboard.D)) {
         this.player.moveInDirection('right', sprint);
-    } else if (this.player.state !== 'attacking') {
+    } else if ((this.player.state !== 'attacking') && (this.player.state !== 'shooting')) {
         this.player.idleHere();
     }
 
@@ -914,6 +983,49 @@ Play.update = function() {
     } else {
         this.fullRepBar.tint = 0x999999;
     }
+};
+let r = 0;
+function bulletCollision(entity, bullet){
+	if (entity !== this.player) { 
+		if (entity.state !== 'dead') {
+			switch (entity.type) {
+                case 'npc':
+					let coins = Math.floor(Math.random() * 4) + 2;
+					this.player.currency += coins;
+					
+					r = Math.floor(Math.random() * 2);
+					if (r == 1){
+						r = Math.floor(Math.random() * 4);
+						let k = '';
+						if (r == 0) k = 'Carrot';
+						if (r == 1) k = 'Apple';
+						if (r == 2) k = 'Pear';
+						if (r == 3) k = 'Mutton';
+						let i = new Item(entity.x + (entity.width / 2), entity.y + (entity.height / 2), k, 'food');
+						this.itemGroup.add(i);
+					}
+                    break;
+                case 'monster':
+					r = Math.floor(Math.random() * 5);
+					if (r == 1){
+						r = Math.floor(Math.random() * 3);
+						let k = '';
+						if (r == 0) k = 'Tusk';
+						if (r == 1) k = 'Cigar';
+						if (r == 2) k = 'Book';
+						let i = new Item(entity.x + (entity.width / 2), entity.y + (entity.height / 2), k, 'misc');
+						this.itemGroup.add(i);
+					}
+                    this.player.score++;
+                    break;
+            }
+			
+			bullet.kill();
+			entity.die();	
+			entity.body.enable = false;
+			
+		}
+	}
 };
 
 function itemCollision(player, item){

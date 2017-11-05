@@ -26,7 +26,9 @@ function Player(x, y, key) {
 	this.currency = 0;
     this.defenseStat = 20;
 	
-	this.weapons = ['Dagger'];
+	this.currentWeapon = 0;
+	
+	this.weapons = ['Dagger', 'Bow'];
 	this.food = [];
 	this.misc = ['Tunic'];
 
@@ -53,6 +55,7 @@ Player.prototype.addToInventory = function(item, type) {
 	}
 	return;
 };
+
 
 // Player.prototype.die = function() {
 //     Entity.die.call(this);
