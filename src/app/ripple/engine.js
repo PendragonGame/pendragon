@@ -42,9 +42,14 @@ function Ripple() {
     //     });
     //     self.timer = setTimeout(updateWorker, 1500);
     // })();
+    this.paused = false;
 };
 
 Ripple.prototype.triggerGossip = function(source) {
+    /**
+     * If paused, do nothing
+     */
+    if (this.paused) return;
     let nearest = Map.nearest(source, kNN + 1, gossipRadius);
     let gossipMongers = nearest
                     // .filter((p) => p[1] === 0)
@@ -82,6 +87,13 @@ Ripple.prototype.triggerConversation = function(e) {
          */
     }
 };
+
+/**
+ * Toggle pause state of Ripple Engine
+ */
+Ripple.prototype.togglePause = function() {
+    this.paused = !this.paused;
+}
 
 /**
  * Get the average reputation of the k nearest entities.

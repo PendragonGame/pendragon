@@ -9,9 +9,9 @@ const ui = require('../ui/ui');
 let LoadMenu = {};
 
 /**
- * 
- * 
- * @param {any} key 
+ *
+ *
+ * @param {any} key
  */
 function loadGame() {
     console.log('Loading: ' + this.key);

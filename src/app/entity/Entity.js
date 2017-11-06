@@ -21,14 +21,14 @@ const DIRECTIONS = ['up', 'right', 'down', 'left'];
 /**
  * The `Entity` class is the base class for all game entities.
  * It needs to have to following properties
- *  
+ *
  *  - Health    (Upto the child class to define)
  *  - Weapon
  *  - Inventory @todo
  *  - Factions @todo
- * 
+ *
  * It also cannot step outside world bounds.
- *  
+ *
  * @param {number} x - The x coordinate of `Entity` on the canvas
  * @param {number} y - The y coordinate of `Entity` on the canvas
  * @param {string} key - The key to the loaded spritesheet
@@ -42,20 +42,20 @@ function Entity(x, y, key) {
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.collideWorldBounds = true;
     /**
-     * Direction initialized to down. 
+     * Direction initialized to down.
      * Must be changed only when new direction is chosen.
      */
     this.direction = 'down';
 
     /**
      * Begin with no weapon.
-     * 
+     *
      * @todo: The weapons can be stored as an object with attributes.
      */
     this.weapon = null;
 
     /**
-     * Miscellaneous attributes. 
+     * Miscellaneous attributes.
      */
     this.speed = 65;
     this.sprintSpeed = 170;
@@ -69,7 +69,7 @@ function Entity(x, y, key) {
     game.physics.enable(this, Phaser.Physics.ARCADE);
 
     /**
-     *  hitbox fix 
+     *  hitbox fix
      */
     this.body.height = this.body.height / 2;
     this.body.width = this.body.width / 2;
@@ -123,8 +123,8 @@ Entity.prototype.constructor = Entity;
 
 /**
  * Set the animations of the `Entity`.
- * 
- * 
+ *
+ *
  * @param {object} frames - Object containing the animation frames
  */
 Entity.prototype.setAnimations = function(frames) {
@@ -134,7 +134,7 @@ Entity.prototype.setAnimations = function(frames) {
 
     /**
      * Adding animations for the `Entity`.
-     * 
+     *
      * 1 sprite sheet contains every movement.
      * You target sections of the sprite sheet by using array[0...n],
      * where 0 is the top left corner of the image and n is the bottom
@@ -202,17 +202,17 @@ Entity.prototype.setAnimations = function(frames) {
 
 /**
  * Method to move any `Entity`
- * 
+ *
  * The parameter `direction` has to be one of 'up', 'down', 'left' or 'right'.
- * 
+ *
  * Another option is to use:
- * 
+ *
  *  1. UP
  *  2. RIGHT
  *  3. DOWN
- *  4. LEFT 
- * 
- * @param {string|number} direction 
+ *  4. LEFT
+ *
+ * @param {string|number} direction
  * @param {Boolean} sprint - Whether to sprint or not
  */
 Entity.prototype.moveInDirection = function(direction, sprint) {
@@ -362,8 +362,8 @@ Entity.prototype.adjustHitbox = function(state) {
 
 /**
  * Set the direction of the sprite
- * 
- * @param {string|number} direction 
+ *
+ * @param {string|number} direction
  */
 Entity.prototype.setDirection= function(direction) {
     if (_.isString(direction) && _.includes(DIRECTIONS, direction)) {
@@ -410,7 +410,7 @@ Entity.prototype.deserialize = function(obj) {
 /**
  * Return the Name of the function.
  * This is a hack and should be used only for debugging.
- * 
+ *
  * @return {string}
  */
 Entity.prototype.toString = function() {
@@ -422,7 +422,7 @@ Entity.prototype.toString = function() {
 
 /**
  * Get the center of the Hitbox of the entity
- * 
+ *
  * @return {Object} - Point with x and y
  */
 Entity.prototype.trueXY = function() {
@@ -434,9 +434,9 @@ Entity.prototype.trueXY = function() {
 };
 
 /**
- * 
- * 
- * @param {Object} rumor 
+ *
+ *
+ * @param {Object} rumor
  */
 Entity.prototype.learnInfo = function(rumor) {
     if (!this.alive) return;
@@ -446,14 +446,14 @@ Entity.prototype.learnInfo = function(rumor) {
          */
         return;
     }
-    console.info('[' + this.id +'] Learning something new....')
+    console.debug('[' + this.id +'] Learning something new....');
     this.information.push(rumor);
 
     switch (rumor.action) {
         case 'kill':
             if (rumor.targetType === this.type) {
                  /**
-                  * If the type that was killed was the same as 
+                  * If the type that was killed was the same as
                   * the current `Entity`'s type, reputation drop by
                   * 0.1.
                   */
