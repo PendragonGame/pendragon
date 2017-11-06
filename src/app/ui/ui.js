@@ -16,6 +16,7 @@
  * @constructor MenuButton
  */
 function MenuButton(x, y, text, key, func, fontSize = '3em') {
+    this.orignalSize = fontSize;
     // add text over the button
     this.key = key;
     this.text = game.add.text(x,
@@ -64,8 +65,8 @@ MenuButton.prototype.setLocation = function(x, y) {
 };
 
 MenuButton.prototype.align = function(a) {
-	this.text.align = a;
-	this.button.align = a;
+    this.text.align = a;
+    this.button.align = a;
 };
 
 /**
@@ -75,6 +76,7 @@ MenuButton.prototype.align = function(a) {
 MenuButton.prototype.hide = function() {
     this.text.visible = false;
     this.button.inputEnabled = false;
+    this.text.fontSize = this.orignalSize;
     return this;
 };
 
