@@ -1,0 +1,40 @@
+matrix:
+  include:
+  - os: osx
+    osx_image: xcode9.0
+    language: node_js
+    node_js: '8'
+    env:
+    - ELECTRON_CACHE=$HOME/.cache/electron
+    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+ 
+cache:
+  directories:
+  - node_modules
+  - "$HOME/.cache/electron"
+  - "$HOME/.cache/electron-builder"
+before_install:
+- |
+  if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+    mkdir -p /tmp/git-lfs && curl -L https://github.com/github/git-lfs/releases/download/v2.3.1/git-lfs-$([ "$TRAVIS_OS_NAME" == "linux" ] && echo "linux" || echo "darwin")-amd64-2.3.1.tar.gz | tar -xz -C /tmp/git-lfs --strip-components 1
+    export PATH="/tmp/git-lfs:$PATH"
+  fi
+before_script:
+- git lfs pull
+script:
+- npm run builder --ia32 --x64 -ml
+before_cache:
+- rm -rf $HOME/.cache/electron-builder/wine
+
+deploy:
+  provider: releases
+  api_key:
+    secure: dfCqP800YZUcerPDRMCgpyPCcUks59egoaUuOGWiv0oOXgwLC0McfPVPNJtfHQV4oGed5KSK0X8qTf2fPyZIXq9UVTaIhYnp8JsDVQmHbeKvqa/oeJEKroOFbREQv5VDVIMy+CohmqwAlfJXWagOH88rWj0E11fjz928SarfedXwRJAPchxgfk9FwLQyAS+OJJ44bLg2Ufu1Ve/uzROsIB/TsgwmV/bHuKOXnfxGRxTF4iSaoZYJ1xboL6H64WWWzmoBI1Gap9gC9BIcuPLBTK4pc74HiIQvJk4E/rYTTNoYJF6OiswYtLVIEHwppaDov2DdjbJL/jFyvYpJGmTUTEIhQg+oQCor+li2t45wAoT3N3Kq1Tp8i7TYOOQ1AK+G60S8xMXsZhK7b3hMva1+/sqa3iJ9v2PoLZ1kpVwm37hXTBK/8kQLZOV6NH6W3aZksi1v5H37fmZgmSiA5llmLcHfv26XQFbHwxpOF8yi2U0G0wMQk3lyTZK8JD60KvpxOWcyvvuOXdAnyltG/hwVEDaTSp44uPANC+0IIOiQ7QTCtKkGWm81TXvgWQOH9T3axg0FtR2cvLUoPg1nvrZawgrAIuQFGK7eYcffNsejBmUrrIIbpTAdMLaiNg3ZOEdBgfb/q7hS99/+Cp6s8Wyu6+rpBsfHZ4pYBemPRfySi3I=
+  file: dist/*
+  on:
+    repo: PendragonGame/pendragon
+
+  branches:
+    only:
+    - master
+    - /^v\d+(\.\d+)+$/
