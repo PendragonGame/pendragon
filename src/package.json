@@ -15,7 +15,7 @@
       "name": "Jacob Belewich"
     }
   ],
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A RPG with realistic gossip",
   "main": "main.js",
   "scripts": {
@@ -64,7 +64,7 @@
   },
   "electronVersion": "1.7.6",
   "build": {
-    "appId": "com.github.pendragon",
+    "appId": "io.github.PendragonGame",
     "productName": "Pendragon",
     "asar": true,
     "directories": {
@@ -82,7 +82,8 @@
     "win": {
       "target": [
         "portable",
-        "zip"
+        "zip",
+        "nsis"
       ],
       "publisherName": "Pendragon Game",
       "icon": "build/icon.ico"
