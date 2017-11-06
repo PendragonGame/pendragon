@@ -193,6 +193,7 @@ Play.pauseGame = function() {
         /* nop */
     } else {
         game.paused ? game.paused = false : game.paused = true;
+        this.rippleGossip.togglePause();
         if (game.paused) {
             // reveal pause menu
             for (let i = 0; i < this.pauseMenu.length; i++) {
@@ -300,6 +301,18 @@ Play.create = function() {
     // this.player.bringToTop();
     this.itemGroup = game.add.group();
     this.bulletGroup = game.add.group();
+    game.physics.arcade.overlap(this.blockLayer, this.bulletGroup,
+        function(bullet, layer) {
+            bullet.kill();
+        },
+        null, this
+    );
+    game.physics.arcade.overlap(this.blockOverlap, this.bulletGroup,
+        function(bullet, layer) {
+            bullet.kill();
+        },
+        null, this
+    );
     /**
      * Check if we should load game.
      */
