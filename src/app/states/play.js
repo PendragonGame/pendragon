@@ -74,6 +74,44 @@ Play.preload = function() {
             case 73:
                 this.toggleInventory();
                 break;
+            case 'W'.charCodeAt(0):
+                this.player.moveInDirection('up', this.player.sprint);
+                break;
+            case 'A'.charCodeAt(0):
+                this.player.moveInDirection('left', this.player.sprint);
+                break;
+            case 'S'.charCodeAt(0):
+                this.player.moveInDirection('down', this.player.sprint);
+                break;
+            case 'D'.charCodeAt(0):
+                this.player.moveInDirection('right', this.player.sprint);
+                break;
+            case 16:
+                this.player.sprint = true;
+                break;
+            default:
+                break;
+        }
+    };
+
+    this.keyboard.onUpCallback = () => {
+        let dir = this.player.direction;
+        switch (game.input.keyboard.event.keyCode) {
+            case 'W'.charCodeAt(0):
+                if (dir === 'up') this.player.idleHere();
+                break;
+            case 'A'.charCodeAt(0):
+                if (dir === 'left') this.player.idleHere();
+                break;
+            case 'S'.charCodeAt(0):
+                if (dir === 'down') this.player.idleHere();
+                break;
+            case 'D'.charCodeAt(0):
+            if (dir === 'right') this.player.idleHere();
+                break;
+            case 16:
+                this.player.sprint = false;
+                break;
             default:
                 break;
         }
@@ -902,12 +940,6 @@ Play.update = function() {
     // game.debug.body(this.player.collideBox);
     // game.debug.bodyInfo(this.player.collideBox, 32, 32);
 
-    // SHIFT for running
-    let sprint = false;
-    if (this.keyboard.isDown(Phaser.Keyboard.SHIFT)) {
-        sprint = true;
-    }
-
     if (this.keyboard.isDown(Phaser.Keyboard.E)) {
         if (this.player.eatAgain == 1 &&
             this.player.food.length > 0 &&
@@ -996,21 +1028,6 @@ Play.update = function() {
                 this.player.state = 'idling';
             }
         }
-    }
-
-    // Moving the player, but only if you aren't attacking.
-
-    if (this.keyboard.isDown(Phaser.Keyboard.W)) {
-        this.player.moveInDirection('up', sprint);
-    } else if (this.keyboard.isDown(Phaser.Keyboard.S)) {
-        this.player.moveInDirection('down', sprint);
-    } else if (this.keyboard.isDown(Phaser.Keyboard.A)) {
-        this.player.moveInDirection('left', sprint);
-    } else if (this.keyboard.isDown(Phaser.Keyboard.D)) {
-        this.player.moveInDirection('right', sprint);
-    } else if ((this.player.state !== 'attacking')
-                && (this.player.state !== 'shooting')) {
-        this.player.idleHere();
     }
 
     /**
