@@ -30,8 +30,8 @@ function Player(x, y, key) {
 	this.stamina = 100;
 	this.maxStamina = 250;
 	
-	this.speed = 130;
-    this.sprintSpeed = 230;
+	this.speed = 150;
+    this.sprintSpeed = 260;
 	
 	this.currentWeapon = 0;
 	
