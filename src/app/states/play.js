@@ -814,17 +814,12 @@ Play.create = function() {
     timerIDs.push(i);
 };
 
-let canToggle = 1;
-
 Play.update = function() {
     if (this.player.state === 'dead') {
         game.score = this.player.score;
         game.dayCount = this.player.daysSurvived;
-        setTimeout(() => {
-            game.state.start('Game Over');
-        }, 2000);
+        game.state.start('Game Over');
     }
-
     const hpPercent = this.player.HP / this.player.maxHP;
     this.fullHealthBar.width = (146 * (hpPercent));
     this.fullStamBar.width = (146 * (this.player.stamina / this.player.maxStamina));

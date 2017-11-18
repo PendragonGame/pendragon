@@ -79,12 +79,15 @@ NPC.prototype.gotoXY = function(x, y, navMesh, sprint = false) {
 }
     let currentTime = game.time.now;
     // limit the amount of direction changes to about 1 per 150 ms
+    let curDir = this.direction;
     if (currentTime - this.directionLimiter >= 150) {
             // confusing code that ram won't understand
             Math.abs(path[1].x - trueX) >= Math.abs(path[1].y - trueY) ?
             this.moveInDirection(((path[1].x - trueX < 0)*2)+1, sprint) :
             this.moveInDirection((path[1].y - trueY > 0)*2, sprint);
             this.directionLimiter = currentTime;
+    } else {
+        if (curDir !== this.direction) this.idleHere();
     }
     } else {
         // if lost don't move
