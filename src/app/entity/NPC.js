@@ -140,7 +140,7 @@ NPC.prototype.wander = function(navMesh,
  * @param {boolean=} sprint the navMesh of the map
  * @return {boolean} target no longer exists (probably dead)
  */
-NPC.prototype.aggro = function(target, navMesh, sprint = false) {
+NPC.prototype.aggro = function(target, navMesh, sprint = true) {
     if (!target) {
         console.warn('target does not exist');
         this.idleHere();

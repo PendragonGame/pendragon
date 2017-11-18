@@ -65,6 +65,7 @@ Play.preload = function() {
 
     // Input for game
     this.keyboard = game.input.keyboard;
+    this.wasdQueue = [];
     this.keyboard.onDownCallback = () => {
         switch (game.input.keyboard.event.keyCode) {
             // 27 = escape
@@ -75,16 +76,16 @@ Play.preload = function() {
                 this.toggleInventory();
                 break;
             case 'W'.charCodeAt(0):
-                this.player.moveInDirection('up', this.player.sprint);
+                if (!this.wasdQueue.includes('up')) this.wasdQueue.push('up');
                 break;
             case 'A'.charCodeAt(0):
-                this.player.moveInDirection('left', this.player.sprint);
+                if (!this.wasdQueue.includes('left')) this.wasdQueue.push('left');
                 break;
             case 'S'.charCodeAt(0):
-                this.player.moveInDirection('down', this.player.sprint);
+                if (!this.wasdQueue.includes('down')) this.wasdQueue.push('down');
                 break;
             case 'D'.charCodeAt(0):
-                this.player.moveInDirection('right', this.player.sprint);
+                if (!this.wasdQueue.includes('right')) this.wasdQueue.push('right');
                 break;
             case 16:
                 this.player.sprint = true;
@@ -95,19 +96,23 @@ Play.preload = function() {
     };
 
     this.keyboard.onUpCallback = () => {
-        let dir = this.player.direction;
+        let index;
         switch (game.input.keyboard.event.keyCode) {
             case 'W'.charCodeAt(0):
-                if (dir === 'up') this.player.idleHere();
+                index = this.wasdQueue.indexOf('up');
+                this.wasdQueue.splice(index, 1);
                 break;
             case 'A'.charCodeAt(0):
-                if (dir === 'left') this.player.idleHere();
+                index = this.wasdQueue.indexOf('left');
+                this.wasdQueue.splice(index, 1);
                 break;
             case 'S'.charCodeAt(0):
-                if (dir === 'down') this.player.idleHere();
+                index = this.wasdQueue.indexOf('down');
+                this.wasdQueue.splice(index, 1);
                 break;
             case 'D'.charCodeAt(0):
-            if (dir === 'right') this.player.idleHere();
+                index = this.wasdQueue.indexOf('right');
+                this.wasdQueue.splice(index, 1);
                 break;
             case 16:
                 this.player.sprint = false;
@@ -1028,6 +1033,13 @@ Play.update = function() {
                 this.player.state = 'idling';
             }
         }
+    }
+
+    if (this.wasdQueue.length) {
+        this.player.moveInDirection(this.wasdQueue[this.wasdQueue.length-1],
+             this.player.sprint);
+    } else if(this.player.state !== 'attacking' && this.player.state !== 'shooting') {
+        this.player.idleHere();
     }
 
     /**

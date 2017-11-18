@@ -23,17 +23,17 @@ function Player(x, y, key) {
     this.HP = 100;
     this.score = 0;
     this.daysSurvived = 1;
-	this.currency = 0;
+    this.currency = 0;
     this.defenseStat = 20;
-	
-	this.currentWeapon = 0;
-	
-	this.weapons = ['Dagger', 'Bow'];
-	this.food = [];
-	this.misc = ['Tunic'];
 
-	this.eatAgain = 1;	
-		
+    this.currentWeapon = 0;
+
+    this.weapons = ['Dagger', 'Bow'];
+    this.food = [];
+    this.misc = ['Tunic'];
+
+    this.eatAgain = 1;
+
     this.type = 'player';
     this.converse('Press Escape for help');
 }
@@ -42,18 +42,18 @@ Player.prototype = Object.create(Entity.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.addToInventory = function(item, type) {
-	switch (type){
-		case ('food'):
-			this.food.push(item);
-			break;
-		case ('weapons'):
-			this.weapons.push(item);
-			break;
-		case ('misc'):
-			this.misc.push(item);
-			break;
-	}
-	return;
+    switch (type) {
+        case ('food'):
+            this.food.push(item);
+            break;
+        case ('weapons'):
+            this.weapons.push(item);
+            break;
+        case ('misc'):
+            this.misc.push(item);
+            break;
+    }
+    return;
 };
 
 
