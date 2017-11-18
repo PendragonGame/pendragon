@@ -19,12 +19,25 @@ function Player(x, y, key) {
      * 
      * Setting max HP to 100 by default.
      */
+	this.canSprint = 1;
     this.maxHP = 100;
     this.HP = 100;
     this.score = 0;
     this.daysSurvived = 1;
     this.currency = 0;
     this.defenseStat = 20;
+	
+	this.stamina = 100;
+	this.maxStamina = 250;
+	
+	this.speed = 150;
+    this.sprintSpeed = 260;
+	
+	this.currentWeapon = 0;
+	
+	this.weapons = ['Dagger', 'Bow'];
+	this.food = [];
+	this.misc = ['Tunic'];
 
     this.currentWeapon = 0;
 
@@ -55,7 +68,6 @@ Player.prototype.addToInventory = function(item, type) {
     }
     return;
 };
-
 
 // Player.prototype.die = function() {
 //     Entity.die.call(this);

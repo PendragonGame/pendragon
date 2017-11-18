@@ -218,12 +218,9 @@ Entity.prototype.setAnimations = function(frames) {
 Entity.prototype.moveInDirection = function(direction, sprint) {
     if (this.state !== 'attacking' && this.state !== 'shooting') {
         this.state = 'walking';
-        let speed = this.speed;
-        let animSpeed = 10;
-        if (sprint) {
-            speed = this.sprintSpeed;
-            animSpeed = 30;
-        }
+        let speed = sprint ? this.sprintSpeed : this.speed;
+
+        let animSpeed = speed*20/150;
         this.animations.currentAnim.speed = animSpeed;
 
         let dir = '';
