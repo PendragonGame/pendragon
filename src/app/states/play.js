@@ -65,6 +65,7 @@ Play.preload = function() {
 
     // Input for game
     this.keyboard = game.input.keyboard;
+    this.wasdQueue = [];
     this.keyboard.onDownCallback = () => {
         switch (game.input.keyboard.event.keyCode) {
             // 27 = escape
@@ -74,15 +75,51 @@ Play.preload = function() {
             case 73:
                 this.toggleInventory();
                 break;
-			case 81:
-				if (this.player.state !== 'shooting' && this.player.state !== 'attacking'){
-				this.player.currentWeapon++;
-				if (this.player.currentWeapon == this.player.weapons.length) this.player.currentWeapon = 0;
-				this.wpn.loadTexture('hud_' + this.player.weapons[this.player.currentWeapon], 0, false);
-				if (this.player.weapons[this.player.currentWeapon] === 'Bow') this.player.loadTexture('player_shoot');
-				if (this.player.weapons[this.player.currentWeapon] === 'Dagger') this.player.loadTexture('player');
-				}
-				break;
+            case 'W'.charCodeAt(0):
+                if (!this.wasdQueue.includes('up')) this.wasdQueue.push('up');
+                break;
+            case 'A'.charCodeAt(0):
+                if (!this.wasdQueue.includes('left')) this.wasdQueue.push('left');
+                break;
+            case 'S'.charCodeAt(0):
+                if (!this.wasdQueue.includes('down')) this.wasdQueue.push('down');
+                break;
+            case 'D'.charCodeAt(0):
+                if (!this.wasdQueue.includes('right')) this.wasdQueue.push('right');
+                break;
+            default:
+                break;
+        }
+    };
+
+    this.keyboard.onUpCallback = () => {
+        let index;
+        switch (game.input.keyboard.event.keyCode) {
+            case 'W'.charCodeAt(0):
+                index = this.wasdQueue.indexOf('up');
+                this.wasdQueue.splice(index, 1);
+                break;
+            case 'A'.charCodeAt(0):
+                index = this.wasdQueue.indexOf('left');
+                this.wasdQueue.splice(index, 1);
+                break;
+            case 'S'.charCodeAt(0):
+                index = this.wasdQueue.indexOf('down');
+                this.wasdQueue.splice(index, 1);
+                break;
+            case 'D'.charCodeAt(0):
+                index = this.wasdQueue.indexOf('right');
+                this.wasdQueue.splice(index, 1);
+                break;
+            case 81:
+                if (this.player.state !== 'shooting' && this.player.state !== 'attacking') {
+                    this.player.currentWeapon++;
+                    if (this.player.currentWeapon == this.player.weapons.length) this.player.currentWeapon = 0;
+                    this.wpn.loadTexture('hud_' + this.player.weapons[this.player.currentWeapon], 0, false);
+                    if (this.player.weapons[this.player.currentWeapon] === 'Bow') this.player.loadTexture('player_shoot');
+                    if (this.player.weapons[this.player.currentWeapon] === 'Dagger') this.player.loadTexture('player');
+                }
+                break;
             default:
                 break;
         }
@@ -102,7 +139,7 @@ Play.preload = function() {
     this.wpn.x = game.camera.width - this.wpn.width - margin;
     this.wpn.y = margin;
     this.wpn.fixedToCamera = true;
-	
+
     this.textStyle = {
         font: 'Press Start 2P',
         fill: '#ffff00',
@@ -118,7 +155,7 @@ Play.preload = function() {
     this.repLabel = game.add.text(margin, this.healthLabel.height + margin + margin,
         'Rep  ', this.textStyle);
     this.repLabel.fixedToCamera = true;
-	// "Rep" text
+    // "Rep" text
     this.stamLabel = game.add.text(margin, this.healthLabel.height * 2 + margin * 3,
         'Stamina', this.textStyle);
     this.stamLabel.fixedToCamera = true;
@@ -160,8 +197,8 @@ Play.preload = function() {
     this.barRealWidth = this.fullRepBar.width;
     this.fullRepBar.width /= 2;
     this.fullRepBar.height = this.emptyRepBar.height - 4;
-	
-	// Same deal for Stamina
+
+    // Same deal for Stamina
     this.emptyStamBar = game.add.sprite(this.healthLabel.width + (2 * margin),
         this.emptyHealthBar.height * 2 + (5 * margin),
         'hud_emptyHealth');
@@ -187,9 +224,9 @@ Play.preload = function() {
         this.fullHealthBar,
         this.emptyRepBar,
         this.fullRepBar,
-		this.stamLabel,
-		this.emptyStamBar,
-		this.fullStamBar
+        this.stamLabel,
+        this.emptyStamBar,
+        this.fullStamBar,
     ]);
 };
 
@@ -662,11 +699,9 @@ Play.create = function() {
         'Movement:\n - W, A, S, D: Move Up, Left, Down, Right respectively.\n' +
         ' - Shift:      Sprint\n\n' +
         'Attacking:\n' +
-        ' - M: Attack. Attack with your current equipped weapon.\n' +
-        ' - Q: Cycle Weapons. Go to the next weapon in your inventory.\n' +
+        ' - Space: Attack. Attack with your current equipped weapon.\n' +
+        ' - Q: Cycle Weapons. Go to the next weapon in your inventory.\n\n' +
         'Looting:\n' +
-        ' - L: Loot. Pick up items that NPCs drop.\n' +
-        '      *Note: For convenience, Food items are looted automatically.\n' +
         ' - I: Inventory. Open your Inventory to view looted items.\n\n' +
         'Health:\n' +
         ' - E: Eat. Removes first food item from Inventory. +10 HP.\n\n' +
@@ -779,20 +814,16 @@ Play.create = function() {
     timerIDs.push(i);
 };
 
-let canToggle = 1;
-
 Play.update = function() {
     if (this.player.state === 'dead') {
         game.score = this.player.score;
         game.dayCount = this.player.daysSurvived;
-        setTimeout(() => {
-            game.state.start('Game Over');
-        }, 2000);
+        this.keyboard.onDownCallback = this.keyboard.onUpCallback = null;        
+        game.state.start('Game Over');
     }
-
     const hpPercent = this.player.HP / this.player.maxHP;
     this.fullHealthBar.width = (146 * (hpPercent));
-	this.fullStamBar.width = (146 * (this.player.stamina / this.player.maxStamina));
+    this.fullStamBar.width = (146 * (this.player.stamina / this.player.maxStamina));
     while (this.fullHealthBar.width < (146 * (hpPercent))) {
         this.fullHealthBar.width += 1;
     }
@@ -914,24 +945,24 @@ Play.update = function() {
 
     // SHIFT for running
     let sprint = false;
-    if (this.keyboard.isDown(Phaser.Keyboard.SHIFT) 
-		&& this.player.stamina > 0 
-		&& this.player.canSprint === 1
-		&& this.player.state !== 'attacking'
-		&& this.player.state !== 'shooting') {
+    if (this.keyboard.isDown(Phaser.Keyboard.SHIFT) &&
+        this.player.stamina > 0 &&
+        this.player.canSprint === 1 &&
+        this.player.state !== 'attacking' &&
+        this.player.state !== 'shooting' &&
+        this.player.state !== 'idling') {
         sprint = true;
-		this.player.stamina--;
-		if (this.player.stamina === 0) {
-			this.player.canSprint = 0;
-			sprint = false;
-		}
-		
-    } else { 
-		if (this.player.stamina < this.player.maxStamina) 
-			this.player.stamina++; 
-		sprint = false; 
-		this.player.canSprint = 1;
-	}
+        this.player.stamina--;
+        if (this.player.stamina === 0) {
+            this.player.canSprint = 0;
+            sprint = false;
+        }
+    } else {
+        if (this.player.stamina < this.player.maxStamina)
+            {this.player.stamina++;}
+        sprint = false;
+        this.player.canSprint = 1;
+    }
 
     if (this.keyboard.isDown(Phaser.Keyboard.E)) {
         if (this.player.eatAgain == 1 &&
@@ -945,7 +976,7 @@ Play.update = function() {
     } else this.player.eatAgain = 1;
 
     // Shoot
-    if ((this.keyboard.isDown(Phaser.Keyboard.M)) &&
+    if ((this.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) &&
         (this.player.weapons[this.player.currentWeapon] === 'Bow')) {
         console.log(this.player.state);
         if (this.player.state !== 'shooting') {
@@ -1005,7 +1036,7 @@ Play.update = function() {
     }
 
     // Attack
-    if ((this.keyboard.isDown(Phaser.Keyboard.M)) &&
+    if ((this.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) &&
         (this.player.state !== 'attacking') &&
         (this.player.weapons[this.player.currentWeapon] === 'Dagger')) {
         this.player.attack();
@@ -1014,7 +1045,7 @@ Play.update = function() {
          * attacking == false
          * iff we are on the last frame. ie. the whole animation has played.
          */
-        //
+        // å
         let temp = this.player.frame - 161;
         if ((temp % 13 === 0) && (this.player.state === 'attacking')) {
             if (!(this.keyboard.isDown(Phaser.Keyboard.M))) {
@@ -1023,18 +1054,10 @@ Play.update = function() {
         }
     }
 
-    // Moving the player, but only if you aren't attacking.
-
-    if (this.keyboard.isDown(Phaser.Keyboard.W)) {
-        this.player.moveInDirection('up', sprint);
-    } else if (this.keyboard.isDown(Phaser.Keyboard.S)) {
-        this.player.moveInDirection('down', sprint);
-    } else if (this.keyboard.isDown(Phaser.Keyboard.A)) {
-        this.player.moveInDirection('left', sprint);
-    } else if (this.keyboard.isDown(Phaser.Keyboard.D)) {
-        this.player.moveInDirection('right', sprint);
-    } else if ((this.player.state !== 'attacking')
-                && (this.player.state !== 'shooting')) {
+    if (this.wasdQueue.length) {
+        this.player.moveInDirection(this.wasdQueue[this.wasdQueue.length - 1],
+            sprint);
+    } else if (this.player.state !== 'attacking' && this.player.state !== 'shooting') {
         this.player.idleHere();
     }
 
@@ -1137,12 +1160,12 @@ function bulletCollision(entity, bullet) {
  * @param {Phaser.Sprite} item 
  */
 function itemCollision(player, item) {
-    if (item.type === 'food' || this.keyboard.isDown(Phaser.Keyboard.L)) {
+    // if (item.type === 'food' || this.keyboard.isDown(Phaser.Keyboard.L)) {
         item.kill();
         this.itemGroup.remove(item);
         this.player.converse('+' + item.key);
         this.player.addToInventory(item.key, item.type);
-    }
+    // }
 };
 
 

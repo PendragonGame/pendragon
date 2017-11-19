@@ -58,8 +58,8 @@ function Entity(x, y, key) {
      * Miscellaneous attributes.
      */
     this.speed = 65;
-    this.sprintSpeed = 170;
-    this.attackStat = 100;          //How much default damage this entity does -@nitgarg99
+    this.sprintSpeed = 140;
+    this.attackStat = 100; // How much default damage this entity does -@nitgarg99
     this.defenseStat = 1;
     this.maxHP = 100;
     this.HP = 100;
@@ -183,7 +183,7 @@ Entity.prototype.setAnimations = function(frames) {
     this.animations.add('slash_right',
                         [195, 196, 197, 198, 199, 200],
                         10, true);
-						
+
 	this.animations.add('shoot_up',
 					   [208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220],
 					   10, true);
@@ -196,7 +196,6 @@ Entity.prototype.setAnimations = function(frames) {
 	this.animations.add('shoot_right',
 					   [247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259],
 					   10, true);
-					   
 };
 
 
@@ -218,12 +217,9 @@ Entity.prototype.setAnimations = function(frames) {
 Entity.prototype.moveInDirection = function(direction, sprint) {
     if (this.state !== 'attacking' && this.state !== 'shooting') {
         this.state = 'walking';
-        let speed = this.speed;
-        let animSpeed = 10;
-        if (sprint) {
-            speed = this.sprintSpeed;
-            animSpeed = 30;
-        }
+        let speed = sprint ? this.sprintSpeed : this.speed;
+
+        let animSpeed = speed*20/150;
         this.animations.currentAnim.speed = animSpeed;
 
         let dir = '';
@@ -303,9 +299,7 @@ Entity.prototype.shoot = function() {
 Entity.prototype.injure = function() {
     self = this;
     this.state = 'injured';
-    
-    
-}
+};
 
 Entity.prototype.die = function() {
     // const self = this;
@@ -471,7 +465,18 @@ Entity.prototype.learnInfo = function(rumor) {
     }
 };
 
-Entity.prototype.converse = function(text){
+Entity.prototype.converse = function(text) {
+    if (this.children[0]) {
+        this.children[0].text = text;
+        setTimeout(()=>{
+            try {
+            this.children[0].text = '';
+            } catch (err) {
+                // do nothing
+            }
+        }, 2000);
+        return;
+    }
     let chat = game.add.text(32, 0, text);
     chat.anchor.setTo(0.5);
     chat.font = 'Press Start 2P';
@@ -480,7 +485,13 @@ Entity.prototype.converse = function(text){
     chat.stroke = 'black';
     chat.strokeThickness = '4';
     chat.align = 'center';
-    chat.lifespan = 2000; // milliseconds    
+    setTimeout( ()=>{
+        try {
+            if (chat.text === text) chat.text = "";
+        } catch (err) {
+            // do nothing
+        }
+    }, 2000);
     this.addChild(chat);
 };
 
