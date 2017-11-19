@@ -949,7 +949,8 @@ Play.update = function() {
         this.player.stamina > 0 &&
         this.player.canSprint === 1 &&
         this.player.state !== 'attacking' &&
-        this.player.state !== 'shooting') {
+        this.player.state !== 'shooting' &&
+        this.player.state !== 'idling') {
         sprint = true;
         this.player.stamina--;
         if (this.player.stamina === 0) {
