@@ -344,6 +344,12 @@ Play.toggleInventory = function() {
 };
 
 Play.create = function() {
+    if (currentMusic) {
+        currentMusic.stop();
+    }
+    currentMusic = game.add.audio('chip1-music', 1, true);
+    currentMusic.play();
+    this.musicChip = 1;
     // this.player.bringToTop();
     this.itemGroup = game.add.group();
     this.bulletGroup = game.add.group();

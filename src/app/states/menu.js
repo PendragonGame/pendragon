@@ -6,6 +6,12 @@ const ui = require('../ui/ui');
 let Menu = {};
 
 Menu.create = function() {
+    if (currentMusic) {
+        currentMusic.stop();
+    }
+    currentMusic = game.add.audio('menu-music', 1, true);
+    currentMusic.play();
+
     game.world.setBounds(0, 0, 2560, 640);
     this.map = game.add.tilemap('menu-map');
     this.map.addTilesetImage('outdoors', 'tileset');

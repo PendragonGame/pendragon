@@ -8,11 +8,14 @@ Boot.preload = function() {
     game.load.tilemap('menu-map', 'assets/tilemaps/menu-map.json',
     null, Phaser.Tilemap.TILED_JSON);
     game.load.image('tileset', 'assets/tilemaps/outdoors.png');
+    game.load.audio('menu-music', 'assets/music/menu-music.mp3');
 };
 
 
 Boot.create = function() {
-
+    if (currentMusic) {
+        currentMusic.stop();
+    }
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
     game.scale.pageAlignHorizontally = true;
