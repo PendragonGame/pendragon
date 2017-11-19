@@ -16,6 +16,7 @@ let electron = require('electron');
 let window = electron.remote.getCurrentWindow();
 
 const Sampling = require('discrete-sampling');
+const trackSelection = require('../util/music');
 
 
 const npcBounds = [
@@ -344,12 +345,8 @@ Play.toggleInventory = function() {
 };
 
 Play.create = function() {
-    if (currentMusic) {
-        currentMusic.stop();
-    }
-    currentMusic = game.add.audio('chip1-music', 1, true);
-    currentMusic.play();
-    this.musicChip = 1;
+    trackSelection.changeTrack('chip1-music');
+
     // this.player.bringToTop();
     this.itemGroup = game.add.group();
     this.bulletGroup = game.add.group();
@@ -753,9 +750,15 @@ Play.create = function() {
             window.setFullScreenable(false);
             game.paused = true;
         }, '4.5em'));
+    this.pauseMenu.push(new UI.MenuButton(game.camera.width / 2,
+        500, trackSelection.isMuted() ? 'Unmute' : 'Mute', null,
+        ()=>{
+            trackSelection.toggleMute();
+            this.pauseMenu[2].text.text = trackSelection.isMuted() ? 'Unmute' : 'Mute';
+        }, '4.5em'));
     // add a menu button
     this.pauseMenu.push(new UI.MenuButton(game.camera.width / 2,
-        500, 'Main Menu', null, () => {
+        600, 'Main Menu', null, () => {
             game.input.keyboard.onDownCallback = null;
             game.state.start('Menu');
             game.paused = false;
@@ -824,7 +827,7 @@ Play.update = function() {
     if (this.player.state === 'dead') {
         game.score = this.player.score;
         game.dayCount = this.player.daysSurvived;
-        this.keyboard.onDownCallback = this.keyboard.onUpCallback = null;        
+        this.keyboard.onDownCallback = this.keyboard.onUpCallback = null;
         game.state.start('Game Over');
     }
     const hpPercent = this.player.HP / this.player.maxHP;
@@ -964,8 +967,9 @@ Play.update = function() {
             sprint = false;
         }
     } else {
-        if (this.player.stamina < this.player.maxStamina)
-            {this.player.stamina++;}
+        if (this.player.stamina < this.player.maxStamina) {
+            this.player.stamina++;
+        }
         sprint = false;
         this.player.canSprint = 1;
     }
@@ -1167,10 +1171,10 @@ function bulletCollision(entity, bullet) {
  */
 function itemCollision(player, item) {
     // if (item.type === 'food' || this.keyboard.isDown(Phaser.Keyboard.L)) {
-        item.kill();
-        this.itemGroup.remove(item);
-        this.player.converse('+' + item.key);
-        this.player.addToInventory(item.key, item.type);
+    item.kill();
+    this.itemGroup.remove(item);
+    this.player.converse('+' + item.key);
+    this.player.addToInventory(item.key, item.type);
     // }
 };
 
