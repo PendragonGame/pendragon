@@ -1,5 +1,9 @@
 'use strict';
 
+/**
+ * @module entity/Entity
+ */
+
 const _ = require('lodash');
 const uuid = require('../util/uuid');
 
@@ -17,18 +21,18 @@ const DIRECTIONS = ['up', 'right', 'down', 'left'];
 /**
  * The `Entity` class is the base class for all game entities.
  * It needs to have to following properties
- *  
+ *
  *  - Health    (Upto the child class to define)
  *  - Weapon
  *  - Inventory @todo
  *  - Factions @todo
- * 
+ *
  * It also cannot step outside world bounds.
- *  
+ *
  * @param {number} x - The x coordinate of `Entity` on the canvas
  * @param {number} y - The y coordinate of `Entity` on the canvas
  * @param {string} key - The key to the loaded spritesheet
- * 
+ * @constructor Entity
  * @see Phaser.Sprite
  */
 function Entity(x, y, key) {
@@ -38,30 +42,34 @@ function Entity(x, y, key) {
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.collideWorldBounds = true;
     /**
-     * Direction initialized to down. 
+     * Direction initialized to down.
      * Must be changed only when new direction is chosen.
      */
     this.direction = 'down';
 
     /**
      * Begin with no weapon.
-     * 
+     *
      * @todo: The weapons can be stored as an object with attributes.
      */
     this.weapon = null;
 
     /**
-     * Miscellaneous attributes. 
+     * Miscellaneous attributes.
      */
     this.speed = 65;
-    this.sprintSpeed = 170;
+    this.sprintSpeed = 140;
+    this.attackStat = 100; // How much default damage this entity does -@nitgarg99
+    this.defenseStat = 1;
+    this.maxHP = 100;
+    this.HP = 100;
 
     // Set the default animations
     this.setAnimations();
     game.physics.enable(this, Phaser.Physics.ARCADE);
 
     /**
-     *  hitbox fix 
+     *  hitbox fix
      */
     this.body.height = this.body.height / 2;
     this.body.width = this.body.width / 2;
@@ -115,8 +123,8 @@ Entity.prototype.constructor = Entity;
 
 /**
  * Set the animations of the `Entity`.
- * 
- * 
+ *
+ *
  * @param {object} frames - Object containing the animation frames
  */
 Entity.prototype.setAnimations = function(frames) {
@@ -126,7 +134,7 @@ Entity.prototype.setAnimations = function(frames) {
 
     /**
      * Adding animations for the `Entity`.
-     * 
+     *
      * 1 sprite sheet contains every movement.
      * You target sections of the sprite sheet by using array[0...n],
      * where 0 is the top left corner of the image and n is the bottom
@@ -175,33 +183,43 @@ Entity.prototype.setAnimations = function(frames) {
     this.animations.add('slash_right',
                         [195, 196, 197, 198, 199, 200],
                         10, true);
+
+	this.animations.add('shoot_up',
+					   [208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220],
+					   10, true);
+	this.animations.add('shoot_left',
+					   [221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233],
+					   10, true);
+	this.animations.add('shoot_down',
+					   [234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246],
+					   10, true);
+	this.animations.add('shoot_right',
+					   [247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259],
+					   10, true);
 };
 
 
 /**
  * Method to move any `Entity`
- * 
+ *
  * The parameter `direction` has to be one of 'up', 'down', 'left' or 'right'.
- * 
+ *
  * Another option is to use:
- * 
+ *
  *  1. UP
  *  2. RIGHT
  *  3. DOWN
- *  4. LEFT 
- * 
- * @param {string|number} direction 
+ *  4. LEFT
+ *
+ * @param {string|number} direction
  * @param {Boolean} sprint - Whether to sprint or not
  */
 Entity.prototype.moveInDirection = function(direction, sprint) {
-    if (this.state !== 'attacking') {
+    if (this.state !== 'attacking' && this.state !== 'shooting') {
         this.state = 'walking';
-        let speed = this.speed;
-        let animSpeed = 10;
-        if (sprint) {
-            speed = this.sprintSpeed;
-            animSpeed = 30;
-        }
+        let speed = sprint ? this.sprintSpeed : this.speed;
+
+        let animSpeed = speed*20/150;
         this.animations.currentAnim.speed = animSpeed;
 
         let dir = '';
@@ -267,6 +285,22 @@ Entity.prototype.attack = function() {
     this.adjustHitbox('slash');
 };
 
+Entity.prototype.shoot = function() {
+    self = this;
+    this.state = 'shooting';
+    this.body.velocity.x = 0;
+    this.body.velocity.y = 0;
+    this.animations.play('shoot_' + this.direction, 20, false).onComplete.add(function() {
+       self.idleHere();
+    });
+    this.adjustHitbox('slash');
+};
+
+Entity.prototype.injure = function() {
+    self = this;
+    this.state = 'injured';
+};
+
 Entity.prototype.die = function() {
     // const self = this;
     this.state = 'dead';
@@ -322,8 +356,8 @@ Entity.prototype.adjustHitbox = function(state) {
 
 /**
  * Set the direction of the sprite
- * 
- * @param {string|number} direction 
+ *
+ * @param {string|number} direction
  */
 Entity.prototype.setDirection= function(direction) {
     if (_.isString(direction) && _.includes(DIRECTIONS, direction)) {
@@ -370,7 +404,7 @@ Entity.prototype.deserialize = function(obj) {
 /**
  * Return the Name of the function.
  * This is a hack and should be used only for debugging.
- * 
+ *
  * @return {string}
  */
 Entity.prototype.toString = function() {
@@ -382,7 +416,7 @@ Entity.prototype.toString = function() {
 
 /**
  * Get the center of the Hitbox of the entity
- * 
+ *
  * @return {Object} - Point with x and y
  */
 Entity.prototype.trueXY = function() {
@@ -394,9 +428,9 @@ Entity.prototype.trueXY = function() {
 };
 
 /**
- * 
- * 
- * @param {Object} rumor 
+ *
+ *
+ * @param {Object} rumor
  */
 Entity.prototype.learnInfo = function(rumor) {
     if (!this.alive) return;
@@ -406,14 +440,14 @@ Entity.prototype.learnInfo = function(rumor) {
          */
         return;
     }
-    console.info('[' + this.id +'] Learning something new....')
+    console.debug('[' + this.id +'] Learning something new....');
     this.information.push(rumor);
 
     switch (rumor.action) {
         case 'kill':
             if (rumor.targetType === this.type) {
                  /**
-                  * If the type that was killed was the same as 
+                  * If the type that was killed was the same as
                   * the current `Entity`'s type, reputation drop by
                   * 0.1.
                   */
@@ -432,6 +466,17 @@ Entity.prototype.learnInfo = function(rumor) {
 };
 
 Entity.prototype.converse = function(text) {
+    if (this.children[0]) {
+        this.children[0].text = text;
+        setTimeout(()=>{
+            try {
+            this.children[0].text = '';
+            } catch (err) {
+                // do nothing
+            }
+        }, 2000);
+        return;
+    }
     let chat = game.add.text(32, 0, text);
     chat.anchor.setTo(0.5);
     chat.font = 'Press Start 2P';
@@ -440,7 +485,13 @@ Entity.prototype.converse = function(text) {
     chat.stroke = 'black';
     chat.strokeThickness = '4';
     chat.align = 'center';
-    chat.lifespan = 3000; // milliseconds    
+    setTimeout( ()=>{
+        try {
+            if (chat.text === text) chat.text = "";
+        } catch (err) {
+            // do nothing
+        }
+    }, 2000);
     this.addChild(chat);
 };
 

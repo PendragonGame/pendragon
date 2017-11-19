@@ -1,5 +1,7 @@
 'use strict';
-
+/**
+ * @module entity/NPC
+ */
 let Entity = require('./Entity');
 
 
@@ -9,6 +11,7 @@ let Entity = require('./Entity');
  * @param {any} x 
  * @param {any} y 
  * @param {any} key 
+ * @constructor NPC
  */
 function NPC(x, y, key) {
     Entity.call(this, x, y, key);
@@ -21,6 +24,7 @@ function NPC(x, y, key) {
     this.maxHP = 100;
     this.HP = 100;
     this.sprintSpeed = 130;
+	this.currency = 8;
     /**
      * Type of Entity
      */
@@ -75,12 +79,15 @@ NPC.prototype.gotoXY = function(x, y, navMesh, sprint = false) {
 }
     let currentTime = game.time.now;
     // limit the amount of direction changes to about 1 per 150 ms
+    let curDir = this.direction;
     if (currentTime - this.directionLimiter >= 150) {
             // confusing code that ram won't understand
             Math.abs(path[1].x - trueX) >= Math.abs(path[1].y - trueY) ?
             this.moveInDirection(((path[1].x - trueX < 0)*2)+1, sprint) :
             this.moveInDirection((path[1].y - trueY > 0)*2, sprint);
             this.directionLimiter = currentTime;
+    } else {
+        if (curDir !== this.direction) this.idleHere();
     }
     } else {
         // if lost don't move
@@ -136,7 +143,7 @@ NPC.prototype.wander = function(navMesh,
  * @param {boolean=} sprint the navMesh of the map
  * @return {boolean} target no longer exists (probably dead)
  */
-NPC.prototype.aggro = function(target, navMesh, sprint = false) {
+NPC.prototype.aggro = function(target, navMesh, sprint = true) {
     if (!target) {
         console.warn('target does not exist');
         this.idleHere();

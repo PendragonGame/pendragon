@@ -1,7 +1,14 @@
+/**
+ * @module states/GameOver
+ */
+
 const ui = require('../ui/ui');
+const trackSelection = require('../util/music');
 let GameOver = {};
 
 GameOver.create = function() {
+    trackSelection.changeTrack('gameover-music');
+
     let gameoverText = game.add.text(game.camera.width/2, 100, 'Game Over');
     gameoverText.anchor.setTo(.5, .5);
     gameoverText.font = 'Press Start 2P';

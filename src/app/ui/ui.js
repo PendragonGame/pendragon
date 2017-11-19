@@ -1,16 +1,22 @@
-
+/**
+ * 
+ * @module ui/UI
+ */
 /**
  * A basic text button. 
- * @param {*} x 
+ * @param {number} x
  * @param {number} y 
  * @param {string} text 
- * @param {*} key object associated with button
- * @param {*} func
+ * @param {string} key - object associated with button
+ * @param {function} func - on click callback function
  * @param {string} fontSize
- * @property {Phaser.Text} text modify this to change the text.
- * @property {Phaser.Button} button modify this to change the button.
+ * @property {Phaser.Text} text - modify this to change the text.
+ * @property {Phaser.Button} button - modify this to change the button.
+ * 
+ * @constructor MenuButton
  */
 function MenuButton(x, y, text, key, func, fontSize = '3em') {
+    this.orignalSize = fontSize;
     // add text over the button
     this.key = key;
     this.text = game.add.text(x,
@@ -19,6 +25,7 @@ function MenuButton(x, y, text, key, func, fontSize = '3em') {
     this.text.font = 'Press Start 2P';
     this.text.fill = '#000000';
     this.text.fontSize = fontSize;
+    this.orignalSize = fontSize;
     // the button
     this.button = game.add.button(
         x, y, null, func, this, 2, 1, 0);
@@ -33,7 +40,7 @@ function MenuButton(x, y, text, key, func, fontSize = '3em') {
     // hover off effect
     this.button.onInputOut.add(function() {
         this.text.setShadow(0, 0, 'rgba(0,0,0,0.5)', 0);
-        this.text.fontSize = parseFloat(this.text.fontSize)-.5 + 'em';
+        this.text.fontSize = this.orignalSize;
         // this.text.fill = '#000000';
     }, this);
     this.button.fixedToCamera = true;
@@ -57,6 +64,11 @@ MenuButton.prototype.setLocation = function(x, y) {
     this.text.cameraOffset.y = y;
 };
 
+MenuButton.prototype.align = function(a) {
+    this.text.align = a;
+    this.button.align = a;
+};
+
 /**
  * Hide a button and disable it 
  * @return {any} returns itself
@@ -64,6 +76,7 @@ MenuButton.prototype.setLocation = function(x, y) {
 MenuButton.prototype.hide = function() {
     this.text.visible = false;
     this.button.inputEnabled = false;
+    this.text.fontSize = this.orignalSize;
     return this;
 };
 
@@ -83,6 +96,7 @@ MenuButton.prototype.reveal = function() {
  * Cyclable list of buttons.
  * @param {*} saves  array of timestamps 
  * @param {*} func   function for buttons
+ * @constructor ButtonList
  */
 function ButtonList(saves, func) {
     this.saveButtons = [];

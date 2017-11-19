@@ -1,3 +1,6 @@
+/**
+ * @module states/Win
+ */
 let Win = {};
 
 Win.create = function() {

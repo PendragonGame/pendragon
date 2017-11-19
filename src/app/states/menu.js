@@ -1,8 +1,14 @@
+/**
+ * @module states/Menu
+ */
 'use strict';
 const ui = require('../ui/ui');
+const trackSelection = require('../util/music');
 let Menu = {};
 
 Menu.create = function() {
+    trackSelection.changeTrack('menu-music');
+
     game.world.setBounds(0, 0, 2560, 640);
     this.map = game.add.tilemap('menu-map');
     this.map.addTilesetImage('outdoors', 'tileset');
@@ -39,6 +45,16 @@ Menu.create = function() {
             game.state.start('Settings');
         }, '5em'
     );
+
+    // button to exit
+    this.exit = new ui.MenuButton(
+        game.camera.width/2,
+        this.pendragonText.y + 450,
+        'Exit', null, function() {
+            window.close();
+        }, '5em');
+
+    // button to toggle sound.
 };
 
 Menu.update = function() {

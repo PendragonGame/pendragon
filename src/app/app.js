@@ -16,7 +16,8 @@ if (screen.width / screen.height === 16/9) {
     }
 }
 let game = new Phaser.Game(1280, height, Phaser.CANVAS, 'game');
-
+let currentMusic = null;
+let muteMusic = false;
 
 game.state.add('Boot', States.Boot);
 game.state.add('Load', States.Load);

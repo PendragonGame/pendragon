@@ -1,3 +1,6 @@
+/**
+ * @module states/LoadMenu
+ */
 'use strict';
 const dataStore = require('../util/data');
 const moment = require('moment');
@@ -6,9 +9,9 @@ const ui = require('../ui/ui');
 let LoadMenu = {};
 
 /**
- * 
- * 
- * @param {any} key 
+ *
+ *
+ * @param {any} key
  */
 function loadGame() {
     console.log('Loading: ' + this.key);

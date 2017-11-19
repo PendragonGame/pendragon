@@ -1,5 +1,7 @@
 'use strict';
-
+/**
+ * @module States
+ */
 let Boot = require('./boot');
 let Load = require('./load');
 let Play = require('./play');

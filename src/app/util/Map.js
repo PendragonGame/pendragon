@@ -1,3 +1,6 @@
+/**
+ * @module Map
+ */
 const kdTree = require('../lib/kdtreejs/kdTree');
 const _ = require('lodash');
 const Entity = require('../entity/Entity');
@@ -11,6 +14,9 @@ let distanceFormula2 = function(e1, e2) {
 let tree = null;
 let list = {};
 
+/**
+ * @namespace Map
+ */
 let Map = {};
 
 
@@ -22,7 +28,8 @@ let Map = {};
  */
 Map.create = function(entities, dimensions) {
     if (entities.length === 0 || !(entities[0] instanceof Entity)) {
-        throw new TypeError('Invalid array');
+        console.error('Invalid argument for entity or empty list of entities');
+        return;
     }
     let dim = dimensions;
     if (dim === undefined) dim = ['x', 'y'];
@@ -105,6 +112,16 @@ Map.sampleRandom = function(max) {
     return Sampling.sample_from_array(Object.values(list),
                 Math.floor(Math.random() * max), false);
 };
+
+/**
+ * Reset the map
+ *
+ * 
+ */
+Map.reset = function() {
+    tree = null;
+    list = {};
+}
 
 /**
  * Get Entity with ID
