@@ -8,6 +8,7 @@ Boot.preload = function() {
     game.load.tilemap('menu-map', 'assets/tilemaps/menu-map.json',
     null, Phaser.Tilemap.TILED_JSON);
     game.load.image('tileset', 'assets/tilemaps/outdoors.png');
+    game.load.audio('menu-music', 'assets/music/menu-music.mp3');
 };
 
 

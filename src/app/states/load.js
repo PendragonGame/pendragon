@@ -53,7 +53,7 @@ Load.preload = function() {
 
     game.load.audio('chip1-music', 'assets/music/chip1.mp3');
     game.load.audio('chip2-music', 'assets/music/chip2.mp3');
-    game.load.audio('gameover-music', 'assets/music/chip2.mp3');
+    game.load.audio('gameover-music', 'assets/music/game-over.mp3');
 
     game.load.spritesheet('enemy', 'assets/sprites/OrcEnemy.png', 64, 64, 273);
     game.load.spritesheet('woman', 'assets/sprites/woman.png', 64, 64, 273);
