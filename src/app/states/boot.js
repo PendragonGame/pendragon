@@ -12,7 +12,9 @@ Boot.preload = function() {
 
 
 Boot.create = function() {
-
+    if (currentMusic) {
+        currentMusic.stop();
+    }
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
     game.scale.pageAlignHorizontally = true;

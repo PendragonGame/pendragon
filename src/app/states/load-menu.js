@@ -22,10 +22,15 @@ function loadGame() {
 }
 
 LoadMenu.preload = function() {
-
+    game.load.audio('menu-music', 'assets/music/menu-music.mp3');
 };
 
 LoadMenu.create = function() {
+    if (currentMusic) {
+        currentMusic.stop();
+    }
+    currentMusic = game.add.audio('menu-music', 1, true);
+    currentMusic.play();
     // menu background stuff
     game.world.setBounds(0, 0, 2560, 800);
     this.map = game.add.tilemap('menu-map');
