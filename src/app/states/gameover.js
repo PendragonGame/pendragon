@@ -6,6 +6,7 @@ const ui = require('../ui/ui');
 let GameOver = {};
 
 GameOver.create = function() {
+    // game.keyboard.onDownCallback = game.keyboard.onUpCallback = game.keyboard.onPressCallback = null;
     let gameoverText = game.add.text(game.camera.width/2, 100, 'Game Over');
     gameoverText.anchor.setTo(.5, .5);
     gameoverText.font = 'Press Start 2P';

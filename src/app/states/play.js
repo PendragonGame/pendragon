@@ -818,6 +818,7 @@ Play.update = function() {
     if (this.player.state === 'dead') {
         game.score = this.player.score;
         game.dayCount = this.player.daysSurvived;
+        this.keyboard.onDownCallback = this.keyboard.onUpCallback = null;        
         game.state.start('Game Over');
     }
     const hpPercent = this.player.HP / this.player.maxHP;
