@@ -51,8 +51,9 @@ Load.preload = function() {
     game.load.image('Arrow_Up', 'assets/sprites/Inventory/arrow_up.png');
     game.load.image('Arrow_Down', 'assets/sprites/Inventory/arrow_down.png');
 
-    game.load.audio('chip1', 'assets/music/chip1.mp3');
-    game.load.audio('chip2', 'assets/music/chip2.mp3');
+    game.load.audio('chip1-music', 'assets/music/chip1.mp3');
+    game.load.audio('chip2-music', 'assets/music/chip2.mp3');
+    game.load.audio('gameover-music', 'assets/music/chip2.mp3');
 
     game.load.spritesheet('enemy', 'assets/sprites/OrcEnemy.png', 64, 64, 273);
     game.load.spritesheet('woman', 'assets/sprites/woman.png', 64, 64, 273);
