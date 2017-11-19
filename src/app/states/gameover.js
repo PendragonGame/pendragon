@@ -6,6 +6,11 @@ const ui = require('../ui/ui');
 let GameOver = {};
 
 GameOver.create = function() {
+    if (currentMusic) {
+        currentMusic.stop();
+    }
+    currentMusic = game.add.audio('gameover-music', 1, true);
+    currentMusic.play();
     // game.keyboard.onDownCallback = game.keyboard.onUpCallback = game.keyboard.onPressCallback = null;
     let gameoverText = game.add.text(game.camera.width/2, 100, 'Game Over');
     gameoverText.anchor.setTo(.5, .5);
