@@ -3,14 +3,11 @@
  */
 'use strict';
 const ui = require('../ui/ui');
+const trackSelection = require('../util/music');
 let Menu = {};
 
 Menu.create = function() {
-    if (currentMusic) {
-        currentMusic.stop();
-    }
-    currentMusic = game.add.audio('menu-music', 1, true);
-    currentMusic.play();
+    trackSelection.changeTrack('menu-music');
 
     game.world.setBounds(0, 0, 2560, 640);
     this.map = game.add.tilemap('menu-map');
@@ -50,12 +47,14 @@ Menu.create = function() {
     );
 
     // button to exit
-this.exit = new ui.MenuButton(
+    this.exit = new ui.MenuButton(
         game.camera.width/2,
         this.pendragonText.y + 450,
         'Exit', null, function() {
             window.close();
         }, '5em');
+
+    // button to toggle sound.
 };
 
 Menu.update = function() {

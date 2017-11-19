@@ -5,6 +5,7 @@
 const ui = require('../ui/ui');
 let electron = require('electron');
 let window = electron.remote.getCurrentWindow();
+const trackSelection = require('../util/music');
 let Settings = {};
 
 Settings.create = function() {
@@ -42,6 +43,16 @@ Settings.create = function() {
             }
             window.setResizable(false);
             window.setFullScreenable(false);
+        }, '4em'
+    ));
+
+    this.settings.push(new ui.MenuButton(
+        game.camera.width/2, 300,
+        trackSelection.isMuted() ? 'Unmute' : 'Mute', null,
+        ()=>{
+            console.log('mute toggled');
+            trackSelection.toggleMute();
+            this.settings[1].text.text = trackSelection.isMuted() ? 'Unmute' : 'Mute';
         }, '4em'
     ));
 };
