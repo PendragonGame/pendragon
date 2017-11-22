@@ -163,16 +163,16 @@ Entity.prototype.setAnimations = function(frames) {
 
 
     this.animations.add('walk_up',
-                        [105, 106, 107, 108, 109, 110, 111, 112],
+                        [104, 105, 106, 107, 108, 109, 110, 111, 112],
                         10, true);
     this.animations.add('walk_down',
-                        [131, 132, 133, 134, 135, 136, 137, 138],
+                        [130, 131, 132, 133, 134, 135, 136, 137, 138],
                         10, true);
     this.animations.add('walk_left',
-                        [118, 119, 120, 121, 122, 123, 124, 125],
+                        [117, 118, 119, 120, 121, 122, 123, 124, 125],
                         10, true);
     this.animations.add('walk_right',
-                        [144, 145, 146, 147, 148, 149, 150, 151],
+                        [143, 144, 145, 146, 147, 148, 149, 150, 151],
                         10, true);
 
     this.animations.add('slash_up',
@@ -186,6 +186,19 @@ Entity.prototype.setAnimations = function(frames) {
                         10, true);
     this.animations.add('slash_right',
                         [195, 196, 197, 198, 199, 200],
+                        10, true);
+						
+	this.animations.add('thrust_up',
+                        [52, 53, 54, 55, 56, 57, 58, 59],
+                        10, true);
+    this.animations.add('thrust_down',
+                        [78, 79, 80, 81, 82, 83, 84, 85],
+                        10, true);
+    this.animations.add('thrust_left',
+                        [65, 66, 67, 68, 69, 70, 71, 72],
+                        10, true);
+    this.animations.add('thrust_right',
+                        [91, 92, 93, 94, 95, 96, 97, 98],
                         10, true);
 
 	this.animations.add('shoot_up',
@@ -219,7 +232,7 @@ Entity.prototype.setAnimations = function(frames) {
  * @param {Boolean} sprint - Whether to sprint or not
  */
 Entity.prototype.moveInDirection = function(direction, sprint) {
-    if (this.state !== 'attacking' && this.state !== 'shooting') {
+    if (this.state !== 'attacking' && this.state !== 'shooting' && this.state !== 'thrusting') {
         this.state = 'walking';
         let speed = sprint ? this.sprintSpeed : this.speed;
 
@@ -297,6 +310,17 @@ Entity.prototype.shoot = function() {
     this.animations.play('shoot_' + this.direction, 20, false).onComplete.add(function() {
        self.idleHere();
     });
+};
+
+Entity.prototype.thrust = function() {
+    self = this;
+    this.state = 'thrusting';
+    this.body.velocity.x = 0;
+    this.body.velocity.y = 0;
+    this.animations.play('thrust_' + this.direction, 20, false).onComplete.add(function() {
+       self.idleHere();
+    });
+    this.adjustHitbox('slash');
 };
 
 Entity.prototype.injure = function() {

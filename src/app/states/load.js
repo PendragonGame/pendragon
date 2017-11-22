@@ -25,6 +25,7 @@ Load.preload = function() {
     game.load.image('hud_wasd', 'assets/HUD-elements/HUD_wasd.png');
     game.load.image('hud_Dagger', 'assets/HUD-elements/HUD_weapon.png');
     game.load.image('hud_Bow', 'assets/HUD-elements/HUD_bow.png');
+	game.load.image('hud_Spear', 'assets/HUD-elements/HUD_spear.png');
     game.load.image('hud_emptyHealth', 'assets/HUD-elements/HUD_emptyHealth.png');
     game.load.image('hud_fullHealth', 'assets/HUD-elements/HUD_fullHealth.png');
     game.load.image('hud_fullRep', 'assets/HUD-elements/HUD_fullRep.png');
@@ -37,6 +38,7 @@ Load.preload = function() {
     game.load.image('Carrot', 'assets/sprites/Inventory/carrot.png');
     game.load.image('Mutton', 'assets/sprites/Inventory/mutton.png');
     game.load.image('Dagger', 'assets/sprites/Inventory/dagger.png');
+	game.load.image('Spear', 'assets/sprites/Inventory/spear.png');
     game.load.image('Book', 'assets/sprites/Inventory/book.png');
     game.load.image('Pot', 'assets/sprites/Inventory/pot.png');
     game.load.image('Cigar', 'assets/sprites/Inventory/cigar.png');
@@ -65,6 +67,7 @@ Load.preload = function() {
     game.load.spritesheet('player', 'assets/sprites/armor.png', 64, 64, 273);
     
     game.load.spritesheet('player_shoot', 'assets/sprites/armor_bow.png', 64, 64, 273);
+	game.load.spritesheet('player_thrust', 'assets/sprites/armor_spear.png', 64, 64, 273);
 };
 
 Load.create = function() {

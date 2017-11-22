@@ -113,12 +113,13 @@ Play.preload = function() {
                 this.wasdQueue.splice(index, 1);
                 break;
             case 81:
-                if (this.player.state !== 'shooting' && this.player.state !== 'attacking') {
+                if (this.player.state !== 'shooting' && this.player.state !== 'attacking' && this.player.state !== 'thrusting') {
                     this.player.currentWeapon++;
                     if (this.player.currentWeapon == this.player.weapons.length) this.player.currentWeapon = 0;
                     this.wpn.loadTexture('hud_' + this.player.weapons[this.player.currentWeapon], 0, false);
                     if (this.player.weapons[this.player.currentWeapon] === 'Bow') this.player.loadTexture('player_shoot');
                     if (this.player.weapons[this.player.currentWeapon] === 'Dagger') this.player.loadTexture('player');
+					if (this.player.weapons[this.player.currentWeapon] === 'Spear') this.player.loadTexture('player_thrust');
                 }
                 break;
             default:
@@ -1064,11 +1065,25 @@ Play.update = function() {
             }
         }
     }
+	
+	// Thrust
+    if ((this.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) &&
+        (this.player.state !== 'thrusting') &&
+        (this.player.weapons[this.player.currentWeapon] === 'Spear')) {
+        this.player.thrust();
+    } else {
+        let temp = this.player.frame - 59;
+        if ((temp % 13 === 0) && (this.player.state === 'thrusting')) {
+            if (!(this.keyboard.isDown(Phaser.Keyboard.SPACEBAR))) {
+                this.player.state = 'idling';
+            }
+        }
+    }
 
     if (this.wasdQueue.length) {
         this.player.moveInDirection(this.wasdQueue[this.wasdQueue.length - 1],
             sprint);
-    } else if (this.player.state !== 'attacking' && this.player.state !== 'shooting') {
+    } else if (this.player.state !== 'attacking' && this.player.state !== 'shooting' && this.player.state !== 'thrusting') {
         this.player.idleHere();
     }
 
@@ -1221,6 +1236,20 @@ function entityCollision(entity1, entity2) {
         entity1.attack();
         let f1 = entity1.animations.currentAnim.frame;
         if (f1 == 158 || f1 == 184 || f1 == 171 || f1 == 197) { // if statement should be replaced eventually with an entity state called 'injured'
+            this.calculateDamage(entity1, entity2);
+        }
+    }
+	if (entity2.state === 'thrusting') {
+        entity2.thrust();
+        let f2 = entity2.animations.currentAnim.frame;
+        if (f2 == 54 || f2 == 67 || f2 == 80 || f2 == 93) { // if statement should be replaced eventually with an entity state called 'injured'
+            this.calculateDamage(entity2, entity1);
+        }
+    }
+    if (entity1.state === 'thrusting') {
+        entity1.thrust();
+        let f1 = entity1.animations.currentAnim.frame;
+        if (f1 == 54 || f1 == 67 || f1 == 80 || f1 == 93) { // if statement should be replaced eventually with an entity state called 'injured'
             this.calculateDamage(entity1, entity2);
         }
     }
