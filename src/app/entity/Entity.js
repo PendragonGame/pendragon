@@ -471,7 +471,7 @@ Entity.prototype.learnInfo = function(rumor) {
     this.information.push(rumor);
 
 	let positiveDialogue = ['Hi there', 'That\'s good', 'Thank you', 'Sweet', 'Nice work'];
-	let negativeDialogue = ['Get him!', 'Screw you!', 'That person sucks!', 'You\'re dead!', 'That\'s it!'];
+	let negativeDialogue = ['Don\'t do that!', 'Screw you!', 'That person sucks!', 'I\'m done!', 'That\'s it!'];
 	let r = Math.floor(Math.random() * positiveDialogue.length);
 	let s = Math.floor(Math.random() * negativeDialogue.length);
     switch (rumor.action) {

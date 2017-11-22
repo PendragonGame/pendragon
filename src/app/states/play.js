@@ -697,6 +697,14 @@ Play.create = function() {
     this.pauseBg.visible = false;
     this.pauseBg.drawRect(0, 0, game.camera.width, game.camera.height);
     this.pauseBg.fixedToCamera = true;
+	
+	//Red Hitmarker background
+	this.hitBg = game.add.graphics();
+    this.hitBg.beginFill(0xff0000);
+    this.hitBg.alpha = .4;
+    this.hitBg.visible = false;
+    this.hitBg.drawRect(0, 0, game.camera.width, game.camera.height);
+    this.hitBg.fixedToCamera = true;
 
 
     // controls
