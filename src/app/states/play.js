@@ -684,6 +684,13 @@ Play.create = function() {
         this.inventoryButtons[k].text.strokeThickness = 5;
         this.inventoryButtons[k].hide();
     }
+	
+	this.hitBg = game.add.graphics();
+	this.hitBg.beginFill(0xff0000);
+	this.hitBg.alpha = .5;
+	this.hitBg.visible = false;
+	this.hitBg.drawRect(0, 0, game.camera.width, game.camera.height);
+	this.hitBg.fixedToCamera = true;
 
     /**
      * Pause menu set up
@@ -831,6 +838,13 @@ Play.update = function() {
         this.keyboard.onDownCallback = this.keyboard.onUpCallback = null;
         game.state.start('Game Over');
     }
+	if (this.player.state === 'injured') {
+		this.hitBg.visible = true;
+		setTimeout(() => {
+            this.hitBg.visible = false;
+        }, 1000);
+	}
+	
     const hpPercent = this.player.HP / this.player.maxHP;
     this.fullHealthBar.width = (146 * (hpPercent));
     this.fullStamBar.width = (146 * (this.player.stamina / this.player.maxStamina));
@@ -1191,6 +1205,9 @@ function itemCollision(player, item) {
  */
 function entityCollision(entity1, entity2) {
     // entity2 seems to be the Player, and entity1 is the Enemy
+	//Don't let same faction attacks happen
+	if (entity1.type === entity2.type) return;
+	
     if (entity1.frame === 272) {
         entity1.kill();
         return;

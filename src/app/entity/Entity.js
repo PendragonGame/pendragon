@@ -446,8 +446,8 @@ Entity.prototype.learnInfo = function(rumor) {
     console.debug('[' + this.id +'] Learning something new....');
     this.information.push(rumor);
 
-	let positiveDialogue = ['Hi there', 'That\'s good', 'Thank you', 'Sweet', 'I\'m not worthy'];
-	let negativeDialogue = ['Get him!', 'Screw you!', 'That person sucks!', 'You\'re dead!', 'Say good night!'];
+	let positiveDialogue = ['Hi there', 'That\'s good', 'Thank you', 'Sweet', 'Nice work'];
+	let negativeDialogue = ['Get him!', 'Screw you!', 'That person sucks!', 'You\'re dead!', 'That\'s it!'];
 	let r = Math.floor(Math.random() * positiveDialogue.length);
 	let s = Math.floor(Math.random() * negativeDialogue.length);
     switch (rumor.action) {
@@ -459,6 +459,7 @@ Entity.prototype.learnInfo = function(rumor) {
                   * 0.1.
                   */
                 this.reputation = Math.max(-1, this.reputation - 0.1);
+				s = Math.floor(Math.random() * negativeDialogue.length);
                 this.converse(negativeDialogue[s]);
             } else if (this.dislike.includes(rumor.targetType)) {
                 /**
@@ -467,6 +468,7 @@ Entity.prototype.learnInfo = function(rumor) {
                  * rep increases by 0.1
                  */
                 this.reputation = Math.min(1, this.reputation + 0.25);
+				r = Math.floor(Math.random() * positiveDialogue.length);
                 this.converse(positiveDialogue[r]);
             }
     }
