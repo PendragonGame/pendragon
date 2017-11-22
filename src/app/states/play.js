@@ -959,9 +959,7 @@ Play.update = function() {
     if (this.keyboard.isDown(Phaser.Keyboard.SHIFT) &&
         this.player.stamina > 0 &&
         this.player.canSprint === 1 &&
-        this.player.state !== 'attacking' &&
-        this.player.state !== 'shooting' &&
-        this.player.state !== 'idling') {
+        this.player.state === 'walking') {
         sprint = true;
         this.player.stamina--;
         if (this.player.stamina === 0) {
@@ -1061,7 +1059,7 @@ Play.update = function() {
         // å
         let temp = this.player.frame - 161;
         if ((temp % 13 === 0) && (this.player.state === 'attacking')) {
-            if (!(this.keyboard.isDown(Phaser.Keyboard.M))) {
+            if (!(this.keyboard.isDown(Phaser.Keyboard.SPACEBAR))) {
                 this.player.state = 'idling';
             }
         }
@@ -1193,16 +1191,7 @@ function itemCollision(player, item) {
 function entityCollision(entity1, entity2) {
     // entity2 seems to be the Player, and entity1 is the Enemy
 	//Don't let same faction attacks happen
-	if (entity1.type === entity2.type) return;
-	
-    if (entity1.frame === 272) {
-        entity1.kill();
-        return;
-    }
-    if (entity2.frame === 272) {
-        entity2.kill();
-        return;
-    }
+    if (entity1.type === entity2.type) return;
     /**
      * @todo(anand): Handle code to get injured
      */
@@ -1212,6 +1201,7 @@ function entityCollision(entity1, entity2) {
         game.physics.arcade.collide(entity2, this.blockLayer) ||
         game.physics.arcade.collide(entity2, this.blockOverlap)) {
         return;
+		
     }
 
 
@@ -1476,7 +1466,7 @@ Play.shutdown = function() {
 
 Play.calculateDamage = function(attacker, defender) {
     defender.HP = defender.HP - (attacker.attackStat / defender.defenseStat);
-    if (defender.HP == 0) {
+    if (defender.HP <= 0) {
         defender.die();
         defender.body.enable = false;
     }

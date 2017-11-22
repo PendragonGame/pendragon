@@ -311,7 +311,7 @@ Entity.prototype.die = function() {
     this.body.velocity.y = 0;
     this.alive = false;
     // this.exists = false;
-    this.animations.play('die', 15, false);
+    this.animations.play('die', 10, false);
     const self = this;
     setTimeout(function() {
         self.kill();
