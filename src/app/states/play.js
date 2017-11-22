@@ -1206,7 +1206,6 @@ function itemCollision(player, item) {
 function entityCollision(entity1, entity2) {
     // entity2 seems to be the Player, and entity1 is the Enemy
 	//Don't let same faction attacks happen
-    if (entity1.type === entity2.type) return;
     /**
      * @todo(anand): Handle code to get injured
      */
@@ -1229,28 +1228,28 @@ function entityCollision(entity1, entity2) {
         entity2.attack();
         let f2 = entity2.animations.currentAnim.frame;
         if (f2 == 158 || f2 == 184 || f2 == 171 || f2 == 197) { // if statement should be replaced eventually with an entity state called 'injured'
-            this.calculateDamage(entity2, entity1);
+            if (entity1.type !== entity2.type) this.calculateDamage(entity2, entity1);
         }
     }
     if (entity1.state === 'attacking') {
         entity1.attack();
         let f1 = entity1.animations.currentAnim.frame;
         if (f1 == 158 || f1 == 184 || f1 == 171 || f1 == 197) { // if statement should be replaced eventually with an entity state called 'injured'
-            this.calculateDamage(entity1, entity2);
+            if (entity1.type !== entity2.type) this.calculateDamage(entity1, entity2);
         }
     }
 	if (entity2.state === 'thrusting') {
         entity2.thrust();
         let f2 = entity2.animations.currentAnim.frame;
         if (f2 == 54 || f2 == 67 || f2 == 80 || f2 == 93) { // if statement should be replaced eventually with an entity state called 'injured'
-            this.calculateDamage(entity2, entity1);
+            if (entity1.type !== entity2.type) this.calculateDamage(entity2, entity1);
         }
     }
     if (entity1.state === 'thrusting') {
         entity1.thrust();
         let f1 = entity1.animations.currentAnim.frame;
         if (f1 == 54 || f1 == 67 || f1 == 80 || f1 == 93) { // if statement should be replaced eventually with an entity state called 'injured'
-            this.calculateDamage(entity1, entity2);
+            if (entity1.type !== entity2.type) this.calculateDamage(entity1, entity2);
         }
     }
 
