@@ -55,8 +55,13 @@ Load.preload = function() {
     game.load.audio('chip2-music', 'assets/music/chip2.mp3');
     game.load.audio('gameover-music', 'assets/music/game-over.mp3');
 
-    game.load.spritesheet('enemy', 'assets/sprites/OrcEnemy.png', 64, 64, 273);
-    game.load.spritesheet('woman', 'assets/sprites/woman.png', 64, 64, 273);
+    game.load.spritesheet('orc1', 'assets/sprites/orc1.png', 64, 64, 273);
+	game.load.spritesheet('orc2', 'assets/sprites/orc2.png', 64, 64, 273);
+    game.load.spritesheet('npc1', 'assets/sprites/npc1.png', 64, 64, 273);
+	game.load.spritesheet('npc2', 'assets/sprites/npc2.png', 64, 64, 273);
+	game.load.spritesheet('npc3', 'assets/sprites/npc3.png', 64, 64, 273);
+	game.load.spritesheet('npc4', 'assets/sprites/npc4.png', 64, 64, 273);
+	game.load.spritesheet('npc5', 'assets/sprites/npc5.png', 64, 64, 273);
     game.load.spritesheet('player', 'assets/sprites/armor.png', 64, 64, 273);
     
     game.load.spritesheet('player_shoot', 'assets/sprites/armor_bow.png', 64, 64, 273);

@@ -235,6 +235,7 @@ Play.preload = function() {
  * pauses the game
  */
 Play.pauseGame = function() {
+	this.pauseMenu[0].text.text = 'Save';
     // This if statement prevents pausing while the inventory is open.
     if (game.paused == true && this.pauseBg.visible == false) {
         /* nop */
@@ -993,36 +994,37 @@ Play.update = function() {
             this.player.shoot();
             setTimeout(() => {
                 let tempBullet = null;
+				let bulletSpeed = 700;
                 switch (this.player.direction) {
                     case ('up'):
                         tempBullet = game.add.sprite(
-                            this.player.body.x, this.player.body.y, 'Arrow_Up'
+                            this.player.body.x + this.player.body.width / 3, this.player.body.y, 'Arrow_Up'
                         );
                         game.physics.enable(
                             tempBullet, Phaser.Physics.ARCADE
                         );
-                        tempBullet.body.velocity.y = -500;
+                        tempBullet.body.velocity.y = -bulletSpeed;
                         break;
                     case ('down'):
                         tempBullet = game.add.sprite(
-                            this.player.body.x, this.player.body.y, 'Arrow_Down'
+                            this.player.body.x + this.player.body.width / 3, this.player.body.y, 'Arrow_Down'
                         );
                         game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
-                        tempBullet.body.velocity.y = 500;
+                        tempBullet.body.velocity.y = bulletSpeed;
                         break;
                     case ('left'):
                         tempBullet = game.add.sprite(
-                            this.player.body.x, this.player.body.y, 'Arrow_Left'
+                            this.player.body.x, this.player.body.y + 1, 'Arrow_Left'
                         );
                         game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
-                        tempBullet.body.velocity.x = -500;
+                        tempBullet.body.velocity.x = -bulletSpeed;
                         break;
                     case ('right'):
                         tempBullet = game.add.sprite(
-                            this.player.body.x, this.player.body.y, 'Arrow_Right'
+                            this.player.body.x, this.player.body.y + 1, 'Arrow_Right'
                         );
                         game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
-                        tempBullet.body.velocity.x = 500;
+                        tempBullet.body.velocity.x = bulletSpeed;
                         break;
                 }
                 tempBullet.visible = true;
@@ -1319,22 +1321,28 @@ Play.populateBoard = function() {
      */
     this.monsterFactory = new Factory(Monster, this.monsterGroup,
         monsterBounds, 30);
+	let h = 1;
     for (let i = 0; i < 30; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
          */
-        this.monsterFactory.next(null, null, 'enemy');
+        this.monsterFactory.next(null, null, 'orc'+h);
+		h++;
+		if (h === 3) h = 1;
     }
     this.monsters = this.monsterGroup.getAll();
     /**
      * Generate a factory and a few NPCs
      */
     this.npcFactory = new Factory(NPC, this.npcGroup, npcBounds, 40);
+	let g = 1;
     for (let i = 0; i < 40; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
          */
-        this.npcFactory.next(null, null, 'woman');
+		this.npcFactory.next(null, null, 'npc'+g);
+		g++;
+		if (g === 6) g = 1;
     }
     this.npcs = this.npcGroup.getAll();
     /**
