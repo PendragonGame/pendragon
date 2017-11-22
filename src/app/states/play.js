@@ -1007,7 +1007,7 @@ Play.update = function() {
                         break;
                     case ('down'):
                         tempBullet = game.add.sprite(
-                            this.player.body.x + this.player.body.width / 3, this.player.body.y, 'Arrow_Down'
+                            this.player.body.x + this.player.body.width / 3 - 1, this.player.body.y, 'Arrow_Down'
                         );
                         game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
                         tempBullet.body.velocity.y = bulletSpeed;
