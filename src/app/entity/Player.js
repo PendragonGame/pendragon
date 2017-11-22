@@ -39,12 +39,6 @@ function Player(x, y, key) {
 	this.food = [];
 	this.misc = ['Tunic'];
 
-    this.currentWeapon = 0;
-
-    this.weapons = ['Dagger', 'Bow'];
-    this.food = [];
-    this.misc = ['Tunic'];
-
     this.eatAgain = 1;
 
     this.type = 'player';
