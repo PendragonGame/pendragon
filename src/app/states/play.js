@@ -938,8 +938,8 @@ Play.update = function() {
             let attitude = 'aggressive';
             if (e.reputation < -0.8) {
                 // Really aggro
-                e.slowSprint = e.sprintSpeed;
-                e.sprintSpeed = 2 * e.slowSprint;
+                //e.slowSprint = e.sprintSpeed;
+                //e.sprintSpeed = 2 * e.slowSprint;
             }
             e.updateAI(this.navMesh,
                 tL2, bR2, this.player, attitude);
@@ -951,9 +951,9 @@ Play.update = function() {
      */
     if (this.player.state === 'dead') return;
     // Displays the hitbox for the Player
-    // this.game.debug.body(this.player);
-    // game.debug.body(this.player.collideBox);
-    // game.debug.bodyInfo(this.player.collideBox, 32, 32);
+     //this.game.debug.body(this.player);
+     //this.game.debug.body(this.player.collideBox);
+     //game.debug.bodyInfo(this.player.collideBox, 32, 32);
 
     // SHIFT for running
     let sprint = false;

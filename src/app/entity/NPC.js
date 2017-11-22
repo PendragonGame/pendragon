@@ -205,7 +205,7 @@ NPC.prototype.updateAI = function(navMesh, topLeft,
             break;
         case ('aggressive'):
             if (Math.sqrt(Math.pow(player.trueXY().x - this.trueXY().x, 2) +
-             Math.pow(player.trueXY().y - this.trueXY().y, 2)) < 192) {
+             Math.pow(player.trueXY().y - this.trueXY().y, 2)) < 300) {
                  // if in range aggro to player
                 this.aggro(player, navMesh);
                 this.aggroStatus = true;

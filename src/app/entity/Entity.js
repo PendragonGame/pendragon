@@ -58,7 +58,7 @@ function Entity(x, y, key) {
      * Miscellaneous attributes.
      */
     this.speed = 65;
-    this.sprintSpeed = 140;
+    this.sprintSpeed = 180;
     this.attackStat = 100; // How much default damage this entity does -@nitgarg99
     this.defenseStat = 1;
     this.maxHP = 100;
