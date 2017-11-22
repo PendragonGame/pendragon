@@ -153,8 +153,12 @@ Entity.prototype.setAnimations = function(frames) {
                                  271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
                                  271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
                                  271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
-                                 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 272],
-                                 25,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+                                 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+                                 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+                                 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271],
+                                 1,
                                  false);
 
 
@@ -293,7 +297,6 @@ Entity.prototype.shoot = function() {
     this.animations.play('shoot_' + this.direction, 20, false).onComplete.add(function() {
        self.idleHere();
     });
-    this.adjustHitbox('slash');
 };
 
 Entity.prototype.injure = function() {
@@ -308,11 +311,11 @@ Entity.prototype.die = function() {
     this.body.velocity.y = 0;
     this.alive = false;
     // this.exists = false;
-    this.animations.play('die', 10, false);
+    this.animations.play('die', 15, false);
     const self = this;
     setTimeout(function() {
         self.kill();
-    }, 5000);
+    }, 20000);
 };
 
 /*
@@ -443,6 +446,10 @@ Entity.prototype.learnInfo = function(rumor) {
     console.debug('[' + this.id +'] Learning something new....');
     this.information.push(rumor);
 
+	let positiveDialogue = ['Hi there', 'That\'s good', 'Thank you', 'Sweet', 'I\'m not worthy'];
+	let negativeDialogue = ['Get him!', 'Screw you!', 'That person sucks!', 'You\'re dead!', 'Say good night!'];
+	let r = Math.floor(Math.random() * positiveDialogue.length);
+	let s = Math.floor(Math.random() * negativeDialogue.length);
     switch (rumor.action) {
         case 'kill':
             if (rumor.targetType === this.type) {
@@ -452,7 +459,7 @@ Entity.prototype.learnInfo = function(rumor) {
                   * 0.1.
                   */
                 this.reputation = Math.max(-1, this.reputation - 0.1);
-                this.converse('That person sucks!');
+                this.converse(negativeDialogue[s]);
             } else if (this.dislike.includes(rumor.targetType)) {
                 /**
                  * If the current entity dislikes the type of entity
@@ -460,7 +467,7 @@ Entity.prototype.learnInfo = function(rumor) {
                  * rep increases by 0.1
                  */
                 this.reputation = Math.min(1, this.reputation + 0.25);
-                this.converse('I LOVE THAT PERSON!');
+                this.converse(positiveDialogue[r]);
             }
     }
 };

@@ -1294,7 +1294,7 @@ function entityCollision(entity1, entity2) {
         //             action);
         //     }
         // }, this);
-        let nearest = Map.nearest(this.player, 3, 256);
+        let nearest = Map.nearest(this.player, 5, 256);
         let numWitnesses = Math.floor(Math.random() * nearest.length);
         let witnesses = Sampling.sample_from_array(nearest, numWitnesses, false);
 
