@@ -868,7 +868,7 @@ Play.update = function() {
 		);
 		game.world.add(cb);
 		this.cannonballGroup.add(cb);
-		game.world.bringToTop(this.cannonballGroup);
+		//game.world.bringToTop(this.cannonballGroup);
 		game.world.bringToTop(this.hudGroup);
 		cb.body.velocity.x = 1000;
 		cb.width = 20;
