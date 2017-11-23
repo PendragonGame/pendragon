@@ -362,7 +362,6 @@ Play.create = function() {
 	this.Ship.body.velocity.y = 0;
 	
 	this.cannonballGroup = game.add.group();
-	game.world.bringToTop(this.cannonballGroup);
     // this.player.bringToTop();
     this.itemGroup = game.add.group();
     this.bulletGroup = game.add.group();
@@ -861,7 +860,7 @@ Play.update = function() {
 		this.Ship.body.velocity.y = shipSpeed;
 	}
 	
-	let u = Math.floor(Math.random() * 40);
+	let u = Math.floor(Math.random() * 80);
 	if (u === 1 && this.player.body.x < 1100) {
 		let cb = new Cannonball(this.Ship.body.x + this.Ship.body.width / 2, this.Ship.body.y + this.Ship.body.height / 2, 'CannonBall');
 		game.physics.enable(
@@ -870,6 +869,7 @@ Play.update = function() {
 		game.world.add(cb);
 		this.cannonballGroup.add(cb);
 		game.world.bringToTop(this.cannonballGroup);
+		game.world.bringToTop(this.hudGroup);
 		cb.body.velocity.x = 1000;
 		cb.width = 20;
 		cb.height = 20;
@@ -1279,7 +1279,7 @@ function cannonCollision(entity, cannonball) {
 			//NPC's are killed immedeatily, and nearby NPCs react.
 			let nearest = Map.nearest(this.player, 4, 1024);
 			let numWitnesses = Math.floor(Math.random() * nearest.length);
-			if (numWitnesses === 0 && nearest.length > 0) numWitnesses = 1;
+			if (numWitnesses === 0 && nearest.length > 0) numWitnesses = nearest.length;
 			let witnesses = Sampling.sample_from_array(nearest, numWitnesses, false);
 	
 			if (!witnesses) return;
@@ -1289,7 +1289,7 @@ function cannonCollision(entity, cannonball) {
 					let dialogue = ['Oh no!', 'Run!', 'Invasion!', 'Pirate attack!', 'Duck!'];
 					let n = Math.floor(Math.random() * dialogue.length);
 					witness.converse(dialogue[n]);
-					witness.moveInDirection('right');
+					witness.wander(this.navMesh, new Phaser.Point(0, 0), new Phaser.Point(game.world.width, game.world.height));
 				}
 			}, this);
 			r = Math.floor(Math.random() * 2);
