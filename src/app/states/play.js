@@ -350,7 +350,7 @@ Play.toggleInventory = function() {
 Play.create = function() {
     trackSelection.changeTrack('chip1-music');
 
-	this.Ship = game.add.sprite(200, 0, 'Pirate_Ship');
+	this.Ship = game.add.sprite(200, 400, 'Pirate_Ship');
     this.Ship.fixedToCamera = false;
     this.Ship.visible = true;
     this.Ship.width = 400;
@@ -362,6 +362,7 @@ Play.create = function() {
 	this.Ship.body.velocity.y = 20;
 	
 	this.cannonballGroup = game.add.group();
+	game.world.bringToTop(this.cannonballGroup);
     // this.player.bringToTop();
     this.itemGroup = game.add.group();
     this.bulletGroup = game.add.group();
@@ -863,13 +864,14 @@ Play.update = function() {
 	console.log(this.player.body.x);
 	if (u === 1 
 		&& this.player.body.x < 1000 
-		&& Math.abs(this.player.body.y - (this.Ship.body.y + this.Ship.body.height / 2)) < 30) {
+		&& Math.abs(this.player.body.y - (this.Ship.body.y + this.Ship.body.height / 2)) < 200) {
 		let cb = new Cannonball(this.Ship.body.x + this.Ship.body.width / 2, this.Ship.body.y + this.Ship.body.height / 2, 'CannonBall');
 		game.physics.enable(
 			cb, Phaser.Physics.ARCADE
 		);
 		game.world.add(cb);
 		this.cannonballGroup.add(cb);
+		game.world.bringToTop(this.cannonballGroup);
 		cb.body.velocity.x = 1000;
 		cb.width = 20;
 		cb.height = 20;
@@ -880,8 +882,8 @@ Play.update = function() {
 			cb.body.immovable = true;
 			cb.body.moves = false;
 			cb.anchor.setTo(0.5, 0.9);
-			cb.height = 96;
-			cb.width = 96;
+			cb.height = 144;
+			cb.width = 144;
 			cb.loadTexture('cb_explode');
 			cb.animations.add('explode', 
 						[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], 
@@ -946,7 +948,7 @@ Play.update = function() {
         this.player, this.itemGroup, itemCollision, null, this
     );
 	game.physics.arcade.overlap(
-		this.player, this.cannonballGroup, cannonCollision, null, this
+		this.entitiesGroup, this.cannonballGroup, cannonCollision, null, this
 	);
     game.physics.arcade.overlap(
         this.entitiesGroup, this.bulletGroup, bulletCollision, null, this
@@ -1264,11 +1266,16 @@ function itemCollision(player, item) {
     // }
 };
 
-function cannonCollision(player, cannonball) {
+function cannonCollision(entity, cannonball) {
 	if (cannonball.exploded === 0) {
 		cannonball.explode(this.cannonballGroup);
-		this.player.HP -= 20;
-		if (this.player.HP <= 0) this.player.die();
+		if (entity === this.player){
+			this.player.HP -= 20;
+			if (this.player.HP <= 0) this.player.die();
+		} else {
+			entity.body.enable = false;
+			entity.die();
+		}
 	}
 };
 

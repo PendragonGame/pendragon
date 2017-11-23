@@ -34,7 +34,7 @@ Cannonball.prototype.explode = function(cGroup) {
 						10, 
 						false);
 	self = this;
-	this.animations.play('explode', 10, false).onComplete.add(function() {
+	this.animations.play('explode', 6, false).onComplete.add(function() {
 		self.destroy();
     });
 };

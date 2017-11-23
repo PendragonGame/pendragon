@@ -27,7 +27,7 @@ function Player(x, y, key) {
     this.currency = 0;
     this.defenseStat = 90;
 	
-	this.stamina = 100;
+	this.stamina = 250;
 	this.maxStamina = 250;
 	
 	this.speed = 150;
