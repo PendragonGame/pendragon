@@ -52,6 +52,9 @@ Load.preload = function() {
     game.load.image('Arrow_Left', 'assets/sprites/Inventory/arrow_left.png');
     game.load.image('Arrow_Up', 'assets/sprites/Inventory/arrow_up.png');
     game.load.image('Arrow_Down', 'assets/sprites/Inventory/arrow_down.png');
+	
+	game.load.image('Pirate_Ship', 'assets/sprites/pirate_ship.png');
+	game.load.image('CannonBall', 'assets/sprites/cannonball.png');
 
     game.load.audio('chip1-music', 'assets/music/chip1.mp3');
     game.load.audio('chip2-music', 'assets/music/chip2.mp3');
@@ -68,6 +71,8 @@ Load.preload = function() {
     
     game.load.spritesheet('player_shoot', 'assets/sprites/armor_bow.png', 64, 64, 273);
 	game.load.spritesheet('player_thrust', 'assets/sprites/armor_spear.png', 64, 64, 273);
+	
+	game.load.spritesheet('cb_explode', 'assets/sprites/explode.png', 96, 96, 15);
 };
 
 Load.create = function() {

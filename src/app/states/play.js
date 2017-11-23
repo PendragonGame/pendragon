@@ -12,6 +12,7 @@ const dataStore = require('../util/data');
 const Map = require('../util/Map');
 const Ripple = require('../ripple/engine');
 const Item = require('../item/Item.js');
+const Cannonball = require('../item/Cannonball.js');
 let electron = require('electron');
 let window = electron.remote.getCurrentWindow();
 
@@ -349,6 +350,18 @@ Play.toggleInventory = function() {
 Play.create = function() {
     trackSelection.changeTrack('chip1-music');
 
+	this.Ship = game.add.sprite(200, 0, 'Pirate_Ship');
+    this.Ship.fixedToCamera = false;
+    this.Ship.visible = true;
+    this.Ship.width = 400;
+	this.Ship.height = 600;
+	this.Ship.anchor.setTo(0.5, 0.5);
+	game.physics.enable(
+        this.Ship, Phaser.Physics.ARCADE
+    );
+	this.Ship.body.velocity.y = 20;
+	
+	this.cannonballGroup = game.add.group();
     // this.player.bringToTop();
     this.itemGroup = game.add.group();
     this.bulletGroup = game.add.group();
@@ -834,6 +847,52 @@ Play.create = function() {
 };
 
 Play.update = function() {
+	//console.log(this.Ship.body.y);
+	let shipSpeed = 50;
+	if (this.Ship.body.y > 4000) {
+		this.Ship.body.y = 3995;
+		this.Ship.scale.y *= -1;
+		this.Ship.body.velocity.y = -shipSpeed;
+	} else if (this.Ship.body.y < -700) {
+		this.Ship.body.y = -700;
+		this.Ship.scale.y *= -1;
+		this.Ship.body.velocity.y = shipSpeed;
+	}
+	
+	let u = Math.floor(Math.random() * 100);
+	console.log(this.player.body.x);
+	if (u === 1 
+		&& this.player.body.x < 1000 
+		&& Math.abs(this.player.body.y - (this.Ship.body.y + this.Ship.body.height / 2)) < 30) {
+		let cb = new Cannonball(this.Ship.body.x + this.Ship.body.width / 2, this.Ship.body.y + this.Ship.body.height / 2, 'CannonBall');
+		game.physics.enable(
+			cb, Phaser.Physics.ARCADE
+		);
+		game.world.add(cb);
+		this.cannonballGroup.add(cb);
+		cb.body.velocity.x = 1000;
+		cb.width = 20;
+		cb.height = 20;
+		let time = Math.floor(Math.random() * 500) + 500;
+		setTimeout(() => {
+			cb.exploded = 1;
+			cb.body.velocity.y = 0;
+			cb.body.immovable = true;
+			cb.body.moves = false;
+			cb.anchor.setTo(0.5, 0.9);
+			cb.height = 96;
+			cb.width = 96;
+			cb.loadTexture('cb_explode');
+			cb.animations.add('explode', 
+						[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], 
+						10, 
+						false);
+			cb.animations.play('explode', 10, false).onComplete.add(function() {
+				cb.destroy();
+			});
+        }, time);
+	}
+	
     if (this.player.state === 'dead') {
         game.score = this.player.score;
         game.dayCount = this.player.daysSurvived;
@@ -886,6 +945,9 @@ Play.update = function() {
     game.physics.arcade.overlap(
         this.player, this.itemGroup, itemCollision, null, this
     );
+	game.physics.arcade.overlap(
+		this.player, this.cannonballGroup, cannonCollision, null, this
+	);
     game.physics.arcade.overlap(
         this.entitiesGroup, this.bulletGroup, bulletCollision, null, this
     );
@@ -1200,6 +1262,14 @@ function itemCollision(player, item) {
     this.player.converse('+' + item.key);
     this.player.addToInventory(item.key, item.type);
     // }
+};
+
+function cannonCollision(player, cannonball) {
+	if (cannonball.exploded === 0) {
+		cannonball.explode(this.cannonballGroup);
+		this.player.HP -= 20;
+		if (this.player.HP <= 0) this.player.die();
+	}
 };
 
 
