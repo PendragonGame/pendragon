@@ -359,7 +359,7 @@ Play.create = function() {
 	game.physics.enable(
         this.Ship, Phaser.Physics.ARCADE
     );
-	this.Ship.body.velocity.y = 20;
+	this.Ship.body.velocity.y = 0;
 	
 	this.cannonballGroup = game.add.group();
 	game.world.bringToTop(this.cannonballGroup);
@@ -849,7 +849,8 @@ Play.create = function() {
 
 Play.update = function() {
 	//console.log(this.Ship.body.y);
-	let shipSpeed = 50;
+	let shipSpeed = 100;
+	if (this.Ship.body.velocity.y === 0) this.Ship.body.velocity.y = shipSpeed;
 	if (this.Ship.body.y > 4000) {
 		this.Ship.body.y = 3995;
 		this.Ship.scale.y *= -1;
@@ -860,11 +861,8 @@ Play.update = function() {
 		this.Ship.body.velocity.y = shipSpeed;
 	}
 	
-	let u = Math.floor(Math.random() * 100);
-	console.log(this.player.body.x);
-	if (u === 1 
-		&& this.player.body.x < 1000 
-		&& Math.abs(this.player.body.y - (this.Ship.body.y + this.Ship.body.height / 2)) < 200) {
+	let u = Math.floor(Math.random() * 40);
+	if (u === 1 && this.player.body.x < 1100) {
 		let cb = new Cannonball(this.Ship.body.x + this.Ship.body.width / 2, this.Ship.body.y + this.Ship.body.height / 2, 'CannonBall');
 		game.physics.enable(
 			cb, Phaser.Physics.ARCADE
@@ -968,6 +966,7 @@ Play.update = function() {
     let bR2 = new Phaser.Point(4452, 3565);
 
     this.entitiesGroup.sort('y', Phaser.Group.SORT_ASCENDING);
+	
 
     this.entitiesGroup.forEach((e) => {
         if (!e) return;
@@ -1216,18 +1215,17 @@ function bulletCollision(entity, bullet) {
                 case 'npc':
                     let coins = Math.floor(Math.random() * 4) + 2;
                     this.player.currency += coins;
-
                     r = Math.floor(Math.random() * 2);
-                    if (r == 1) {
-                        r = Math.floor(Math.random() * 4);
-                        let k = '';
-                        if (r == 0) k = 'Carrot';
-                        if (r == 1) k = 'Apple';
-                        if (r == 2) k = 'Pear';
-                        if (r == 3) k = 'Mutton';
-                        let i = new Item(entity.x + (entity.width / 2), entity.y + (entity.height / 2), k, 'food');
-                        this.itemGroup.add(i);
-                    }
+					if (r == 1) {
+						r = Math.floor(Math.random() * 4);
+						let k = '';
+						if (r == 0) k = 'Carrot';
+						if (r == 1) k = 'Apple';
+						if (r == 2) k = 'Pear';
+						if (r == 3) k = 'Mutton';
+						let i = new Item(entity.x + (entity.width / 2), entity.y + (entity.height / 2), k, 'food');
+						this.itemGroup.add(i);
+					}
                     break;
                 case 'monster':
                     r = Math.floor(Math.random() * 5);
@@ -1251,7 +1249,6 @@ function bulletCollision(entity, bullet) {
         }
     }
 };
-
 /**
  * 
  * @param {Player} player 
@@ -1266,13 +1263,46 @@ function itemCollision(player, item) {
     // }
 };
 
+
+/*
+ * Handles collision between cannonball and entity.
+ *
+ */
 function cannonCollision(entity, cannonball) {
 	if (cannonball.exploded === 0) {
 		cannonball.explode(this.cannonballGroup);
+		//Player takes 20 damage per hit
 		if (entity === this.player){
 			this.player.HP -= 20;
 			if (this.player.HP <= 0) this.player.die();
 		} else {
+			//NPC's are killed immedeatily, and nearby NPCs react.
+			let nearest = Map.nearest(this.player, 4, 1024);
+			let numWitnesses = Math.floor(Math.random() * nearest.length);
+			if (numWitnesses === 0 && nearest.length > 0) numWitnesses = 1;
+			let witnesses = Sampling.sample_from_array(nearest, numWitnesses, false);
+	
+			if (!witnesses) return;
+			witnesses.forEach(function(p, i) {
+				if (p[0].state !== 'dead') {
+					let witness = p[0];
+					let dialogue = ['Oh no!', 'Run!', 'Invasion!', 'Pirate attack!', 'Duck!'];
+					let n = Math.floor(Math.random() * dialogue.length);
+					witness.converse(dialogue[n]);
+					witness.moveInDirection('right');
+				}
+			}, this);
+			r = Math.floor(Math.random() * 2);
+			if (r == 1) {
+				r = Math.floor(Math.random() * 4);
+				let k = '';
+				if (r == 0) k = 'Carrot';
+				if (r == 1) k = 'Apple';
+				if (r == 2) k = 'Pear';
+				if (r == 3) k = 'Mutton';
+				let i = new Item(entity.x + (entity.width / 2), entity.y + (entity.height / 2), k, 'food');
+				this.itemGroup.add(i);
+			}
 			entity.body.enable = false;
 			entity.die();
 		}
@@ -1611,7 +1641,6 @@ Play.engageGossip = function(dead, perp, action) {
         // }, this);
         let nearest = Map.nearest(this.player, 4, 256);
         let numWitnesses = Math.floor(Math.random() * nearest.length);
-		numWitnesses = nearest.length;
         let witnesses = Sampling.sample_from_array(
             nearest, numWitnesses, false
         );
