@@ -137,8 +137,8 @@ Play.preload = function() {
 
     // Weapon display
     this.wpn = game.add.sprite(0, 0, 'hud_Dagger');
-    this.wpn.width /= 2;
-    this.wpn.height /= 2;
+    this.wpn.width /= 1.5;
+    this.wpn.height /= 1.5;
     this.wpn.x = game.camera.width - this.wpn.width - margin;
     this.wpn.y = margin;
     this.wpn.fixedToCamera = true;
