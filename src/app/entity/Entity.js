@@ -297,7 +297,7 @@ Entity.prototype.attack = function() {
     this.animations.play('slash_' + this.direction, 20, false).onComplete.add(function() {
         // this.animations.frame
         // console.log('attack finished');
-       self.idleHere();
+       if (self instanceof Entity) self.idleHere();
     });
     this.adjustHitbox('slash');
 };
@@ -308,17 +308,17 @@ Entity.prototype.shoot = function() {
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
     this.animations.play('shoot_' + this.direction, 20, false).onComplete.add(function() {
-       self.idleHere();
+       if (self instanceof Entity) self.idleHere();
     });
 };
 
 Entity.prototype.thrust = function() {
-    self = this;
     this.state = 'thrusting';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
+	self = this;
     this.animations.play('thrust_' + this.direction, 20, false).onComplete.add(function() {
-       self.idleHere();
+       if (self instanceof Entity) self.idleHere();
     });
     this.adjustHitbox('slash');
 };
