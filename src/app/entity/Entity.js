@@ -289,26 +289,23 @@ Entity.prototype.idleHere = function() {
 };
 
 Entity.prototype.attack = function() {
-    self = this;
-    // console.log('attacking');
     this.state = 'attacking';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
+	const self = this;
     this.animations.play('slash_' + this.direction, 20, false).onComplete.add(function() {
-        // this.animations.frame
-        // console.log('attack finished');
-       if (self instanceof Entity) self.idleHere();
+       self.idleHere();
     });
     this.adjustHitbox('slash');
 };
 
 Entity.prototype.shoot = function() {
-    self = this;
     this.state = 'shooting';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
+	const self = this;
     this.animations.play('shoot_' + this.direction, 20, false).onComplete.add(function() {
-       if (self instanceof Entity) self.idleHere();
+       self.idleHere();
     });
 };
 
@@ -316,9 +313,9 @@ Entity.prototype.thrust = function() {
     this.state = 'thrusting';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
-	self = this;
+	const self = this;
     this.animations.play('thrust_' + this.direction, 20, false).onComplete.add(function() {
-       if (self instanceof Entity) self.idleHere();
+       self.idleHere();
     });
     this.adjustHitbox('slash');
 };
