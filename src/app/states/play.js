@@ -1079,9 +1079,10 @@ Play.update = function() {
     // Shoot
     if ((this.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) &&
         (this.player.weapons[this.player.currentWeapon] === 'Bow')) {
-        console.log(this.player.state);
         if (this.player.state !== 'shooting') {
             this.player.shoot();
+			//Set a timeout here so that the bullet doesn't shoot immedeatily.
+			//This makes it line up better with the animation.
             setTimeout(() => {
                 let tempBullet = null;
 				let bulletSpeed = 700;
@@ -1128,48 +1129,24 @@ Play.update = function() {
                     tempBullet.kill();
                     this.bulletGroup.remove(tempBullet);
                 }, 10000);
-            }, 500);
+            }, 450);
         }
-    } else {
-        let temp = this.player.frame - 207;
-        if ((temp % 13 === 0)) {
-            this.player.state = 'idling';
-        }
-    }
+    } 
 
     // Attack
     if ((this.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) &&
         (this.player.state !== 'attacking') &&
         (this.player.weapons[this.player.currentWeapon] === 'Dagger')) {
         this.player.attack();
-    } else {
-        /**
-         * attacking == false
-         * iff we are on the last frame. ie. the whole animation has played.
-         */
-        // å
-        let temp = this.player.frame - 161;
-        if ((temp % 13 === 0) && (this.player.state === 'attacking')) {
-            if (!(this.keyboard.isDown(Phaser.Keyboard.SPACEBAR))) {
-                this.player.state = 'idling';
-            }
-        }
-    }
-	
+    } 
 	// Thrust
     if ((this.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) &&
         (this.player.state !== 'thrusting') &&
         (this.player.weapons[this.player.currentWeapon] === 'Spear')) {
         this.player.thrust();
-    } else {
-        let temp = this.player.frame - 59;
-        if ((temp % 13 === 0) && (this.player.state === 'thrusting')) {
-            if (!(this.keyboard.isDown(Phaser.Keyboard.SPACEBAR))) {
-                this.player.state = 'idling';
-            }
-        }
     }
 
+	//Key Queue for movement
     if (this.wasdQueue.length) {
         this.player.moveInDirection(this.wasdQueue[this.wasdQueue.length - 1],
             sprint);
@@ -1308,7 +1285,8 @@ function cannonCollision(entity, cannonball) {
 					let witness = p[0];
 					let dialogue = ['Oh no!', 'Run!', 'Invasion!', 'Pirate attack!', 'Duck!'];
 					let n = Math.floor(Math.random() * dialogue.length);
-					witness.converse(dialogue[n]);
+					if (witness !== entity) witness.converse(dialogue[n]);
+					else witness.converse('Ahhh!');
 					witness.wander(this.navMesh, new Phaser.Point(0, 0), new Phaser.Point(game.world.width, game.world.height));
 				}
 			}, this);

@@ -163,55 +163,55 @@ Entity.prototype.setAnimations = function(frames) {
 
 
     this.animations.add('walk_up',
-                        [104, 105, 106, 107, 108, 109, 110, 111, 112],
+                        [105, 106, 107, 108, 109, 110, 111, 112],
                         10, true);
     this.animations.add('walk_down',
-                        [130, 131, 132, 133, 134, 135, 136, 137, 138],
+                        [131, 132, 133, 134, 135, 136, 137, 138],
                         10, true);
     this.animations.add('walk_left',
-                        [117, 118, 119, 120, 121, 122, 123, 124, 125],
+                        [118, 119, 120, 121, 122, 123, 124, 125],
                         10, true);
     this.animations.add('walk_right',
-                        [143, 144, 145, 146, 147, 148, 149, 150, 151],
+                        [144, 145, 146, 147, 148, 149, 150, 151],
                         10, true);
 
     this.animations.add('slash_up',
-                        [156, 157, 158, 159, 160, 161],
+                        [157, 158, 159, 160, 161, 160, 159, 158, 157, 156],
                         10, true);
     this.animations.add('slash_down',
-                        [182, 183, 184, 185, 186, 187],
+                        [183, 184, 185, 186, 187, 186, 185, 184, 183, 182],
                         10, true);
     this.animations.add('slash_left',
-                        [169, 170, 171, 172, 173, 174],
+                        [170, 171, 172, 173, 174, 173, 172, 171, 170, 169],
                         10, true);
     this.animations.add('slash_right',
-                        [195, 196, 197, 198, 199, 200],
+                        [196, 197, 198, 199, 200, 199, 198, 197, 196, 195],
                         10, true);
 						
 	this.animations.add('thrust_up',
-                        [52, 53, 54, 55, 56, 57, 58, 59],
+                        [53, 54, 55, 56, 57, 58, 59, 58, 57, 56, 55, 54, 53],
                         10, true);
     this.animations.add('thrust_down',
-                        [78, 79, 80, 81, 82, 83, 84, 85],
+                        [79, 80, 81, 82, 83, 84, 85, 84, 83, 82, 81, 80, 79],
                         10, true);
     this.animations.add('thrust_left',
-                        [65, 66, 67, 68, 69, 70, 71, 72],
+                        [66, 67, 68, 69, 70, 71, 72, 71, 70, 69, 68, 67, 66],
                         10, true);
     this.animations.add('thrust_right',
-                        [91, 92, 93, 94, 95, 96, 97, 98],
+                        [92, 93, 94, 95, 96, 97, 98, 97, 96, 95, 94, 93, 92],
                         10, true);
 
 	this.animations.add('shoot_up',
-					   [208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220],
+					   [208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 219, 219],
 					   10, true);
 	this.animations.add('shoot_left',
-					   [221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233],
+					   [221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 232, 232],
 					   10, true);
 	this.animations.add('shoot_down',
-					   [234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246],
+					   [234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 245, 245],
 					   10, true);
 	this.animations.add('shoot_right',
-					   [247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259],
+					   [247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 258, 258],
 					   10, true);
 };
 
@@ -293,7 +293,7 @@ Entity.prototype.attack = function() {
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
 	const self = this;
-    this.animations.play('slash_' + this.direction, 20, false).onComplete.add(function() {
+    this.animations.play('slash_' + this.direction, 30, false).onComplete.add(function() {
        self.idleHere();
     });
     this.adjustHitbox('slash');
