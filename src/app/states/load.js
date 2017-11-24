@@ -55,6 +55,7 @@ Load.preload = function() {
 	
 	game.load.image('Pirate_Ship', 'assets/sprites/pirate_ship.png');
 	game.load.image('CannonBall', 'assets/sprites/cannonball.png');
+	game.load.spritesheet('smoke', 'assets/sprites/smoke.png', 128, 128, 10);
 
     game.load.audio('chip1-music', 'assets/music/chip1.mp3');
     game.load.audio('chip2-music', 'assets/music/chip2.mp3');

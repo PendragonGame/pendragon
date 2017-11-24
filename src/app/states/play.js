@@ -248,9 +248,9 @@ Play.pauseGame = function() {
             // reveal pause menu
             for (let i = 0; i < this.pauseMenu.length; i++) {
                 this.pauseMenu[i].reveal();
-                this.pauseBg.visible = true;
-                this.pauseBg.alpha = 0.2;
             }
+			this.pauseBg.visible = true;
+            this.pauseBg.alpha = 0.2;
         } else {
             // hide the menu
             for (let i = 0; i < this.pauseMenu.length; i++) {
@@ -350,7 +350,8 @@ Play.toggleInventory = function() {
 Play.create = function() {
     trackSelection.changeTrack('chip1-music');
 
-	this.Ship = game.add.sprite(200, 400, 'Pirate_Ship');
+	//Creating the Ship
+	this.Ship = game.add.sprite(200, 800, 'Pirate_Ship');
     this.Ship.fixedToCamera = false;
     this.Ship.visible = true;
     this.Ship.width = 400;
@@ -360,6 +361,7 @@ Play.create = function() {
         this.Ship, Phaser.Physics.ARCADE
     );
 	this.Ship.body.velocity.y = 0;
+	
 	
 	this.cannonballGroup = game.add.group();
     // this.player.bringToTop();
@@ -846,9 +848,14 @@ Play.create = function() {
     timerIDs.push(i);
 };
 
+//Variable for ship. I should probably make Ship a class at this point,
+//but I'll leave that as a TODO@brianbad for now.
+let reloaded = 1;
+
 Play.update = function() {
-	//console.log(this.Ship.body.y);
-	let shipSpeed = 100;
+	//Tracking the ships locations and turning
+	//it as neccessary
+	let shipSpeed = 50;
 	if (this.Ship.body.velocity.y === 0) this.Ship.body.velocity.y = shipSpeed;
 	if (this.Ship.body.y > 4000) {
 		this.Ship.body.y = 3995;
@@ -860,20 +867,43 @@ Play.update = function() {
 		this.Ship.body.velocity.y = shipSpeed;
 	}
 	
-	let u = Math.floor(Math.random() * 80);
-	if (u === 1 && this.player.body.x < 1100) {
-		let cb = new Cannonball(this.Ship.body.x + this.Ship.body.width / 2, this.Ship.body.y + this.Ship.body.height / 2, 'CannonBall');
+	//Firing the cannons
+	let u = Math.floor(Math.random() * 120); //1 in 120 chance of firing...
+	if (u === 1 && this.player.body.x < 1100 && reloaded === 1) { //...so long as the Player is near the coast.
+		reloaded = 0;
+		//Reload takes 0.5 seconds.
+		setTimeout(() => {
+			reloaded = 1;
+		}, 500);
+		//Creating and sending the Cannonball
+		let cb = new Cannonball(this.Ship.body.x + this.Ship.body.width / 1.5, this.Ship.body.y + this.Ship.body.height / 2 + 5, 'CannonBall');
 		game.physics.enable(
 			cb, Phaser.Physics.ARCADE
 		);
 		game.world.add(cb);
 		this.cannonballGroup.add(cb);
-		//game.world.bringToTop(this.cannonballGroup);
-		game.world.bringToTop(this.hudGroup);
 		cb.body.velocity.x = 1000;
 		cb.width = 20;
 		cb.height = 20;
-		let time = Math.floor(Math.random() * 500) + 500;
+		
+		//Adds smoke when the cannon fires.
+		let s = game.add.sprite(this.Ship.body.x + this.Ship.body.width / 1.5, this.Ship.body.y + this.Ship.body.height / 2 + 5, 'smoke');
+		game.world.add(s);
+		s.anchor.setTo(0.5, 0.5);
+		s.width = 128;
+		s.height = 128;
+		s.animations.add('fire',
+						 [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+						 10, false);
+		s.animations.play('fire', 10, false).onComplete.add(function() {
+			s.destroy();
+		});
+		game.world.bringToTop(this.hudGroup);
+		
+		//Exploding the cannon. For some reason the function in Cannonball.js
+		//wasn't working here, so I wrote this out manually. Yet I think the function
+        //works in the cannonCollision function I call down below. I'm hate JavaScript.
+		let time = Math.floor(Math.random() * 500) + 500; //Cannonball explodes somewhere between 0.5-1 seconds of travel
 		setTimeout(() => {
 			cb.exploded = 1;
 			cb.body.velocity.y = 0;
@@ -893,6 +923,7 @@ Play.update = function() {
         }, time);
 	}
 	
+	//Check for Game Over
     if (this.player.state === 'dead') {
         game.score = this.player.score;
         game.dayCount = this.player.daysSurvived;
@@ -900,6 +931,7 @@ Play.update = function() {
         game.state.start('Game Over');
     }
 	
+	//Update Health Bar
     const hpPercent = this.player.HP / this.player.maxHP;
     this.fullHealthBar.width = (146 * (hpPercent));
     this.fullStamBar.width = (146 * (this.player.stamina / this.player.maxStamina));
@@ -1027,6 +1059,7 @@ Play.update = function() {
      //game.debug.bodyInfo(this.player.collideBox, 32, 32);
 
     // SHIFT for running
+	//Also checking ability to sprint considering Stamina
     let sprint = false;
     if (this.keyboard.isDown(Phaser.Keyboard.SHIFT) &&
         this.player.stamina > 0 &&
@@ -1046,6 +1079,7 @@ Play.update = function() {
         this.player.canSprint = 1;
     }
 
+	//Eating the next nood item in player.food
     if (this.keyboard.isDown(Phaser.Keyboard.E)) {
         if (this.player.eatAgain == 1 &&
             this.player.food.length > 0 &&
@@ -1486,10 +1520,10 @@ Play.populateBoard = function() {
      * Create the Player, setting location and naming as 'player'.
      * Giving him Physics and allowing collision with the world boundaries.
      */
-    this.player = new Player(1971,
-        504,
+    this.player = new Player(900,
+        1500,
         'player');
-
+//1971, 504!!!!
     /**
      * Add all Entities to the same group.
      */
