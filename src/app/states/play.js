@@ -1288,6 +1288,7 @@ function itemCollision(player, item) {
  *
  */
 function cannonCollision(entity, cannonball) {
+	//Direct hit causes 20 damage to the player, and insta kills NPCs
 	if (cannonball.exploded === 0) {
 		cannonball.explode();
 		//Player takes 20 damage per hit
@@ -1322,6 +1323,13 @@ function cannonCollision(entity, cannonball) {
 				let i = new Item(entity.x + (entity.width / 2), entity.y + (entity.height / 2), k, 'food');
 				this.itemGroup.add(i);
 			}
+			entity.body.enable = false;
+			entity.die();
+		}
+	} else {
+		//Colliding with explosion hurts a little bit.
+		entity.HP -= 0.1;
+		if (entity.HP <= 0){
 			entity.body.enable = false;
 			entity.die();
 		}
