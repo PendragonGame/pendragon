@@ -883,6 +883,7 @@ Play.update = function() {
 		game.world.add(cb);
 		this.cannonballGroup.add(cb);
 		cb.body.velocity.x = 1000;
+		cb.body.velocity.y = this.Ship.body.velocity.y;
 		cb.width = 20;
 		cb.height = 20;
 		
@@ -900,26 +901,10 @@ Play.update = function() {
 		});
 		game.world.bringToTop(this.hudGroup);
 		
-		//Exploding the cannon. For some reason the function in Cannonball.js
-		//wasn't working here, so I wrote this out manually. Yet I think the function
-        //works in the cannonCollision function I call down below. I'm hate JavaScript.
+		//Exploding the cannon. 
 		let time = Math.floor(Math.random() * 500) + 500; //Cannonball explodes somewhere between 0.5-1 seconds of travel
 		setTimeout(() => {
-			cb.exploded = 1;
-			cb.body.velocity.y = 0;
-			cb.body.immovable = true;
-			cb.body.moves = false;
-			cb.anchor.setTo(0.5, 0.9);
-			cb.height = 144;
-			cb.width = 144;
-			cb.loadTexture('cb_explode');
-			cb.animations.add('explode', 
-						[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], 
-						10, 
-						false);
-			cb.animations.play('explode', 10, false).onComplete.add(function() {
-				cb.destroy();
-			});
+			if (cb.exploded === 0) cb.explode();
         }, time);
 	}
 	
@@ -1304,7 +1289,7 @@ function itemCollision(player, item) {
  */
 function cannonCollision(entity, cannonball) {
 	if (cannonball.exploded === 0) {
-		cannonball.explode(this.cannonballGroup);
+		cannonball.explode();
 		//Player takes 20 damage per hit
 		if (entity === this.player){
 			this.player.HP -= 20;
@@ -1520,8 +1505,8 @@ Play.populateBoard = function() {
      * Create the Player, setting location and naming as 'player'.
      * Giving him Physics and allowing collision with the world boundaries.
      */
-    this.player = new Player(900,
-        1500,
+    this.player = new Player(1971,
+        504,
         'player');
 //1971, 504!!!!
     /**

@@ -20,21 +20,21 @@ function Cannonball(x, y, key) {
 Cannonball.prototype = Object.create(Phaser.Sprite.prototype);
 Cannonball.prototype.constructor = Cannonball;
 
-Cannonball.prototype.explode = function(cGroup) {
+Cannonball.prototype.explode = function() {
 	this.exploded = 1;
 	this.body.velocity.y = 0;
 	this.body.immovable = true;
 	this.body.moves = false;
 	this.anchor.setTo(0.5, 0.9);
-	this.height = 96;
-	this.width = 96;
+	this.height = 192;
+	this.width = 192;
 	this.loadTexture('cb_explode');
 	this.animations.add('explode', 
 						[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], 
 						10, 
 						false);
-	self = this;
-	this.animations.play('explode', 6, false).onComplete.add(function() {
+	const self = this;
+	this.animations.play('explode', 15, false).onComplete.add(function() {
 		self.destroy();
     });
 };
