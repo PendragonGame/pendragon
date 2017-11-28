@@ -63,6 +63,10 @@ Load.preload = function() {
 
     game.load.spritesheet('orc1', 'assets/sprites/orc1.png', 64, 64, 273);
 	game.load.spritesheet('orc2', 'assets/sprites/orc2.png', 64, 64, 273);
+	
+	game.load.spritesheet('enemy', 'assets/sprites/orc1.png', 64, 64, 273);
+	game.load.spritesheet('woman', 'assets/sprites/npc1.png', 64, 64, 273);
+	
     game.load.spritesheet('npc1', 'assets/sprites/npc1.png', 64, 64, 273);
 	game.load.spritesheet('npc2', 'assets/sprites/npc2.png', 64, 64, 273);
 	game.load.spritesheet('npc3', 'assets/sprites/npc3.png', 64, 64, 273);
