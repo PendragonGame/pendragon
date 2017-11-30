@@ -25,9 +25,9 @@ function Player(x, y, key) {
     this.score = 0;
     this.daysSurvived = 1;
     this.currency = 0;
-    this.defenseStat = 20;
+    this.defenseStat = 90;
 	
-	this.stamina = 100;
+	this.stamina = 250;
 	this.maxStamina = 250;
 	
 	this.speed = 150;
@@ -35,15 +35,9 @@ function Player(x, y, key) {
 	
 	this.currentWeapon = 0;
 	
-	this.weapons = ['Dagger', 'Bow'];
+	this.weapons = ['Dagger', 'Bow', 'Spear'];
 	this.food = [];
 	this.misc = ['Tunic'];
-
-    this.currentWeapon = 0;
-
-    this.weapons = ['Dagger', 'Bow'];
-    this.food = [];
-    this.misc = ['Tunic'];
 
     this.eatAgain = 1;
 

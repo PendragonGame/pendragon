@@ -58,7 +58,7 @@ function Entity(x, y, key) {
      * Miscellaneous attributes.
      */
     this.speed = 65;
-    this.sprintSpeed = 140;
+    this.sprintSpeed = 180;
     this.attackStat = 100; // How much default damage this entity does -@nitgarg99
     this.defenseStat = 1;
     this.maxHP = 100;
@@ -153,8 +153,12 @@ Entity.prototype.setAnimations = function(frames) {
                                  271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
                                  271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
                                  271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
-                                 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 272],
-                                 25,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+                                 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+								 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+                                 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271,
+                                 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271, 271],
+                                 1,
                                  false);
 
 
@@ -172,29 +176,42 @@ Entity.prototype.setAnimations = function(frames) {
                         10, true);
 
     this.animations.add('slash_up',
-                        [156, 157, 158, 159, 160, 161],
+                        [157, 158, 159, 160, 161, 160, 159, 158, 157, 156],
                         10, true);
     this.animations.add('slash_down',
-                        [182, 183, 184, 185, 186, 187],
+                        [183, 184, 185, 186, 187, 186, 185, 184, 183, 182],
                         10, true);
     this.animations.add('slash_left',
-                        [169, 170, 171, 172, 173, 174],
+                        [170, 171, 172, 173, 174, 173, 172, 171, 170, 169],
                         10, true);
     this.animations.add('slash_right',
-                        [195, 196, 197, 198, 199, 200],
+                        [196, 197, 198, 199, 200, 199, 198, 197, 196, 195],
+                        10, true);
+						
+	this.animations.add('thrust_up',
+                        [53, 54, 55, 56, 57, 58, 59, 58, 57, 56, 55, 54, 53],
+                        10, true);
+    this.animations.add('thrust_down',
+                        [79, 80, 81, 82, 83, 84, 85, 84, 83, 82, 81, 80, 79],
+                        10, true);
+    this.animations.add('thrust_left',
+                        [66, 67, 68, 69, 70, 71, 72, 71, 70, 69, 68, 67, 66],
+                        10, true);
+    this.animations.add('thrust_right',
+                        [92, 93, 94, 95, 96, 97, 98, 97, 96, 95, 94, 93, 92],
                         10, true);
 
 	this.animations.add('shoot_up',
-					   [208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220],
+					   [208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 219, 219],
 					   10, true);
 	this.animations.add('shoot_left',
-					   [221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233],
+					   [221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 232, 232],
 					   10, true);
 	this.animations.add('shoot_down',
-					   [234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246],
+					   [234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 245, 245],
 					   10, true);
 	this.animations.add('shoot_right',
-					   [247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259],
+					   [247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 258, 258],
 					   10, true);
 };
 
@@ -215,7 +232,7 @@ Entity.prototype.setAnimations = function(frames) {
  * @param {Boolean} sprint - Whether to sprint or not
  */
 Entity.prototype.moveInDirection = function(direction, sprint) {
-    if (this.state !== 'attacking' && this.state !== 'shooting') {
+    if (this.state !== 'attacking' && this.state !== 'shooting' && this.state !== 'thrusting') {
         this.state = 'walking';
         let speed = sprint ? this.sprintSpeed : this.speed;
 
@@ -272,25 +289,32 @@ Entity.prototype.idleHere = function() {
 };
 
 Entity.prototype.attack = function() {
-    self = this;
-    // console.log('attacking');
     this.state = 'attacking';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
-    this.animations.play('slash_' + this.direction, 20, false).onComplete.add(function() {
-        // this.animations.frame
-        // console.log('attack finished');
+	const self = this;
+    this.animations.play('slash_' + this.direction, 30, false).onComplete.add(function() {
        self.idleHere();
     });
     this.adjustHitbox('slash');
 };
 
 Entity.prototype.shoot = function() {
-    self = this;
     this.state = 'shooting';
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
+	const self = this;
     this.animations.play('shoot_' + this.direction, 20, false).onComplete.add(function() {
+       self.idleHere();
+    });
+};
+
+Entity.prototype.thrust = function() {
+    this.state = 'thrusting';
+    this.body.velocity.x = 0;
+    this.body.velocity.y = 0;
+	const self = this;
+    this.animations.play('thrust_' + this.direction, 20, false).onComplete.add(function() {
        self.idleHere();
     });
     this.adjustHitbox('slash');
@@ -312,7 +336,7 @@ Entity.prototype.die = function() {
     const self = this;
     setTimeout(function() {
         self.kill();
-    }, 5000);
+    }, 20000);
 };
 
 /*
@@ -443,6 +467,10 @@ Entity.prototype.learnInfo = function(rumor) {
     console.debug('[' + this.id +'] Learning something new....');
     this.information.push(rumor);
 
+	let positiveDialogue = ['Hi there', 'That\'s good', 'Thank you', 'Sweet', 'Nice work'];
+	let negativeDialogue = ['Don\'t do that!', 'Screw you!', 'That person sucks!', 'I\'m done!', 'That\'s it!'];
+	let r = Math.floor(Math.random() * positiveDialogue.length);
+	let s = Math.floor(Math.random() * negativeDialogue.length);
     switch (rumor.action) {
         case 'kill':
             if (rumor.targetType === this.type) {
@@ -452,7 +480,8 @@ Entity.prototype.learnInfo = function(rumor) {
                   * 0.1.
                   */
                 this.reputation = Math.max(-1, this.reputation - 0.1);
-                this.converse('That person sucks!');
+				s = Math.floor(Math.random() * negativeDialogue.length);
+                this.converse(negativeDialogue[s]);
             } else if (this.dislike.includes(rumor.targetType)) {
                 /**
                  * If the current entity dislikes the type of entity
@@ -460,7 +489,8 @@ Entity.prototype.learnInfo = function(rumor) {
                  * rep increases by 0.1
                  */
                 this.reputation = Math.min(1, this.reputation + 0.25);
-                this.converse('I LOVE THAT PERSON!');
+				r = Math.floor(Math.random() * positiveDialogue.length);
+                this.converse(positiveDialogue[r]);
             }
     }
 };
