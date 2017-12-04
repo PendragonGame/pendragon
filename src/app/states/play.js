@@ -12,6 +12,7 @@ const dataStore = require('../util/data');
 const Map = require('../util/Map');
 const Ripple = require('../ripple/engine');
 const Item = require('../item/Item.js');
+const Cannonball = require('../item/Cannonball.js');
 let electron = require('electron');
 let window = electron.remote.getCurrentWindow();
 
@@ -113,12 +114,13 @@ Play.preload = function() {
                 this.wasdQueue.splice(index, 1);
                 break;
             case 81:
-                if (this.player.state !== 'shooting' && this.player.state !== 'attacking') {
+                if (this.player.state !== 'shooting' && this.player.state !== 'attacking' && this.player.state !== 'thrusting') {
                     this.player.currentWeapon++;
                     if (this.player.currentWeapon == this.player.weapons.length) this.player.currentWeapon = 0;
                     this.wpn.loadTexture('hud_' + this.player.weapons[this.player.currentWeapon], 0, false);
                     if (this.player.weapons[this.player.currentWeapon] === 'Bow') this.player.loadTexture('player_shoot');
                     if (this.player.weapons[this.player.currentWeapon] === 'Dagger') this.player.loadTexture('player');
+					if (this.player.weapons[this.player.currentWeapon] === 'Spear') this.player.loadTexture('player_thrust');
                 }
                 break;
             default:
@@ -135,8 +137,8 @@ Play.preload = function() {
 
     // Weapon display
     this.wpn = game.add.sprite(0, 0, 'hud_Dagger');
-    this.wpn.width /= 2;
-    this.wpn.height /= 2;
+    this.wpn.width /= 1.5;
+    this.wpn.height /= 1.5;
     this.wpn.x = game.camera.width - this.wpn.width - margin;
     this.wpn.y = margin;
     this.wpn.fixedToCamera = true;
@@ -235,6 +237,7 @@ Play.preload = function() {
  * pauses the game
  */
 Play.pauseGame = function() {
+	this.pauseMenu[0].text.text = 'Save';
     // This if statement prevents pausing while the inventory is open.
     if (game.paused == true && this.pauseBg.visible == false) {
         /* nop */
@@ -245,9 +248,9 @@ Play.pauseGame = function() {
             // reveal pause menu
             for (let i = 0; i < this.pauseMenu.length; i++) {
                 this.pauseMenu[i].reveal();
-                this.pauseBg.visible = true;
-                this.pauseBg.alpha = 0.2;
             }
+			this.pauseBg.visible = true;
+            this.pauseBg.alpha = 0.2;
         } else {
             // hide the menu
             for (let i = 0; i < this.pauseMenu.length; i++) {
@@ -347,6 +350,20 @@ Play.toggleInventory = function() {
 Play.create = function() {
     trackSelection.changeTrack('chip1-music');
 
+	//Creating the Ship
+	this.Ship = game.add.sprite(200, 800, 'Pirate_Ship');
+    this.Ship.fixedToCamera = false;
+    this.Ship.visible = true;
+    this.Ship.width = 400;
+	this.Ship.height = 600;
+	this.Ship.anchor.setTo(0.5, 0.5);
+	game.physics.enable(
+        this.Ship, Phaser.Physics.ARCADE
+    );
+	this.Ship.body.velocity.y = 0;
+	
+	
+	this.cannonballGroup = game.add.group();
     // this.player.bringToTop();
     this.itemGroup = game.add.group();
     this.bulletGroup = game.add.group();
@@ -695,6 +712,14 @@ Play.create = function() {
     this.pauseBg.visible = false;
     this.pauseBg.drawRect(0, 0, game.camera.width, game.camera.height);
     this.pauseBg.fixedToCamera = true;
+	
+	//Red Hitmarker background
+	this.hitBg = game.add.graphics();
+    this.hitBg.beginFill(0xff0000);
+    this.hitBg.alpha = .4;
+    this.hitBg.visible = false;
+    this.hitBg.drawRect(0, 0, game.camera.width, game.camera.height);
+    this.hitBg.fixedToCamera = true;
 
 
     // controls
@@ -823,13 +848,75 @@ Play.create = function() {
     timerIDs.push(i);
 };
 
+//Variable for ship. I should probably make Ship a class at this point,
+//but I'll leave that as a TODO@brianbad for now.
+let reloaded = 1;
+
 Play.update = function() {
+	//Tracking the ships locations and turning
+	//it as neccessary
+	let shipSpeed = 50;
+	if (this.Ship.body.velocity.y === 0) this.Ship.body.velocity.y = shipSpeed;
+	if (this.Ship.body.y > 4000) {
+		this.Ship.body.y = 3995;
+		this.Ship.scale.y *= -1;
+		this.Ship.body.velocity.y = -shipSpeed;
+	} else if (this.Ship.body.y < -700) {
+		this.Ship.body.y = -700;
+		this.Ship.scale.y *= -1;
+		this.Ship.body.velocity.y = shipSpeed;
+	}
+	
+	//Firing the cannons
+	let u = Math.floor(Math.random() * 120); //1 in 120 chance of firing...
+	if (u === 1 && this.player.body.x < 1100 && reloaded === 1) { //...so long as the Player is near the coast.
+		reloaded = 0;
+		//Reload takes 0.5 seconds.
+		setTimeout(() => {
+			reloaded = 1;
+		}, 500);
+		//Creating and sending the Cannonball
+		let cb = new Cannonball(this.Ship.body.x + this.Ship.body.width / 1.5, this.Ship.body.y + this.Ship.body.height / 2 + 5, 'CannonBall');
+		game.physics.enable(
+			cb, Phaser.Physics.ARCADE
+		);
+		game.world.add(cb);
+		this.cannonballGroup.add(cb);
+		cb.body.velocity.x = 1000;
+		cb.body.velocity.y = this.Ship.body.velocity.y;
+		cb.width = 20;
+		cb.height = 20;
+		
+		//Adds smoke when the cannon fires.
+		let s = game.add.sprite(this.Ship.body.x + this.Ship.body.width / 1.5, this.Ship.body.y + this.Ship.body.height / 2 + 5, 'smoke');
+		game.world.add(s);
+		s.anchor.setTo(0.5, 0.5);
+		s.width = 128;
+		s.height = 128;
+		s.animations.add('fire',
+						 [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+						 10, false);
+		s.animations.play('fire', 10, false).onComplete.add(function() {
+			s.destroy();
+		});
+		game.world.bringToTop(this.hudGroup);
+		
+		//Exploding the cannon. 
+		let time = Math.floor(Math.random() * 500) + 500; //Cannonball explodes somewhere between 0.5-1 seconds of travel
+		setTimeout(() => {
+			if (cb.exploded === 0) cb.explode();
+        }, time);
+	}
+	
+	//Check for Game Over
     if (this.player.state === 'dead') {
         game.score = this.player.score;
         game.dayCount = this.player.daysSurvived;
         this.keyboard.onDownCallback = this.keyboard.onUpCallback = null;
         game.state.start('Game Over');
     }
+	
+	//Update Health Bar
     const hpPercent = this.player.HP / this.player.maxHP;
     this.fullHealthBar.width = (146 * (hpPercent));
     this.fullStamBar.width = (146 * (this.player.stamina / this.player.maxStamina));
@@ -875,6 +962,9 @@ Play.update = function() {
     game.physics.arcade.overlap(
         this.player, this.itemGroup, itemCollision, null, this
     );
+	game.physics.arcade.overlap(
+		this.entitiesGroup, this.cannonballGroup, cannonCollision, null, this
+	);
     game.physics.arcade.overlap(
         this.entitiesGroup, this.bulletGroup, bulletCollision, null, this
     );
@@ -893,6 +983,7 @@ Play.update = function() {
     let bR2 = new Phaser.Point(4452, 3565);
 
     this.entitiesGroup.sort('y', Phaser.Group.SORT_ASCENDING);
+	
 
     this.entitiesGroup.forEach((e) => {
         if (!e) return;
@@ -935,8 +1026,8 @@ Play.update = function() {
             let attitude = 'aggressive';
             if (e.reputation < -0.8) {
                 // Really aggro
-                e.slowSprint = e.sprintSpeed;
-                e.sprintSpeed = 2 * e.slowSprint;
+                //e.slowSprint = e.sprintSpeed;
+                //e.sprintSpeed = 2 * e.slowSprint;
             }
             e.updateAI(this.navMesh,
                 tL2, bR2, this.player, attitude);
@@ -948,18 +1039,17 @@ Play.update = function() {
      */
     if (this.player.state === 'dead') return;
     // Displays the hitbox for the Player
-    // this.game.debug.body(this.player);
-    // game.debug.body(this.player.collideBox);
-    // game.debug.bodyInfo(this.player.collideBox, 32, 32);
+     //this.game.debug.body(this.player);
+     //this.game.debug.body(this.player.collideBox);
+     //game.debug.bodyInfo(this.player.collideBox, 32, 32);
 
     // SHIFT for running
+	//Also checking ability to sprint considering Stamina
     let sprint = false;
     if (this.keyboard.isDown(Phaser.Keyboard.SHIFT) &&
         this.player.stamina > 0 &&
         this.player.canSprint === 1 &&
-        this.player.state !== 'attacking' &&
-        this.player.state !== 'shooting' &&
-        this.player.state !== 'idling') {
+        this.player.state === 'walking') {
         sprint = true;
         this.player.stamina--;
         if (this.player.stamina === 0) {
@@ -974,6 +1064,7 @@ Play.update = function() {
         this.player.canSprint = 1;
     }
 
+	//Eating the next nood item in player.food
     if (this.keyboard.isDown(Phaser.Keyboard.E)) {
         if (this.player.eatAgain == 1 &&
             this.player.food.length > 0 &&
@@ -988,41 +1079,43 @@ Play.update = function() {
     // Shoot
     if ((this.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) &&
         (this.player.weapons[this.player.currentWeapon] === 'Bow')) {
-        console.log(this.player.state);
         if (this.player.state !== 'shooting') {
             this.player.shoot();
+			//Set a timeout here so that the bullet doesn't shoot immedeatily.
+			//This makes it line up better with the animation.
             setTimeout(() => {
                 let tempBullet = null;
+				let bulletSpeed = 700;
                 switch (this.player.direction) {
                     case ('up'):
                         tempBullet = game.add.sprite(
-                            this.player.body.x, this.player.body.y, 'Arrow_Up'
+                            this.player.body.x + this.player.body.width / 3, this.player.body.y, 'Arrow_Up'
                         );
                         game.physics.enable(
                             tempBullet, Phaser.Physics.ARCADE
                         );
-                        tempBullet.body.velocity.y = -500;
+                        tempBullet.body.velocity.y = -bulletSpeed;
                         break;
                     case ('down'):
                         tempBullet = game.add.sprite(
-                            this.player.body.x, this.player.body.y, 'Arrow_Down'
+                            this.player.body.x + this.player.body.width / 3 - 1, this.player.body.y, 'Arrow_Down'
                         );
                         game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
-                        tempBullet.body.velocity.y = 500;
+                        tempBullet.body.velocity.y = bulletSpeed;
                         break;
                     case ('left'):
                         tempBullet = game.add.sprite(
-                            this.player.body.x, this.player.body.y, 'Arrow_Left'
+                            this.player.body.x, this.player.body.y + 1, 'Arrow_Left'
                         );
                         game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
-                        tempBullet.body.velocity.x = -500;
+                        tempBullet.body.velocity.x = -bulletSpeed;
                         break;
                     case ('right'):
                         tempBullet = game.add.sprite(
-                            this.player.body.x, this.player.body.y, 'Arrow_Right'
+                            this.player.body.x, this.player.body.y + 1, 'Arrow_Right'
                         );
                         game.physics.enable(tempBullet, Phaser.Physics.ARCADE);
-                        tempBullet.body.velocity.x = 500;
+                        tempBullet.body.velocity.x = bulletSpeed;
                         break;
                 }
                 tempBullet.visible = true;
@@ -1036,38 +1129,28 @@ Play.update = function() {
                     tempBullet.kill();
                     this.bulletGroup.remove(tempBullet);
                 }, 10000);
-            }, 500);
+            }, 450);
         }
-    } else {
-        let temp = this.player.frame - 207;
-        if ((temp % 13 === 0)) {
-            this.player.state = 'idling';
-        }
-    }
+    } 
 
     // Attack
     if ((this.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) &&
         (this.player.state !== 'attacking') &&
         (this.player.weapons[this.player.currentWeapon] === 'Dagger')) {
         this.player.attack();
-    } else {
-        /**
-         * attacking == false
-         * iff we are on the last frame. ie. the whole animation has played.
-         */
-        // å
-        let temp = this.player.frame - 161;
-        if ((temp % 13 === 0) && (this.player.state === 'attacking')) {
-            if (!(this.keyboard.isDown(Phaser.Keyboard.M))) {
-                this.player.state = 'idling';
-            }
-        }
+    } 
+	// Thrust
+    if ((this.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) &&
+        (this.player.state !== 'thrusting') &&
+        (this.player.weapons[this.player.currentWeapon] === 'Spear')) {
+        this.player.thrust();
     }
 
+	//Key Queue for movement
     if (this.wasdQueue.length) {
         this.player.moveInDirection(this.wasdQueue[this.wasdQueue.length - 1],
             sprint);
-    } else if (this.player.state !== 'attacking' && this.player.state !== 'shooting') {
+    } else if (this.player.state !== 'attacking' && this.player.state !== 'shooting' && this.player.state !== 'thrusting') {
         this.player.idleHere();
     }
 
@@ -1128,18 +1211,17 @@ function bulletCollision(entity, bullet) {
                 case 'npc':
                     let coins = Math.floor(Math.random() * 4) + 2;
                     this.player.currency += coins;
-
                     r = Math.floor(Math.random() * 2);
-                    if (r == 1) {
-                        r = Math.floor(Math.random() * 4);
-                        let k = '';
-                        if (r == 0) k = 'Carrot';
-                        if (r == 1) k = 'Apple';
-                        if (r == 2) k = 'Pear';
-                        if (r == 3) k = 'Mutton';
-                        let i = new Item(entity.x + (entity.width / 2), entity.y + (entity.height / 2), k, 'food');
-                        this.itemGroup.add(i);
-                    }
+					if (r == 1) {
+						r = Math.floor(Math.random() * 4);
+						let k = '';
+						if (r == 0) k = 'Carrot';
+						if (r == 1) k = 'Apple';
+						if (r == 2) k = 'Pear';
+						if (r == 3) k = 'Mutton';
+						let i = new Item(entity.x + (entity.width / 2), entity.y + (entity.height / 2), k, 'food');
+						this.itemGroup.add(i);
+					}
                     break;
                 case 'monster':
                     r = Math.floor(Math.random() * 5);
@@ -1163,7 +1245,6 @@ function bulletCollision(entity, bullet) {
         }
     }
 };
-
 /**
  * 
  * @param {Player} player 
@@ -1179,6 +1260,61 @@ function itemCollision(player, item) {
 };
 
 
+/*
+ * Handles collision between cannonball and entity.
+ *
+ */
+function cannonCollision(entity, cannonball) {
+	//Direct hit causes 20 damage to the player, and insta kills NPCs
+	if (cannonball.exploded === 0) {
+		cannonball.explode();
+		//Player takes 20 damage per hit
+		if (entity === this.player){
+			this.player.HP -= 20;
+			if (this.player.HP <= 0) this.player.die();
+		} else {
+			//NPC's are killed immedeatily, and nearby NPCs react.
+			let nearest = Map.nearest(this.player, 4, 1024);
+			let numWitnesses = Math.floor(Math.random() * nearest.length);
+			if (numWitnesses === 0 && nearest.length > 0) numWitnesses = nearest.length;
+			let witnesses = Sampling.sample_from_array(nearest, numWitnesses, false);
+	
+			if (!witnesses) return;
+			witnesses.forEach(function(p, i) {
+				if (p[0].state !== 'dead') {
+					let witness = p[0];
+					let dialogue = ['Oh no!', 'Run!', 'Invasion!', 'Pirate attack!', 'Duck!'];
+					let n = Math.floor(Math.random() * dialogue.length);
+					if (witness !== entity) witness.converse(dialogue[n]);
+					else witness.converse('Ahhh!');
+					witness.wander(this.navMesh, new Phaser.Point(0, 0), new Phaser.Point(game.world.width, game.world.height));
+				}
+			}, this);
+			r = Math.floor(Math.random() * 2);
+			if (r == 1) {
+				r = Math.floor(Math.random() * 4);
+				let k = '';
+				if (r == 0) k = 'Carrot';
+				if (r == 1) k = 'Apple';
+				if (r == 2) k = 'Pear';
+				if (r == 3) k = 'Mutton';
+				let i = new Item(entity.x + (entity.width / 2), entity.y + (entity.height / 2), k, 'food');
+				this.itemGroup.add(i);
+			}
+			entity.body.enable = false;
+			entity.die();
+		}
+	} else {
+		//Colliding with explosion hurts a little bit.
+		entity.HP -= 0.1;
+		if (entity.HP <= 0){
+			entity.body.enable = false;
+			entity.die();
+		}
+	}
+};
+
+
 /**
  * Handle collision between two `Entities`
  *
@@ -1189,14 +1325,7 @@ function itemCollision(player, item) {
  */
 function entityCollision(entity1, entity2) {
     // entity2 seems to be the Player, and entity1 is the Enemy
-    if (entity1.frame === 272) {
-        entity1.kill();
-        return;
-    }
-    if (entity2.frame === 272) {
-        entity2.kill();
-        return;
-    }
+	//Don't let same faction attacks happen
     /**
      * @todo(anand): Handle code to get injured
      */
@@ -1206,6 +1335,7 @@ function entityCollision(entity1, entity2) {
         game.physics.arcade.collide(entity2, this.blockLayer) ||
         game.physics.arcade.collide(entity2, this.blockOverlap)) {
         return;
+		
     }
 
 
@@ -1218,14 +1348,28 @@ function entityCollision(entity1, entity2) {
         entity2.attack();
         let f2 = entity2.animations.currentAnim.frame;
         if (f2 == 158 || f2 == 184 || f2 == 171 || f2 == 197) { // if statement should be replaced eventually with an entity state called 'injured'
-            this.calculateDamage(entity2, entity1);
+            if (entity1.type !== entity2.type) this.calculateDamage(entity2, entity1);
         }
     }
     if (entity1.state === 'attacking') {
         entity1.attack();
         let f1 = entity1.animations.currentAnim.frame;
         if (f1 == 158 || f1 == 184 || f1 == 171 || f1 == 197) { // if statement should be replaced eventually with an entity state called 'injured'
-            this.calculateDamage(entity1, entity2);
+            if (entity1.type !== entity2.type) this.calculateDamage(entity1, entity2);
+        }
+    }
+	if (entity2.state === 'thrusting') {
+        entity2.thrust();
+        let f2 = entity2.animations.currentAnim.frame;
+        if (f2 == 54 || f2 == 67 || f2 == 80 || f2 == 93) { // if statement should be replaced eventually with an entity state called 'injured'
+            if (entity1.type !== entity2.type) this.calculateDamage(entity2, entity1);
+        }
+    }
+    if (entity1.state === 'thrusting') {
+        entity1.thrust();
+        let f1 = entity1.animations.currentAnim.frame;
+        if (f1 == 54 || f1 == 67 || f1 == 80 || f1 == 93) { // if statement should be replaced eventually with an entity state called 'injured'
+            if (entity1.type !== entity2.type) this.calculateDamage(entity1, entity2);
         }
     }
 
@@ -1292,7 +1436,7 @@ function entityCollision(entity1, entity2) {
         //             action);
         //     }
         // }, this);
-        let nearest = Map.nearest(this.player, 3, 256);
+        let nearest = Map.nearest(this.player, 5, 256);
         let numWitnesses = Math.floor(Math.random() * nearest.length);
         let witnesses = Sampling.sample_from_array(nearest, numWitnesses, false);
 
@@ -1319,22 +1463,28 @@ Play.populateBoard = function() {
      */
     this.monsterFactory = new Factory(Monster, this.monsterGroup,
         monsterBounds, 30);
+	let h = 1;
     for (let i = 0; i < 30; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
          */
-        this.monsterFactory.next(null, null, 'enemy');
+        this.monsterFactory.next(null, null, 'orc'+h);
+		h++;
+		if (h === 3) h = 1;
     }
     this.monsters = this.monsterGroup.getAll();
     /**
      * Generate a factory and a few NPCs
      */
     this.npcFactory = new Factory(NPC, this.npcGroup, npcBounds, 40);
+	let g = 1;
     for (let i = 0; i < 40; i++) {
         /**
          * Generate a random location withing 3/4ths of the map
          */
-        this.npcFactory.next(null, null, 'woman');
+		this.npcFactory.next(null, null, 'npc'+g);
+		g++;
+		if (g === 6) g = 1;
     }
     this.npcs = this.npcGroup.getAll();
     /**
@@ -1344,7 +1494,7 @@ Play.populateBoard = function() {
     this.player = new Player(1971,
         504,
         'player');
-
+//1971, 504!!!!
     /**
      * Add all Entities to the same group.
      */
@@ -1464,7 +1614,7 @@ Play.shutdown = function() {
 
 Play.calculateDamage = function(attacker, defender) {
     defender.HP = defender.HP - (attacker.attackStat / defender.defenseStat);
-    if (defender.HP == 0) {
+    if (defender.HP <= 0) {
         defender.die();
         defender.body.enable = false;
     }
@@ -1494,7 +1644,7 @@ Play.engageGossip = function(dead, perp, action) {
         //             action);
         //     }
         // }, this);
-        let nearest = Map.nearest(this.player, 3, 256);
+        let nearest = Map.nearest(this.player, 4, 256);
         let numWitnesses = Math.floor(Math.random() * nearest.length);
         let witnesses = Sampling.sample_from_array(
             nearest, numWitnesses, false
